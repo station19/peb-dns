@@ -33,6 +33,7 @@ class ViewZone(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
+
 class Zone(db.Model):
     __tablename__ = 'dns_zone'
     id = db.Column(db.Integer, primary_key=True)
@@ -78,7 +79,7 @@ class Record(db.Model):
     status = db.Column(db.String(64), default='enabled')
     enabled = db.Column(db.String(64), default='1')
     alive = db.Column(db.String(64), default='ON')
-    zone_id = db.Column(db.Integer, db.ForeignKey('dns_zones.id'))
+    zone_id = db.Column(db.Integer, db.ForeignKey('dns_zone.id'))
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 

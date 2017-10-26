@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import abort, request, jsonify, current_app, g
 import jwt
-from .models import User
+from peb_dns.models.account import User, LocalAuth
 
 
 def permission_required(permission):
@@ -39,15 +39,15 @@ def token_required(f):
         # token = request.args.get('token') #http://127.0.0.1:5000/route?token=alshfjfjdklsfj89549834ur
         token = request.headers.get('Authorization')
         if not token:
-            return jsonify({'message' : 'Token is missing!'}), 403
+            return {'message' : 'Token is missing!'}, 403
         try: 
             data = jwt.decode(token, current_app.config['SECRET_KEY'])
         except:
-            return jsonify({'message' : 'Token is invalid!'}), 403
+            return {'message' : 'Token is invalid!'}, 403
 
         g.current_user = User.query.filter_by(username=data.get('user')).first()
         if g.current_user is None:
-            return jsonify({'message' : 'Token is invalid!'}), 403
+            return {'message' : 'Token is invalid!'}, 403
         return f(*args, **kwargs)
 
     return decorated

@@ -6,9 +6,6 @@ import jwt
 from peb_dns.models.account import User, LocalAuth
 from peb_dns import db
 
-from . import auth_bp
-auth_api = Api(auth_bp)
-
 
 print('xxxxxxxxxxxxxxxxxxxxxxxxx')
 
@@ -74,8 +71,4 @@ class AuthLocal(Resource):
 
         return {'token':token}, 200
 
-
-
-auth_api.add_resource(AuthLDAP, '/login_ldap')
-auth_api.add_resource(AuthLocal, '/login_local')
 

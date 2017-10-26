@@ -3,9 +3,9 @@ from configs.config import config, config_pyfiles
 from flask_migrate import Migrate, MigrateCommand
 from .extensions import mail, db
 from flask_cors import CORS
-from .resourses.account.auth import auth_bp
+from .resourses.account import auth_bp
 from .resourses.admin import admin
-from .resourses.dns import dns
+from .resourses.dns import dns_bp
 import os
 import click
 
@@ -55,7 +55,7 @@ def create_app(config_name='default'):
     app.config.from_pyfile('configs/dns_templates.cfg')
 
     configure_extensions(app)
-    configure_blueprints(app, [auth_bp, dns, admin])
+    configure_blueprints(app, [auth_bp, dns_bp, admin])
     configure_error_handlers(app)
     # configure_db(app)
     # configure_hooks(app)
