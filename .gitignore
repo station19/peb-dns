@@ -1,0 +1,6 @@
+**/__pycache__
+migrations
+uploads/*
+.idea/
+env_dns/*
+sftp-config.json
