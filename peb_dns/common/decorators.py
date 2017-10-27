@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import abort, request, jsonify, current_app, g
 import jwt
-from peb_dns.models.account import User, LocalAuth
+from peb_dns.models.account import DBUser, DBLocalAuth
 
 
 def permission_required(permission):
@@ -45,7 +45,7 @@ def token_required(f):
         except:
             return {'message' : 'Token is invalid!'}, 403
 
-        g.current_user = User.query.filter_by(username=data.get('user')).first()
+        g.current_user = DBUser.query.filter_by(username=data.get('user')).first()
         if g.current_user is None:
             return {'message' : 'Token is invalid!'}, 403
         return f(*args, **kwargs)

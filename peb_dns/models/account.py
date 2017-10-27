@@ -2,10 +2,10 @@ from flask import current_app, request
 from peb_dns.extensions import db
 from sqlalchemy import and_, or_
 from werkzeug.security import generate_password_hash, check_password_hash
-from .dns import Zone, View, Record, Server
+from .dns import DBZone, DBView, DBRecord, DBDNSServer
 from datetime import datetime
 
-class User(db.Model):
+class DBUser(db.Model):
     __tablename__ = 'account_user'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -22,11 +22,11 @@ class User(db.Model):
 
     def can(self, privilege):
 
-        current_user_privileges = db.session.query(Privilege).join(RolePrivilege, and_(Privilege.id == RolePrivilege.privilege_id, Privilege.name == privilege)) \
-            .join(Role, and_(Role.id == RolePrivilege.role_id)) \
-            .join(UserRole, and_(UserRole.role_id == Role.id)) \
-            .join(User, and_(User.id == UserRole.user_id)) \
-            .filter(User.id == self.id).all()
+        current_user_privileges = db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id, DBPrivilege.name == privilege)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()
         
         for current_user_privilege in current_user_privileges:
             if privilege == current_user_privilege.name:
@@ -35,22 +35,22 @@ class User(db.Model):
 
 
     def is_admin(self):
-        admins = db.session.query(Role).join(UserRole, and_(UserRole.role_id == Role.id, Role.name == "admin")) \
-            .join(User, and_(User.id == UserRole.user_id)) \
-            .filter(User.id == self.id).all()
+        admins = db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id, DBRole.name == "admin")) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()
         if admins:
             return True
         return False
 
 
     def can_access_zone(self, zone_name):
-        zones = db.session.query(Zone) \
-            .join(Privilege, and_(Zone.name == zone_name, Zone.id == Privilege.resource_id, Privilege.resource_type == Resource.ZONE, Privilege.operation == Operation.VISIT)) \
-            .join(RolePrivilege, and_(Privilege.id == RolePrivilege.privilege_id)) \
-            .join(Role, and_(Role.id == RolePrivilege.role_id)) \
-            .join(UserRole, and_(UserRole.role_id == Role.id)) \
-            .join(User, and_(User.id == UserRole.user_id)) \
-            .filter(User.id == self.id).all()
+        zones = db.session.query(DBZone) \
+            .join(DBPrivilege, and_(DBZone.name == zone_name, DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == Resource.ZONE, DBPrivilege.operation == Operation.VISIT)) \
+            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()
 
         if zones:
             return True
@@ -59,16 +59,16 @@ class User(db.Model):
 
     def can_update(self, resource_type, resource_id):
         if resource_type == Resource.ZONE:
-            r = Zone
+            r = DBZone
         elif resource_type == Resource.VIEW:
-            r = View
+            r = DBView
         current_user_resources = db.session.query(r) \
-            .join(Privilege, and_(r.id == resource_id, r.id == Privilege.resource_id, Privilege.resource_type == resource_type, Privilege.operation == Operation.UPDATE)) \
-            .join(RolePrivilege, and_(Privilege.id == RolePrivilege.privilege_id)) \
-            .join(Role, and_(Role.id == RolePrivilege.role_id)) \
-            .join(UserRole, and_(UserRole.role_id == Role.id)) \
-            .join(User, and_(User.id == UserRole.user_id)) \
-            .filter(User.id == self.id).all()
+            .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == Operation.UPDATE)) \
+            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()
 
         if current_user_resources:
             return True
@@ -77,23 +77,23 @@ class User(db.Model):
 
     def can_delete(self, resource_type, resource_id):
         if resource_type == Resource.ZONE:
-            r = Zone
+            r = DBZone
         elif resource_type == Resource.VIEW:
-            r = View
+            r = DBView
         current_user_resources = db.session.query(r) \
-            .join(Privilege, and_(r.id == resource_id, r.id == Privilege.resource_id, Privilege.resource_type == resource_type, Privilege.operation == Operation.DELETE)) \
-            .join(RolePrivilege, and_(Privilege.id == RolePrivilege.privilege_id)) \
-            .join(Role, and_(Role.id == RolePrivilege.role_id)) \
-            .join(UserRole, and_(UserRole.role_id == Role.id)) \
-            .join(User, and_(User.id == UserRole.user_id)) \
-            .filter(User.id == self.id).all()
+            .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == Operation.DELETE)) \
+            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()
 
         if current_user_resources:
             return True
         return False
 
 
-class LocalAuth(db.Model):
+class DBLocalAuth(db.Model):
     __tablename__ = 'account_local_auth'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, unique=True, index=True)
@@ -112,23 +112,23 @@ class LocalAuth(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-class UserRole(db.Model):
+class DBUserRole(db.Model):
     __tablename__ = 'account_user_role'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, index=True)
     role_id = db.Column(db.Integer, index=True)
 
 
-class Role(db.Model):
+class DBRole(db.Model):
     __tablename__ = 'account_role'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
 
     def __repr__(self):
-        return '<Role %r>' % self.name
+        return '<DBRole %r>' % self.name
 
 
-class RolePrivilege(db.Model):
+class DBRolePrivilege(db.Model):
     __tablename__ = 'account_role_privilege'
     id = db.Column(db.Integer, primary_key=True)
     role_id = db.Column(db.Integer, index=True)
@@ -136,7 +136,7 @@ class RolePrivilege(db.Model):
 
 
 #权限表
-class Privilege(db.Model):
+class DBPrivilege(db.Model):
     __tablename__ = 'account_privilege'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))

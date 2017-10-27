@@ -9,7 +9,11 @@ dns_api = Api(dns_bp)
 
 from .server import DNSServerList, DNSServer
 dns_api.add_resource(DNSServerList, '/servers')
-dns_api.add_resource(DNSServer, '/servers/<int:id>')
+dns_api.add_resource(DNSServer, '/servers/<int:server_id>')
+
+from .view import DNSViewList, DNSView
+dns_api.add_resource(DNSViewList, '/views')
+dns_api.add_resource(DNSView, '/views/<int:view_id>')
 
 
 

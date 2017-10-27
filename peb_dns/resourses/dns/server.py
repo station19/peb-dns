@@ -1,14 +1,23 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort
-from flask import Blueprint, request, jsonify, current_app
-from ldap3 import Server, Connection, ALL
-import datetime
-import jwt
-from peb_dns.models.dns import Server
+from flask import current_app, g
+
+from peb_dns.models.dns import DBDNSServer, DBOperationLog
 from peb_dns.common.decorators import token_required
 from peb_dns import db
+from peb_dns.common.util import ResourceContent
+from sqlalchemy import and_, or_
 
 
-print('xxxxxxxxxxxxxxxxxxxxxxxxx')
+dns_server_common_parser = reqparse.RequestParser()
+dns_server_common_parser.add_argument('host', type = str, location = 'json', required=True, help='host')
+dns_server_common_parser.add_argument('ip', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('env', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('dns_server_type', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('status', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('zb_process_itemid', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('zb_port_itemid', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('zb_resolve_itemid', type = str, location = 'json', required=True)
+dns_server_common_parser.add_argument('zb_resolve_rate_itemid', type = str, location = 'json', required=True)
 
 
 class DNSServerList(Resource):
@@ -16,34 +25,98 @@ class DNSServerList(Resource):
     method_decorators = [token_required] 
 
     def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('username', type = str, location = 'json')
-        self.reqparse.add_argument('password', type = str, location = 'json')
+        self.get_reqparse = reqparse.RequestParser()
         super(DNSServerList, self).__init__()
 
     def get(self):
+        DBDNSServer.query.all()
         return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
     def post(self):
-        args = self.reqparse.parse_args()
-        print(args)
-        return { 'message': 'bbbbbbbbbbbbbbbb' }
+        args = dns_server_common_parser.parse_args()
+
+        unique_server = db.session.query(DBDNSServer).filter(or_(DBDNSServer.host==args['host'], DBDNSServer.ip==args['ip'])).all()
+        if unique_server:
+            return dict(message='Failed', error='创建失败! 重复的Server，相同Host或IP地址已存在！')
+
+        new_server = DBDNSServer(**args)
+        db.session.add(new_server)
+        db.session.flush()
+        log = DBOperationLog(operation_type='添加', operator=g.current_user.username, target_type='DNSServer', target_name=new_server.host, \
+                target_id=int(new_server.id), target_detail=ResourceContent.getServerContent(new_server))
+        db.session.add(log)
+        db.session.commit()
+
+        # app_object = current_app._get_current_object()
+        # init_cmd = current_app.config['SERVER_INIT_CMD']
+        # init_server_thread = threading.Thread(target=initServer, args=(init_cmd, app_object, new_server.id))
+        # init_server_thread.start()
+        
+        return dict(message='OK'), 201
+
+    def init_server(self):
+        pass
+
 
 
 
 class DNSServer(Resource):
 
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('username', type = str, location = 'json')
-        self.reqparse.add_argument('password', type = str, location = 'json')
-        super(DNSServer, self).__init__()
+    method_decorators = [token_required]
 
-    def get(self):
+    def get(self, server_id):
+        current_server = DBDNSServer.query.get(server_id)
+        args = dns_server_common_parser.parse_args()
+
         return { 'message' : "哈哈哈哈哈哈" }, 200
 
-    def post(self):
-        args = self.reqparse.parse_args()
-        print(args)
-        return { 'message': '啦啦啦啦啦啦啦啦啦' }
+    def put(self, server_id):
+        current_server = DBDNSServer.query.get(server_id)
+        args = dns_server_common_parser.parse_args()
+        try:
+            self._update_server(current_server, args)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+        return dict(message='OK'), 200
+
+
+    def delete(self, server_id):
+        current_server = DBDNSServer.query.get(server_id)
+        try:
+            self._delete_server(current_server)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+        return dict(message='OK'), 200
+
+
+    def _update_server(self, server, args):
+        try:
+            log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Server', target_name=server.host, \
+                    target_id=int(server.id), target_detail=ResourceContent.getServerContent(server, prefix="修改前："))
+            db.session.add(log)
+            server.host = args['host']
+            server.ip = args['ip']
+            server.env = args['env']
+            server.dns_server_type = args['dns_server_type']
+            server.zb_process_itemid = args['zb_process_itemid']
+            server.zb_port_itemid = args['zb_port_itemid']
+            server.zb_resolve_itemid = args['zb_resolve_itemid']
+            server.zb_resolve_rate_itemid = args['zb_resolve_rate_itemid']
+            db.session.add(server)
+        except Exception as e:
+            raise e
+
+    def _delete_server(self, server):
+        try:
+            log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Server', target_name=server.host, \
+                    target_id=int(server.id), target_detail=ResourceContent.getServerContent(server))
+            db.session.add(log)
+            db.session.delete(server)
+        except Exception as e:
+            raise e
+
 
