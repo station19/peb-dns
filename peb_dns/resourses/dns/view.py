@@ -45,9 +45,6 @@ class DNSViewList(Resource):
         db.session.commit()
         return dict(message='OK'), 201
 
-    def init_server(self):
-        pass
-
 
 class DNSView(Resource):
 
@@ -80,53 +77,21 @@ class DNSView(Resource):
         return dict(message='OK'), 200
 
     def _update_view(self, view, args):
-        try:
-            log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='View', target_name=view.name, \
-                    target_id=int(view.id), target_detail=ResourceContent.getViewContent(view, prefix="修改前："))
-            db.session.add(log)
-            view.name = args['name']
-            view.acl = args['acl']
-            db.session.add(view)
-            view_list = db.session.query(DBView).all()
-            view.make_view('modify', view_list)
-        except Exception as e:
-            raise e
+        log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='View', target_name=view.name, \
+                target_id=int(view.id), target_detail=ResourceContent.getViewContent(view, prefix="修改前："))
+        db.session.add(log)
+        view.name = args['name']
+        view.acl = args['acl']
+        db.session.add(view)
+        view_list = db.session.query(DBView).all()
+        view.make_view('modify', view_list)
 
     def _delete_view(self, view):
-        try:
-            log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='View', target_name=view.host, \
-                    target_id=int(view.id), target_detail=ResourceContent.getViewContent(view))
-            db.session.add(log)
-            db.session.delete(view)
-        except Exception as e:
-            raise e
+        log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='View', target_name=view.name, \
+                target_id=int(view.id), target_detail=ResourceContent.getViewContent(view))
+        db.session.add(log)
+        db.session.delete(view)
+        view_list = db.session.query(DBView).all()
+        view.make_view('delete', view_list)
 
 
-
-# view_id = req.get('view_id')
-# if not g.current_user.can_update(Resource.VIEW, int(view_id)):
-#     abort(403)
-
-# unique_view = db.session.query(View).filter(and_(View.name==v_name, View.id != int(view_id))).first()
-# if unique_view:
-#     return jsonify(message='Failed', error_msg='创建失败 !<br \>重复的Zone！！<br> 相同名字的Zone，每种类型域名下只能存在一个！。')
-
-# current_view = View.query.get(int(view_id))
-# log = Logs(operation_type='修改', operator=g.current_user.username, target_type='View', target_name=current_view.name, \
-#         target_id=int(current_view.id), target_detail=ResourceContent.getViewContent(current_view, prefix="修改前："))
-# db.session.add(log)
-# # if current_view and current_view.name == v_name:
-# #     return jsonify(message='Failed', error_msg='修改失败 !<br \>重复的View！！<br> 相同的名字的View 已存在。')
-# current_view.name = v_name
-# current_view.data = v_data
-# db.session.add(current_view)
-
-# # view_list = db.session.query(View).all()
-# try:
-#     # make_view(action, v_name, ip_list, view_list)
-#     DNSView(current_view).modify()
-# except Exception as e:
-#     db.session.rollback()
-#     return jsonify(message='Failed', error_msg='操作失败 !!!<br> 错误信息如下：<br>' + str(e))
-# db.session.commit()
-# return jsonify(message='OK'), 200
