@@ -15,5 +15,13 @@ from .view import DNSViewList, DNSView
 dns_api.add_resource(DNSViewList, '/views')
 dns_api.add_resource(DNSView, '/views/<int:view_id>')
 
+from .zone import DNSZoneList, DNSZone
+dns_api.add_resource(DNSZoneList, '/zones')
+dns_api.add_resource(DNSZone, '/zones/<int:zone_id>')
+
+from .record import DNSRecordList, DNSRecord
+dns_api.add_resource(DNSRecordList, '/records')
+dns_api.add_resource(DNSRecord, '/records/<int:record_id>')
+
 
 

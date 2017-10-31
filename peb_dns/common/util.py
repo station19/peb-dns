@@ -65,8 +65,8 @@ class ResourceContent(object):
     def getZoneContent(zone, prefix=None):
         content = 'id: ' + str(zone.id) + '\n' \
         + 'Zone名称: ' + str(zone.name) + '\n' \
-        + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(zone.is_inner) + '\n' \
-        + 'Zone类型: ' + str(zone.z_type) + '\n' \
+        + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(zone.zone_group) + '\n' \
+        + 'Zone类型: ' + str(zone.zone_type) + '\n' \
         + '关联View: ' + str(zone.views) + '\n' 
 
         if prefix:
@@ -80,11 +80,11 @@ class ResourceContent(object):
         + '记录主机: ' + str(record.host) + '\n' \
         + '记录类型: ' + str(record.record_type) + '\n' \
         + '记录值: ' + str(record.value) + '\n' \
-        + 'TTL: ' + str(record.TTL) + '\n' \
-        + '线路类型: ' + str(record.line_type) + '\n' \
+        + 'TTL: ' + str(record.ttl) + '\n' \
+        + '线路类型: ' + str(record.view_name) + '\n' \
         + '备注: ' + str(record.comment) + '\n' \
         + '创建人: ' + str(record.creator) + '\n' \
-        + '创建时间: ' + str(record.create_time)
+        + '创建时间: ' + str(record.gmt_create)
 
         if prefix:
             content = prefix + '\n' + content
