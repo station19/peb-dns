@@ -1,7 +1,8 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g
 
-from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
+from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
+from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from peb_dns.common.util import ResourceContent
@@ -51,11 +52,32 @@ class DNSZoneList(Resource):
             db.session.add(v)
         try:
             new_zone.create()
+            self._add_privilege_for_zone(new_zone)
         except Exception as e:
             db.session.rollback()
             return dict(message='Failed', error="{e}".format(e=str(e)))
         db.session.commit()
         return dict(message='OK'), 201
+
+
+    def _add_privilege_for_zone(self, new_zone):
+        access_privilege_name =  new_zone.name + '#' + str(Operation.ACCESS)
+        update_privilege_name =  new_zone.name + '#' + str(Operation.UPDATE)
+        delete_privilege_name =  new_zone.name + '#' + str(Operation.DELETE)
+        access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.ACCESS, resource_id=new_zone.id)
+        update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.UPDATE, resource_id=new_zone.id)
+        delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.DELETE, resource_id=new_zone.id)
+        db.session.add(access_privilege)
+        db.session.add(update_privilege)
+        db.session.add(delete_privilege)
+        db.session.flush()
+        admin_access =  DBRolePrivilege(role_id=1, privilege_id=access_privilege.id)
+        admin_update =  DBRolePrivilege(role_id=1, privilege_id=update_privilege.id)
+        admin_delete =  DBRolePrivilege(role_id=1, privilege_id=delete_privilege.id)
+        db.session.add(admin_access)
+        db.session.add(admin_update)
+        db.session.add(admin_delete)
+
 
 
 class DNSZone(Resource):
@@ -83,7 +105,8 @@ class DNSZone(Resource):
     def delete(self, zone_id):
         current_zone = DBZone.query.get(zone_id)
         try:
-            self._delete_view(current_zone)
+            self._remove_zone_privileges(current_zone)
+            self._delete_zone(current_zone)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
@@ -112,12 +135,32 @@ class DNSZone(Resource):
         db.session.flush()
         current_zone.modify(pre_views)
 
-    def _delete_zone(self, view):
-        log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='View', target_name=view.name, \
-                target_id=int(view.id), target_detail=ResourceContent.getViewContent(view))
+
+    def _delete_zone(self, current_zone):
+        log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Zone', target_name=current_zone.name, \
+                target_id=int(current_zone.id), target_detail=ResourceContent.getZoneContent(current_zone))
         db.session.add(log)
-        db.session.delete(view)
-        view_list = db.session.query(DBView).all()
-        view.make_view('delete', view_list)
+
+        DBViewZone.query.filter(DBViewZone.zone_id==current_zone.id).delete()
+        DBRecord.query.filter(DBRecord.zone_id == current_zone.id).delete()
+        db.session.delete(current_zone)
+        current_zone.delete()
 
 
+    def _remove_zone_privileges(self, current_zone):
+        current_zone_records = DBRecord.query.filter(DBRecord.zone_id == current_zone.id).all()
+        for current_zone_record in current_zone_records:
+            self._remove_record_privileges(current_zone, current_zone_record)
+        current_zone_privileges_query = DBPrivilege.query.filter(DBPrivilege.resource_id==current_zone.id, DBPrivilege.resource_type==ResourceType.ZONE)
+        current_zone_privileges = current_zone_privileges_query.all()
+        for zone_privilege in current_zone_privileges:
+            DBRolePrivilege.query.filter(DBRolePrivilege.privilege_id == zone_privilege.id).delete()
+        current_zone_privileges_query.delete()
+
+
+    def _remove_record_privileges(self, current_zone, current_record):
+        current_record_privileges_query = DBPrivilege.query.filter(DBPrivilege.resource_id==current_record.id, DBPrivilege.resource_type==ResourceType.RECORD)
+        current_record_privileges = current_record_privileges_query.all()
+        for record_privilege in current_record_privileges:
+            DBRolePrivilege.query.filter(DBRolePrivilege.privilege_id == record_privilege.id).delete()
+        current_record_privileges_query.delete()

@@ -246,8 +246,6 @@ class DNSPod(object):
         except Exception as e:
             return []
         if res.status_code >= 200 and res.status_code <= 220:
-            # print(res.status_code)
-            # print(res.json())
             return res.json()['lines']
         return []
 

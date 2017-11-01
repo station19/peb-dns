@@ -7,7 +7,6 @@ from peb_dns import db
 from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 
-
 dns_view_common_parser = reqparse.RequestParser()
 dns_view_common_parser.add_argument('name', type = str, location = 'json', required=True, help='host')
 dns_view_common_parser.add_argument('acl', type = str, location = 'json', required=True)

@@ -43,45 +43,48 @@ class DBUser(db.Model):
         return False
 
 
-    def can_access_zone(self, zone_name):
-        zones = db.session.query(DBZone) \
-            .join(DBPrivilege, and_(DBZone.name == zone_name, DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == Resource.ZONE, DBPrivilege.operation == Operation.VISIT)) \
-            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
-            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
-            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
-            .filter(DBUser.id == self.id).all()
+    # def can_access_zone(self, zone_name):
+    #     zones = db.session.query(DBZone) \
+    #         .join(DBPrivilege, and_(DBZone.name == zone_name, DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == ResourceType.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
+    #         .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
+    #         .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+    #         .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+    #         .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+    #         .filter(DBUser.id == self.id).all()
+    #     if zones:
+    #         return True
+    #     return False
 
-        if zones:
-            return True
-        return False
+
+    # def can_update(self, resource_type, resource_id):
+    #     if resource_type == ResourceType.ZONE:
+    #         r = DBZone
+    #     elif resource_type == ResourceType.VIEW:
+    #         r = DBView
+    #     current_user_resources = db.session.query(r) \
+    #         .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == Operation.UPDATE)) \
+    #         .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
+    #         .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+    #         .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+    #         .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+    #         .filter(DBUser.id == self.id).all()
+
+    #     if current_user_resources:
+    #         return True
+    #     return False
 
 
-    def can_update(self, resource_type, resource_id):
-        if resource_type == Resource.ZONE:
+    def can_do(self, operation, resource_type, resource_id):
+        if resource_type == ResourceType.ZONE:
             r = DBZone
-        elif resource_type == Resource.VIEW:
+        elif resource_type == ResourceType.VIEW:
             r = DBView
+        elif resource_type == ResourceType.RECORD:
+            r = DBRecord
+        elif resource_type == ResourceType.SERVER:
+            r = DBDNSServer
         current_user_resources = db.session.query(r) \
-            .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == Operation.UPDATE)) \
-            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
-            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
-            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
-            .filter(DBUser.id == self.id).all()
-
-        if current_user_resources:
-            return True
-        return False
-
-
-    def can_delete(self, resource_type, resource_id):
-        if resource_type == Resource.ZONE:
-            r = DBZone
-        elif resource_type == Resource.VIEW:
-            r = DBView
-        current_user_resources = db.session.query(r) \
-            .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == Operation.DELETE)) \
+            .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == operation)) \
             .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
@@ -147,16 +150,17 @@ class DBPrivilege(db.Model):
 
 
 class Operation(object):
-    VISIT = 0
+    ACCESS = 0
     UPDATE = 1
     DELETE = 2
 
 
-class Resource(object):
+class ResourceType(object):
     SERVER = 0
     VIEW = 1
     ZONE = 2
-    USER = 3
-    ROLE = 4
-    PRIVILEGE = 5
-    PAGE = 6
+    RECORD = 3
+    USER = 4
+    ROLE = 5
+    PRIVILEGE = 6
+    PAGE = 7

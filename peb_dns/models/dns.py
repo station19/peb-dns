@@ -10,7 +10,7 @@ import copy
 import requests
 import etcd
 import time
-from peb_dns.common.util import getETCDclient
+from peb_dns.common.util import getETCDclient, ZBapi
 
 
 ZONE_GROUP_MAPPING = {
@@ -209,7 +209,7 @@ class DBZone(db.Model):
 
     # @staticmethod
     # def get_splitted_zones():
-    #     zone_query = db.session.query(DBZone).join(DBPrivilege, and_(DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == Resource.ZONE, DBPrivilege.operation == Operation.VISIT)) \
+    #     zone_query = db.session.query(DBZone).join(DBPrivilege, and_(DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == Resource.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
     #         .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
     #         .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
     #         .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
@@ -279,6 +279,22 @@ class DBDNSServer(db.Model):
             'logs': self.logs
         }
         return json_server
+
+    def get_server_status(self):        
+        zb = ZBapi(self)
+        server_status = zb.get_server_status()
+        return server_status
+
+    @staticmethod
+    def get_resolve_rates(start_time, end_time):
+        dns_servers = DBDNSServer.query.all()
+        resolve_rates = {}
+        for dns_server in dns_servers:
+            zb = ZBapi(dns_server)
+            resolve_rate = zb.get_resolve_rate(start_time, end_time)
+            # resolve_rates.append({dns_server.host: resolve_rate})
+            resolve_rates[dns_server.host] = resolve_rate
+        return resolve_rates
 
 
 class DBOperationLog(db.Model):

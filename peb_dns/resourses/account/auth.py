@@ -8,7 +8,6 @@ from peb_dns.models.account import DBUser, DBLocalAuth
 from peb_dns import db
 
 
-print('xxxxxxxxxxxxxxxxxxxxxxxxx')
 
 class AuthLDAP(Resource):
 
