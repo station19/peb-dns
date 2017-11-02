@@ -21,6 +21,7 @@ dns_server_common_parser.add_argument('zb_resolve_itemid', type = str, location 
 dns_server_common_parser.add_argument('zb_resolve_rate_itemid', type = str, location = 'json', required=True)
 
 server_fields = {
+    'id':fields.String,
     'host': fields.String,
     'ip': fields.String,
     'env': fields.String,
