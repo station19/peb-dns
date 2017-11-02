@@ -26,3 +26,4 @@ dns_api.add_resource(DNSRecord, '/records/<int:record_id>')
 from .operation_log import DNSOperationLogList, DNSOperationLog
 dns_api.add_resource(DNSOperationLogList, '/oplogs')
 dns_api.add_resource(DNSOperationLog, '/oplogs/<int:log_id>')
+

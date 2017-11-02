@@ -42,7 +42,7 @@ class DBView(db.Model):
             .filter(DBView.id == self.id).all()
         if not related_zones:
             return []
-        print([v.name for v in related_zones])
+        print(related_zones)
         return related_zones
 
     @property
@@ -226,27 +226,6 @@ class DBZone(db.Model):
             if action == 'del':
                 etcd_client.delete(zone_record_conf)
                 time.sleep(0.2)
-
-
-
-    # @staticmethod
-    # def get_splitted_zones():
-    #     zone_query = db.session.query(DBZone).join(DBPrivilege, and_(DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == Resource.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
-    #         .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
-    #         .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
-    #         .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-    #         .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
-    #         .filter(DBUser.id == g.current_user.id)
-    #     inner_zones = [{'item_name':zone.name, 'url':'/dns/inner/'+zone.name.replace('.', '_')} for zone in zone_query.filter(DBZone.is_inner == 1).all()]
-    #     intercepted_zones = [{'item_name':zone.name, 'url':'/dns/intercepted/'+zone.name.replace('.', '_')} for zone in zone_query.filter(DBZone.is_inner == 2).all()]
-    #     outter_zones = [{'item_name':zone.name, 'url':'/dns/outter/'+zone.name.replace('.', '_')} for zone in zone_query.filter(DBZone.is_inner == 0).all()]
-
-    #     zone_groups = [{'title':'内部域名', 'items':inner_zones}, \
-    #         {'title':'劫持域名', 'items':intercepted_zones},
-    #         {'title':'外部域名', 'items':outter_zones}
-    #     ]
-        
-    #     return zone_groups
 
 
 class DBRecord(db.Model):

@@ -1,7 +1,9 @@
 import logging
 import time
 import subprocess
-import os, signal,sys
+import os
+import signal
+import sys
 import etcd
 from flask import current_app
 import requests
@@ -322,12 +324,14 @@ class ZBapi(object):
         except Exception as e:
             raise e
         results = json.loads(r.text).get("result")
-        
+        # print('xxxxx --- ' + str(len(results)))
         results_dct = OrderedDict()
         for i in range(13):
             end = time_slot_minutes*(i+1)
             if i >= 12:
                 end = time_slot_minutes*(i+1) - 1
+            # print(len(results))
+            # print(end)
             resolving_slot = results[time_slot_minutes*i : end]
             time_flag = results[end]['clock']
             time_flag_str = datetime.fromtimestamp(int(time_flag)).strftime("%m-%d %H:%M")
@@ -336,7 +340,7 @@ class ZBapi(object):
                 resolving_slot_amount += int(ss['value'])
             results_dct[time_flag_str] = resolving_slot_amount
         
-        return {'name':self._server.name, 'data':results_dct}
+        return {'name':self._server.host, 'data':results_dct}
 
 
     def get_server_status(self):

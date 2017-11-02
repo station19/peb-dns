@@ -19,13 +19,13 @@ dns_user_common_parser.add_argument('user_id', type = int, location = 'json', re
 dns_user_common_parser.add_argument('role_ids', type = int, location = 'json', action='append', required=True)
 
 
-class UserList(Resource):
+class UserRoleList(Resource):
 
     method_decorators = [token_required, admin_required] 
 
     def __init__(self):
         self.get_reqparse = reqparse.RequestParser()
-        super(UserList, self).__init__()
+        super(UserRoleList, self).__init__()
 
     def get(self):
         DBUser.query.all()
@@ -46,21 +46,19 @@ class UserList(Resource):
         return dict(message='OK'), 200
 
 
+class UserList(Resource):
 
-class User(Resource):
+    method_decorators = [token_required, admin_required]
 
-    method_decorators = [token_required]
+    # def get(self, zone_id):
+    #     current_zone = DBZone.query.get(zone_id)
+    #     args = dns_user_common_parser.parse_args()
+    #     return { 'message' : "哈哈哈哈哈哈" }, 200
 
-    def get(self, user_id):
-        current_zone = DBZone.query.get(user_id)
-        args = dns_user_common_parser.parse_args()
-        return { 'message' : "哈哈哈哈哈哈" }, 200
-
-
-    def put(self, user_id):
+    def put(self, zone_id):
         args = dns_user_common_parser.parse_args()
         role_ids = args['role_ids']
-        current_u = DBUser.query.get(user_id)
+        user_id = args['user_id']
         try:
             for role_id in role_ids:
                 new_user_role = DBUserRole(user_id=user_id, role_id=role_id)
@@ -72,7 +70,15 @@ class User(Resource):
         return dict(message='OK'), 200
 
 
-    def delete(self, user_id):
-        
+
+    def delete(self, zone_id):
+        current_zone = DBZone.query.get(zone_id)
+        try:
+            self._remove_zone_privileges(current_zone)
+            self._delete_zone(current_zone)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return dict(message='Failed', error="{e}".format(e=str(e))), 200
         return dict(message='OK'), 200
 

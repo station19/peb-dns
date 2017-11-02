@@ -5,6 +5,25 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .dns import DBZone, DBView, DBRecord, DBDNSServer
 from datetime import datetime
 
+
+class Operation(object):
+    ACCESS = 0
+    UPDATE = 1
+    DELETE = 2
+
+
+class ResourceType(object):
+    SERVER = 0
+    VIEW = 1
+    ZONE = 2
+    RECORD = 3
+    USER = 4
+    ROLE = 5
+    PRIVILEGE = 6
+    PAGE = 7
+    SERVER = 8
+
+
 class DBUser(db.Model):
     __tablename__ = 'account_user'
     id = db.Column(db.Integer, primary_key=True)
@@ -43,35 +62,17 @@ class DBUser(db.Model):
         return False
 
 
-    # def can_access_zone(self, zone_name):
-    #     zones = db.session.query(DBZone) \
-    #         .join(DBPrivilege, and_(DBZone.name == zone_name, DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == ResourceType.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
-    #         .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
-    #         .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
-    #         .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-    #         .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
-    #         .filter(DBUser.id == self.id).all()
-    #     if zones:
-    #         return True
-    #     return False
+    @property
+    def roles(self):
+        return db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBRole.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()
 
-
-    # def can_update(self, resource_type, resource_id):
-    #     if resource_type == ResourceType.ZONE:
-    #         r = DBZone
-    #     elif resource_type == ResourceType.VIEW:
-    #         r = DBView
-    #     current_user_resources = db.session.query(r) \
-    #         .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == Operation.UPDATE)) \
-    #         .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
-    #         .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
-    #         .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-    #         .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
-    #         .filter(DBUser.id == self.id).all()
-
-    #     if current_user_resources:
-    #         return True
-    #     return False
+    @roles.setter
+    def roles(self, role_ids):
+        for role_id in role_ids:
+            current_user_new_role = DBUserRole(user_id=self.id, role_id=role_id)
+            db.session.add(current_user_new_role)
 
 
     def can_do(self, operation, resource_type, resource_id):
@@ -130,6 +131,24 @@ class DBRole(db.Model):
     def __repr__(self):
         return '<DBRole %r>' % self.name
 
+    @property
+    def users(self):
+        return db.session.query(DBUser).join(DBUserRole, and_(DBUserRole.user_id == DBUser.id)) \
+            .join(DBRole, and_(DBRole.id == DBUserRole.role_id)) \
+            .filter(DBRole.id == self.id).all()
+
+    @property
+    def privileges(self):
+        return db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .filter(DBRole.id == self.id).all()
+
+    @privileges.setter
+    def privileges(self, privilege_ids):
+        for privilege_id in privilege_ids:
+            current_role_new_privilege = DBRolePrivilege(role_id=self.id, privilege_id=privilege_id)
+            db.session.add(current_role_new_privilege)
+
 
 class DBRolePrivilege(db.Model):
     __tablename__ = 'account_role_privilege'
@@ -148,20 +167,3 @@ class DBPrivilege(db.Model):
     resource_id = db.Column(db.Integer, index=True)
     comment = db.Column(db.String(128))
 
-
-class Operation(object):
-    ACCESS = 0
-    UPDATE = 1
-    DELETE = 2
-
-
-class ResourceType(object):
-    SERVER = 0
-    VIEW = 1
-    ZONE = 2
-    RECORD = 3
-    USER = 4
-    ROLE = 5
-    PRIVILEGE = 6
-    PAGE = 7
-    SERVER = 8
