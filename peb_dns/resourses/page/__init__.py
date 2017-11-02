@@ -12,6 +12,6 @@ from .dashboard import ResourceAmount, DNSServerResolveRate, DNSServerStatus
 
 page_api.add_resource(MenuSidebar, '/menu_sidebar')
 page_api.add_resource(ResourceAmount, '/resource_amount')
-page_api.add_resource(DNSServerResolveRate, '/servers_resolverate')
+page_api.add_resource(DNSServerResolveRate, '/servers_resolve_rate')
 page_api.add_resource(DNSServerStatus, '/server_status')
 

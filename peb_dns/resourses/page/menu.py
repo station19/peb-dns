@@ -2,7 +2,7 @@ from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
-from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, Operation
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, Operation, ResourceType
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from peb_dns.common.util import ResourceContent
@@ -21,32 +21,36 @@ class MenuSidebar(Resource):
 
     def get(self):
         menu_group = self._get_zones()
-        menu_group.append({'title':'Zone管理', 'items':None, 'url':'/dns/zones'})
-        menu_group.append({'title':'View管理', 'items':None, 'url':'/dns/views'})
-        menu_group.append({'title':'DNS服务器', 'items':None, 'url':'/dns/servers'})
+        menu_group['menu'].append({'title':'Zone管理', 'items':None, 'url':'/dns/zones'})
+        menu_group['menu'].append({'title':'View管理', 'items':None, 'url':'/dns/views'})
+        menu_group['menu'].append({'title':'DNS服务器', 'items':None, 'url':'/dns/servers'})
         if g.current_user.is_admin():
-            menu_group.append({'title':'后台管理系统', 'items':None, 'url':'/dns/admin'})
-        if g.current_user.can("log_page_visit"):
-            menu_group.append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
+            menu_group['menu'].append({'title':'后台管理系统', 'items':None, 'url':'/dns/admin'})
+        if g.current_user.can("LOG_PAGE_ACCESS"):
+            menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
         return dict(menu_group)
 
 
     def _get_zones(self):
         zone_query = db.session.query(DBZone) \
-            .join(DBPrivilege, and_(DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == Resource.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
+            .join(DBPrivilege, and_(DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == ResourceType.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
             .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == g.current_user.id)
-        inner_zones = [{'item_name':zone.name, 'url':'/dns/inner/'+zone.name.replace('.', '_')} for zone in zone_query.filter(DBZone.is_inner == 1).all()]
-        intercepted_zones = [{'item_name':zone.name, 'url':'/dns/intercepted/'+zone.name.replace('.', '_')} for zone in zone_query.filter(DBZone.is_inner == 2).all()]
-        outter_zones = [{'item_name':zone.name, 'url':'/dns/outter/'+zone.name.replace('.', '_')} for zone in zone_query.filter(DBZone.is_inner == 0).all()]
 
-        zone_groups = [{'title':'内部域名', 'items':inner_zones}, \
-            {'title':'劫持域名', 'items':intercepted_zones},
-            {'title':'外部域名', 'items':outter_zones}
-        ]
+        print(zone_query.all())
+        inner_zones = [{'item_name':zone.name, 'url':'/dns/zones/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 1).all()]
+        intercepted_zones = [{'item_name':zone.name, 'url':'/dns/zones/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 2).all()]
+        outter_zones = [{'item_name':zone.name, 'url':'/dns/zones/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 0).all()]
+
+        zone_groups = {'menu' : 
+            [{'title':'内部域名', 'items':inner_zones}, \
+                {'title':'劫持域名', 'items':intercepted_zones},
+                {'title':'外部域名', 'items':outter_zones}
+            ]
+        }
         
         return zone_groups
 

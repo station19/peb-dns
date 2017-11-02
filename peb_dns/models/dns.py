@@ -28,8 +28,26 @@ class DBView(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
+    def __init__(self, **kwargs):
+        super(DBView, self).__init__(**kwargs)
+        # self.zone_name_list = [v.name for v in self.zones]
+
     def __repr__(self):
         return '<DBView %r>' % self.name
+
+    @property
+    def zones(self):
+        related_zones = db.session.query(DBZone).join(DBViewZone, and_(DBViewZone.zone_id == DBZone.id)) \
+            .join(DBView, and_(DBView.id == DBViewZone.view_id)) \
+            .filter(DBView.id == self.id).all()
+        if not related_zones:
+            return []
+        print([v.name for v in related_zones])
+        return related_zones
+
+    @property
+    def zone_name_list(self):
+        return [v.name for v in self.zones]
 
     def make_view(self, action, view_list):
         prevExist = True
@@ -113,15 +131,19 @@ class DBZone(db.Model):
         if not related_views:
             return []
         print([v.name for v in related_views])
-        return [v.name for v in related_views]
+        return related_views
+
+    @property
+    def view_name_list(self):
+        return [v.name for v in self.views]
 
     def _create_inner(self):
-        for related_view in self.views:
+        for related_view in self.view_name_list:
             ns_record = DBRecord(host='@', record_type='NS', value='master.'+self.name+'.' , \
                     ttl='86400', view_name=related_view, creator=g.current_user.username, zone_id=self.id)
             db.session.add(ns_record)
         zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
-        for z_view in self.views:
+        for z_view in self.view_name_list:
             self._make_zone('create', z_view, zone_list, [])
             time.sleep(0.1)
 
@@ -135,7 +157,7 @@ class DBZone(db.Model):
 
     def _modify_inner(self, pre_views):
         zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
-        current_views = set(self.views)
+        current_views = set(self.view_name_list)
         pre_views = set(pre_views)
         # 清除当前zone 解除绑定view所对应的record
         del_views = pre_views - current_views
@@ -159,7 +181,7 @@ class DBZone(db.Model):
 
     def _del_inner(self):
         zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
-        for z_view in self.views:
+        for z_view in self.view_name_list:
             self._make_zone('del', z_view, zone_list, [])
 
     def _del_outter(self):
@@ -177,13 +199,13 @@ class DBZone(db.Model):
         if action == 'del':
             bind_zones = []
             for zz in zone_list:
-                if view_name in self.views and zz.name != self.name :
+                if view_name in self.view_name_list and zz.name != self.name :
                     bind_zones.append(zz)
             view_zone_conf_content = Template(current_app.config.get('ZONE_TEMPLATE')).render(view_name=view_name, zone_list=bind_zones)
         else:
             bind_zones = []
             for zz in zone_list:
-                if view_name in self.views:
+                if view_name in self.view_name_list:
                     bind_zones.append(zz)
             view_zone_conf_content = Template(current_app.config.get('ZONE_TEMPLATE')).render(view_name=view_name, zone_list=bind_zones)
         etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=True)
@@ -285,16 +307,11 @@ class DBDNSServer(db.Model):
         server_status = zb.get_server_status()
         return server_status
 
-    @staticmethod
-    def get_resolve_rates(start_time, end_time):
-        dns_servers = DBDNSServer.query.all()
-        resolve_rates = {}
-        for dns_server in dns_servers:
-            zb = ZBapi(dns_server)
-            resolve_rate = zb.get_resolve_rate(start_time, end_time)
-            # resolve_rates.append({dns_server.host: resolve_rate})
-            resolve_rates[dns_server.host] = resolve_rate
-        return resolve_rates
+    def get_resolve_rate(self, start_time, end_time):
+        zb = ZBapi(self)
+        resolve_rate = zb.get_resolve_rate(start_time, end_time)
+        # resolve_rates.append({dns_server.host: resolve_rate})
+        return resolve_rate
 
 
 class DBOperationLog(db.Model):

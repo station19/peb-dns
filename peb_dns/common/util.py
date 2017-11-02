@@ -67,7 +67,7 @@ class ResourceContent(object):
         + 'Zone名称: ' + str(zone.name) + '\n' \
         + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(zone.zone_group) + '\n' \
         + 'Zone类型: ' + str(zone.zone_type) + '\n' \
-        + '关联View: ' + str(zone.views) + '\n' 
+        + '关联View: ' + str(zone.view_name_list) + '\n' 
 
         if prefix:
             content = prefix + '\n' + content
@@ -340,8 +340,12 @@ class ZBapi(object):
 
 
     def get_server_status(self):
-        itemids = [self._server.zb_process_itemid, self._server.zb_port_itemid, self._server.zb_resolve_itemid]
-        return [self._get_server_status_by_itemid(itemid) for itemid in itemids]
+        # itemids = [self._server.zb_process_itemid, self._server.zb_port_itemid, self._server.zb_resolve_itemid]
+
+        return {'process':self._get_server_status_by_itemid(self._server.zb_process_itemid),
+                'port':self._get_server_status_by_itemid(self._server.zb_port_itemid),
+                'resolve':self._get_server_status_by_itemid(self._server.zb_resolve_itemid)
+            }
 
 
     def get_resolve_rate(self, start_time, end_time):

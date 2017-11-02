@@ -37,6 +37,7 @@ class DNSViewList(Resource):
                 target_id=int(new_view.id), target_detail=ResourceContent.getViewContent(new_view))
         db.session.add(log)
         try:
+            self._add_privilege_for_view(new_view)
             view_list = db.session.query(DBView).all()
             new_view.make_view('create', view_list)
         except Exception as e:
@@ -49,9 +50,9 @@ class DNSViewList(Resource):
         access_privilege_name =  new_view.name + '#' + str(Operation.ACCESS)
         update_privilege_name =  new_view.name + '#' + str(Operation.UPDATE)
         delete_privilege_name =  new_view.name + '#' + str(Operation.DELETE)
-        access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.ACCESS, resource_id=new_view.id)
-        update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.UPDATE, resource_id=new_view.id)
-        delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.DELETE, resource_id=new_view.id)
+        access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.ACCESS, resource_id=new_view.id)
+        update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.UPDATE, resource_id=new_view.id)
+        delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.DELETE, resource_id=new_view.id)
         db.session.add(access_privilege)
         db.session.add(update_privilege)
         db.session.add(delete_privilege)
@@ -86,7 +87,12 @@ class DNSView(Resource):
 
     def delete(self, view_id):
         current_view = DBView.query.get(view_id)
+        print(current_view)
+        current_view_related_zones = current_view.zone_name_list
+        if current_view_related_zones:
+            return dict(message='Failed', error="{e}".format(e='当前View还与Zone有关联，请先解除关联，再进行删除操作！\n' + str(current_view_related_zones))), 200
         try:
+            self._remove_view_privileges(current_view)
             self._delete_view(current_view)
             db.session.commit()
         except Exception as e:
@@ -112,4 +118,11 @@ class DNSView(Resource):
         view_list = db.session.query(DBView).all()
         view.make_view('delete', view_list)
 
+
+    def _remove_view_privileges(self, current_view):
+        current_view_privileges_query = DBPrivilege.query.filter(DBPrivilege.resource_id==current_view.id, DBPrivilege.resource_type==ResourceType.VIEW)
+        current_view_privileges = current_view_privileges_query.all()
+        for view_privilege in current_view_privileges:
+            DBRolePrivilege.query.filter(DBRolePrivilege.privilege_id == view_privilege.id).delete()
+        current_view_privileges_query.delete()
 

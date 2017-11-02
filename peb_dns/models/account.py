@@ -164,3 +164,4 @@ class ResourceType(object):
     ROLE = 5
     PRIVILEGE = 6
     PAGE = 7
+    SERVER = 8

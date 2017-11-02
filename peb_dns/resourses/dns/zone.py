@@ -114,7 +114,7 @@ class DNSZone(Resource):
         return dict(message='OK'), 200
 
     def _update_zone(self, current_zone, args):
-        pre_views = current_zone.views
+        pre_views = current_zone.view_name_list
         log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Zone', target_name=current_zone.name, \
                 target_id=int(current_zone.id), target_detail=ResourceContent.getZoneContent(current_zone, prefix="修改前："))
         db.session.add(log)
