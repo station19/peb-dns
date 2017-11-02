@@ -1,4 +1,4 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
 from flask import current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
@@ -20,18 +20,28 @@ dns_server_common_parser.add_argument('zb_port_itemid', type = str, location = '
 dns_server_common_parser.add_argument('zb_resolve_itemid', type = str, location = 'json', required=True)
 dns_server_common_parser.add_argument('zb_resolve_rate_itemid', type = str, location = 'json', required=True)
 
+server_fields = {
+    'host': fields.String,
+    'ip': fields.String,
+    'env': fields.String,
+    'dns_server_type': fields.String,
+    'zb_process_itemid': fields.String,
+    'zb_port_itemid': fields.String,
+    'zb_resolve_itemid': fields.String,
+    'zb_resolve_rate_itemid': fields.String,
+}
 
 class DNSServerList(Resource):
 
-    method_decorators = [token_required] 
+    method_decorators = [token_required]
 
     def __init__(self):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSServerList, self).__init__()
 
+    @marshal_with(server_fields, envelope='servers')
     def get(self):
-        DBDNSServer.query.all()
-        return { 'message' : "aaaaaaaaaaaaaa" }, 200
+        return DBDNSServer.query.all()
 
     def post(self):
         args = dns_server_common_parser.parse_args()
