@@ -2,6 +2,7 @@ from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
+from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from peb_dns.common.util import ResourceContent
@@ -43,6 +44,24 @@ class DNSViewList(Resource):
             return dict(message='Failed', error="{e}".format(e=str(e)))
         db.session.commit()
         return dict(message='OK'), 201
+
+    def _add_privilege_for_view(self, new_view):
+        access_privilege_name =  new_view.name + '#' + str(Operation.ACCESS)
+        update_privilege_name =  new_view.name + '#' + str(Operation.UPDATE)
+        delete_privilege_name =  new_view.name + '#' + str(Operation.DELETE)
+        access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.ACCESS, resource_id=new_view.id)
+        update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.UPDATE, resource_id=new_view.id)
+        delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.DELETE, resource_id=new_view.id)
+        db.session.add(access_privilege)
+        db.session.add(update_privilege)
+        db.session.add(delete_privilege)
+        db.session.flush()
+        admin_access =  DBRolePrivilege(role_id=1, privilege_id=access_privilege.id)
+        admin_update =  DBRolePrivilege(role_id=1, privilege_id=update_privilege.id)
+        admin_delete =  DBRolePrivilege(role_id=1, privilege_id=delete_privilege.id)
+        db.session.add(admin_access)
+        db.session.add(admin_update)
+        db.session.add(admin_delete)
 
 
 class DNSView(Resource):
