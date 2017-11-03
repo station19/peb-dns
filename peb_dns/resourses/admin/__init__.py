@@ -5,3 +5,5 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 admin_api = Api(admin)
 
+from .user import UserList
+admin_api.add_resource(UserList, '/users')

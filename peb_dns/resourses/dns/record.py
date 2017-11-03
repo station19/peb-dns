@@ -1,5 +1,5 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort
-from flask import current_app, g
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
+from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
@@ -20,6 +20,22 @@ dns_record_common_parser.add_argument('comment', type = str, location = 'json', 
 dns_record_common_parser.add_argument('zone_id', type = int, location = 'json', required=True, help='zone id')
 
 
+# zone_field()
+
+#'zone_id': fields.Nested(role_fields)，
+
+record_fields = {
+    'id': fields.String,
+    'host': fields.String,
+    'record_type': fields.String,
+    'ttl': fields.String,
+    'value': fields.String,
+    'view_name': fields.String,
+    'comment': fields.String,
+    'zone_id': fields.String,
+}
+
+
 class DNSRecordList(Resource):
 
     method_decorators = [token_required] 
@@ -28,18 +44,23 @@ class DNSRecordList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSRecordList, self).__init__()
 
+    @marshal_with(record_fields, envelope='records')
     def get(self):
-        DBZone.query.all()
-        return { 'message' : "aaaaaaaaaaaaaa" }, 200
+        args = request.args
+        zone_id = args.get('zone_id')
+        if zone_id:
+            return DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).all()
+        return DBRecord.query.all()
+        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
     def post(self):
         args = dns_record_common_parser.parse_args()
         current_zone = DBZone.query.get(args['zone_id'])
         if not current_zone:
-            return dict(message='Failed', error_msg='创建失败！当前Zone不存在，请检查zone_id是否正确！')
+            return dict(message='Failed', error='创建失败！当前Zone不存在，请检查zone_id是否正确！')
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
-            return dict(message='Failed', error_msg='创建失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。')
+            return dict(message='Failed', error='创建失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。')
         args['creator'] = g.current_user.username
         new_record = DBRecord(**args)
         db.session.add(new_record)
@@ -99,7 +120,7 @@ class DNSRecord(Resource):
         current_zone = DBZone.query.get(current_record.zone_id)
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
-            return dict(message='Failed', error_msg='修改失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。')
+            return dict(message='Failed', error='修改失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。')
         try:
             self._update_record(current_zone, current_record, args)
             db.session.commit()

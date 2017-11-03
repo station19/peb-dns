@@ -1,4 +1,4 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
 from flask import current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
