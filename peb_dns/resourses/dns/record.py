@@ -1,4 +1,4 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
@@ -35,6 +35,18 @@ record_fields = {
     'zone_id': fields.String,
 }
 
+page_record_fields = {
+    'total': fields.String,
+    'records': fields.List(fields.Nested(record_fields)),
+    'current_page': fields.String
+}
+
+
+class Wrapper(object):
+    def __init__(self, current_page, records, total):
+        self.total = None
+        self.records = None
+        self.current_page = None
 
 class DNSRecordList(Resource):
 
@@ -44,17 +56,19 @@ class DNSRecordList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSRecordList, self).__init__()
 
-    @marshal_with(record_fields, envelope='records')
+
     def get(self):
         args = request.args
         zone_id = args.get('zone_id')
-        current_page = request.args.get('currentPage', 2, type=int)
-        page_size = request.args.get('pageSize', 2, type=int)
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 3, type=int)
         if zone_id:
             return DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items
-        return DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items
-        # return DBRecord.query.all()
-        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
+
+        marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
+        results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, page_record_fields)
+
 
     def post(self):
         args = dns_record_common_parser.parse_args()
