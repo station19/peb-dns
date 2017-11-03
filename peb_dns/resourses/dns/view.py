@@ -35,9 +35,17 @@ class DNSViewList(Resource):
 
     def get(self):
         args = request.args
+        zone_id = args.get('zone_id')
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 3, type=int)
 
+        if zone_id:
+            related_view_query = db.session.query(DBView).join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
+                .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
+                .filter(DBZone.id == int(zone_id))
+            marshal_records = marshal(related_view_query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
+            results_wrapper = {'total': DBView.query.count(), 'views': marshal_records, 'current_page': current_page}
+            return marshal(results_wrapper, paginated_view_fields)
         marshal_records = marshal(DBView.query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
         results_wrapper = {'total': DBView.query.count(), 'views': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_view_fields)

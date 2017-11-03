@@ -1,5 +1,5 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
-from flask import current_app, g
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
+from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
@@ -26,6 +26,12 @@ zone_fields = {
     'views': fields.String,
 }
 
+paginated_zone_fields = {
+    'total': fields.String,
+    'zones': fields.List(fields.Nested(zone_fields)),
+    'current_page': fields.String
+}
+
 class DNSZoneList(Resource):
 
     method_decorators = [token_required] 
@@ -34,10 +40,15 @@ class DNSZoneList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSZoneList, self).__init__()
 
-    @marshal_with(zone_fields, envelope='zones')
+
     def get(self):
-        return DBZone.query.all()
-        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
+        args = request.args
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 3, type=int)
+
+        marshal_records = marshal(DBZone.query.order_by(DBZone.id.desc()).paginate(current_page, page_size, error_out=False).items, zone_fields)
+        results_wrapper = {'total': DBZone.query.count(), 'zones': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, paginated_zone_fields)
 
     def post(self):
         args = dns_zone_common_parser.parse_args()

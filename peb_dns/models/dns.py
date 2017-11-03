@@ -36,13 +36,15 @@ class DBView(db.Model):
         return '<DBView %r>' % self.name
 
     @property
-    def zones(self):
+    def zones(self, name_only=False):
         related_zones = db.session.query(DBZone).join(DBViewZone, and_(DBViewZone.zone_id == DBZone.id)) \
             .join(DBView, and_(DBView.id == DBViewZone.view_id)) \
             .filter(DBView.id == self.id).all()
         if not related_zones:
             return []
-        print(related_zones)
+        # print(related_zones)
+        if name_only:
+            return [z.name for z in related_zones]
         return related_zones
 
     @property
@@ -124,13 +126,14 @@ class DBZone(db.Model):
             self._del_outter()
 
     @property
-    def views(self):
+    def views(self, name_only=False):
         related_views = db.session.query(DBView).join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
             .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
             .filter(DBZone.id == self.id).all()
         if not related_views:
             return []
-        print([v.name for v in related_views])
+        if name_only:
+            return [v.name for v in related_views]
         return related_views
 
     @property
