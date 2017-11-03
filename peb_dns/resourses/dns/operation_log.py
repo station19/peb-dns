@@ -1,5 +1,5 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
-from flask import current_app, g
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
+from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.common.decorators import token_required
@@ -20,6 +20,12 @@ log_fields = {
     'target_detail': fields.String,
 }
 
+paginated_log_fields = {
+    'total': fields.String,
+    'operation_logs': fields.List(fields.Nested(log_fields)),
+    'current_page': fields.String
+}
+
 class DNSOperationLogList(Resource):
 
     method_decorators = [token_required] 
@@ -28,9 +34,17 @@ class DNSOperationLogList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSOperationLogList, self).__init__()
 
-    @marshal_with(log_fields, envelope='operation_logs')
+    # @marshal_with(log_fields, envelope='operation_logs')
     def get(self):
-        return DBOperationLog.query.all()
+        args = request.args
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 3, type=int)
+
+        marshal_records = marshal(DBOperationLog.query.order_by(DBOperationLog.id.desc()).paginate(current_page, page_size, error_out=False).items, log_fields)
+        results_wrapper = {'total': DBOperationLog.query.count(), 'operation_logs': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, paginated_log_fields)
+
+        # return DBOperationLog.query.all()
         # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
 
