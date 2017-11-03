@@ -35,7 +35,7 @@ class DNSViewList(Resource):
 
     def get(self):
         args = request.args
-        zone_id = args.get('zone_id')
+        zone_id = args.get('zone_id', type=int)
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 3, type=int)
 

@@ -1,5 +1,5 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
-from flask import current_app, g
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
+from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
@@ -32,6 +32,12 @@ server_fields = {
     'zb_resolve_rate_itemid': fields.String,
 }
 
+paginated_server_fields = {
+    'total': fields.String,
+    'servers': fields.List(fields.Nested(server_fields)),
+    'current_page': fields.String
+}
+
 class DNSServerList(Resource):
 
     method_decorators = [token_required]
@@ -40,9 +46,14 @@ class DNSServerList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSServerList, self).__init__()
 
-    @marshal_with(server_fields, envelope='servers')
     def get(self):
-        return DBDNSServer.query.all()
+        args = request.args
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 3, type=int)
+
+        marshal_records = marshal(DBDNSServer.query.order_by(DBDNSServer.id.desc()).paginate(current_page, page_size, error_out=False).items, server_fields)
+        results_wrapper = {'total': DBDNSServer.query.count(), 'servers': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, paginated_server_fields)
 
     def post(self):
         args = dns_server_common_parser.parse_args()

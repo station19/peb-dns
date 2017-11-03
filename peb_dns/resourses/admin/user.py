@@ -1,9 +1,6 @@
-from flask_restful import Resource, marshal_with, fields
-from flask import Blueprint, request, jsonify, current_app
+from flask_restful import Resource, marshal_with, fields, marshal, reqparse
+from flask import Blueprint, request, jsonify, current_app, g
 
-
-from flask_restful import Api, Resource, url_for, reqparse, abort
-from flask import current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
@@ -30,6 +27,11 @@ user_fields = {
     'roles': fields.List(fields.Nested(role_fields))
 }
 
+paginated_user_fields = {
+    'total': fields.String,
+    'users': fields.List(fields.Nested(user_fields)),
+    'current_page': fields.String
+}
 
 class UserList(Resource):
 
@@ -39,10 +41,14 @@ class UserList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(UserList, self).__init__()
 
-    @marshal_with(user_fields, envelope='users')
     def get(self):
-        return DBUser.query.all()
+        args = request.args
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 3, type=int)
 
+        marshal_records = marshal(DBUser.query.order_by(DBUser.id.desc()).paginate(current_page, page_size, error_out=False).items, user_fields)
+        results_wrapper = {'total': DBUser.query.count(), 'users': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, paginated_user_fields)
 
 
 class User(Resource):
@@ -58,11 +64,14 @@ class User(Resource):
     def put(self, user_id):
         args = dns_user_common_parser.parse_args()
         role_ids = args['role_ids']
+        print(role_ids)
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 400
         try:
-            DBUserRole.query.filter(DBUserRole.user_id==user_id, DBUserRole.role_id.notin_(tuple(role_ids))).delete()
+            # print(DBUserRole.query.filter(DBUserRole.user_id==user_id, DBUserRole.role_id.notin_(role_ids)).all())
+            for del_ur in DBUserRole.query.filter(DBUserRole.user_id==user_id, DBUserRole.role_id.notin_(role_ids)).all():
+                db.session.delete(del_ur)
             for role_id in role_ids:
                 ur = DBUserRole.query.filter(DBUserRole.role_id==role_id, DBUserRole.user_id==user_id).first()
                 if not ur:
