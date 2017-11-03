@@ -1,5 +1,5 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
-from flask import current_app, g
+from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
@@ -30,8 +30,9 @@ class DNSViewList(Resource):
 
     @marshal_with(view_fields, envelope='views')
     def get(self):
+        args = request.args
+        zone_id = args['zone_id']
         return DBView.query.all()
-        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
     def post(self):
         args = dns_view_common_parser.parse_args()

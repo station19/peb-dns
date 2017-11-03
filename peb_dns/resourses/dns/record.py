@@ -48,9 +48,12 @@ class DNSRecordList(Resource):
     def get(self):
         args = request.args
         zone_id = args.get('zone_id')
+        current_page = request.args.get('currentPage', 2, type=int)
+        page_size = request.args.get('pageSize', 2, type=int)
         if zone_id:
-            return DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).all()
-        return DBRecord.query.all()
+            return DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items
+        return DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items
+        # return DBRecord.query.all()
         # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
     def post(self):
@@ -105,12 +108,13 @@ class DNSRecord(Resource):
 
     method_decorators = [token_required]
 
+    @marshal_with(record_fields, envelope='record')
     def get(self, record_id):
-        args = dns_record_common_parser.parse_args()
+        # args = dns_record_common_parser.parse_args()
         current_record = DBRecord.query.get(record_id)
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+        return current_record
 
     def put(self, record_id):
         args = dns_record_common_parser.parse_args()
@@ -175,7 +179,6 @@ class DNSRecord(Resource):
         for record_privilege in current_record_privileges:
             DBRolePrivilege.query.filter(DBRolePrivilege.privilege_id == record_privilege.id).delete()
         current_record_privileges_query.delete()
-        
 
 
         
