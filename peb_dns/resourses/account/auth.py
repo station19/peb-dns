@@ -29,15 +29,15 @@ class AuthLDAP(Resource):
             user = DBUser.query.filter_by(username=username).first()
             if user is not None :
                 token = jwt.encode({'user' : user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
-                return { 'token' : token.decode('UTF-8') }, 200
+                return { 'token' : token.decode('UTF-8'), 'user_info': user.to_json()}, 200
 
             new_user = DBUser(username=username)
             db.session.add(new_user)
             db.session.commit()
             token = jwt.encode({'user' : new_user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
-            return { 'token' : token.decode('UTF-8') }, 200
+            return { 'token' : token.decode('UTF-8'), 'user_info': new_user.to_json()}, 200
 
-        return { 'message' : "认证失败！" }, 401
+        return { 'message' : "认证失败！"}, 401
 
 
     def _auth_via_ldap(self, username, passwd):
@@ -68,6 +68,6 @@ class AuthLocal(Resource):
             return { 'message' : "认证失败！" }, 401
         token = jwt.encode({'user' : auth_user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
 
-        return {'token':token}, 200
+        return {'token':token, 'user_info': auth_user.to_json()}, 200
 
 

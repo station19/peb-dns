@@ -39,6 +39,19 @@ class DBUser(db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.now)
 
 
+    def to_json(self):
+        json_user = {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'cellphone': self.cellphone,
+            'position': self.position,
+            'location': self.location,
+            'member_since': self.member_since
+        }
+        return json_user
+
+
     def can(self, privilege):
 
         current_user_privileges = db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id, DBPrivilege.name == privilege)) \

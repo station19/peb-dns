@@ -84,6 +84,7 @@ class Role(Resource):
         args = self.role_common_parser.parse_args()
         return { 'message' : "哈哈哈哈哈哈" }, 200
 
+
     def put(self, role_id):
         args = self.role_common_parser.parse_args()
         privilege_ids = args['privilege_ids']
