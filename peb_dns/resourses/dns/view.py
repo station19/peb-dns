@@ -1,4 +1,4 @@
-from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
@@ -19,6 +19,11 @@ view_fields = {
     'acl': fields.String,
 }
 
+paginated_view_fields = {
+    'total': fields.String,
+    'views': fields.List(fields.Nested(view_fields)),
+    'current_page': fields.String
+}
 
 class DNSViewList(Resource):
 
@@ -28,11 +33,14 @@ class DNSViewList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSViewList, self).__init__()
 
-    @marshal_with(view_fields, envelope='views')
     def get(self):
         args = request.args
-        zone_id = args['zone_id']
-        return DBView.query.all()
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 3, type=int)
+
+        marshal_records = marshal(DBView.query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
+        results_wrapper = {'total': DBView.query.count(), 'views': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, paginated_view_fields)
 
     def post(self):
         args = dns_view_common_parser.parse_args()
@@ -79,9 +87,19 @@ class DNSView(Resource):
     method_decorators = [token_required]
 
     def get(self, view_id):
-        current_view = DBView.query.get(view_id)
-        args = dns_view_common_parser.parse_args()
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+
+        args = request.args
+        current_page = request.args.get('currentPage', 1, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
+        if view_id:
+            marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
+            results_wrapper = {'total': DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
+            return marshal(results_wrapper, paginated_record_fields)
+
+        marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
+        results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
+        return marshal(results_wrapper, paginated_record_fields)
+
 
     def put(self, view_id):
         current_view = DBView.query.get(view_id)

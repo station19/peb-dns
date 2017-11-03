@@ -58,7 +58,9 @@ class DNSRecordList(Resource):
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 3, type=int)
         if zone_id:
-            return DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items
+            marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
+            results_wrapper = {'total': DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
+            return marshal(results_wrapper, paginated_record_fields)
 
         marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
         results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
