@@ -42,7 +42,7 @@ class UserRoleList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 
@@ -66,7 +66,7 @@ class UserList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 
@@ -79,6 +79,6 @@ class UserList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 

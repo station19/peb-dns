@@ -44,7 +44,7 @@ class DNSZoneList(Resource):
         view_ids = args['view_ids']
         unique_zone = db.session.query(DBZone).filter(and_(DBZone.name==args['name'].strip(), DBZone.zone_group.in_((1,2)))).first()
         if unique_zone:
-            return dict(message='Failed', error_msg='创建失败！重复的Zone！！相同名字的Zone，每种类型域名下只能存在一个！')
+            return dict(message='Failed', error_msg='创建失败！重复的Zone！！相同名字的Zone，每种类型域名下只能存在一个！'), 400
         if args['zone_type'] == 'forward only':
             args['forwarders'] = '; '.join([ip.strip() for ip in args['forwarders'].strip().split()]) + ';'
         # print(args)
@@ -63,7 +63,7 @@ class DNSZoneList(Resource):
             self._add_privilege_for_zone(new_zone)
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e)))
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         db.session.commit()
         return dict(message='OK'), 201
 
@@ -107,7 +107,7 @@ class DNSZone(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def delete(self, zone_id):
@@ -118,7 +118,7 @@ class DNSZone(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def _update_zone(self, current_zone, args):

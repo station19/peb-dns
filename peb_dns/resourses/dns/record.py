@@ -35,18 +35,13 @@ record_fields = {
     'zone_id': fields.String,
 }
 
-page_record_fields = {
+paginated_record_fields = {
     'total': fields.String,
     'records': fields.List(fields.Nested(record_fields)),
     'current_page': fields.String
 }
 
 
-class Wrapper(object):
-    def __init__(self, current_page, records, total):
-        self.total = None
-        self.records = None
-        self.current_page = None
 
 class DNSRecordList(Resource):
 
@@ -67,17 +62,17 @@ class DNSRecordList(Resource):
 
         marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
         results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
-        return marshal(results_wrapper, page_record_fields)
+        return marshal(results_wrapper, paginated_record_fields)
 
 
     def post(self):
         args = dns_record_common_parser.parse_args()
         current_zone = DBZone.query.get(args['zone_id'])
         if not current_zone:
-            return dict(message='Failed', error='创建失败！当前Zone不存在，请检查zone_id是否正确！')
+            return dict(message='Failed', error='创建失败！当前Zone不存在，请检查zone_id是否正确！'), 400
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
-            return dict(message='Failed', error='创建失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。')
+            return dict(message='Failed', error='创建失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。'), 400
         args['creator'] = g.current_user.username
         new_record = DBRecord(**args)
         db.session.add(new_record)
@@ -90,7 +85,7 @@ class DNSRecordList(Resource):
             new_record.make_record(current_zone.name, record_list)
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e)))
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
 
         self._add_privilege_for_record(current_zone, new_record)
         db.session.commit()
@@ -138,13 +133,13 @@ class DNSRecord(Resource):
         current_zone = DBZone.query.get(current_record.zone_id)
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
-            return dict(message='Failed', error='修改失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。')
+            return dict(message='Failed', error='修改失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。'), 400
         try:
             self._update_record(current_zone, current_record, args)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def delete(self, record_id):
@@ -158,7 +153,7 @@ class DNSRecord(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def _update_record(self, current_zone, current_record, args):

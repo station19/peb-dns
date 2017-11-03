@@ -49,7 +49,7 @@ class DNSServerList(Resource):
 
         unique_server = db.session.query(DBDNSServer).filter(or_(DBDNSServer.host==args['host'], DBDNSServer.ip==args['ip'])).all()
         if unique_server:
-            return dict(message='Failed', error='创建失败! 重复的Server，相同Host或IP地址已存在！')
+            return dict(message='Failed', error='创建失败! 重复的Server，相同Host或IP地址已存在！'), 400
 
         new_server = DBDNSServer(**args)
         db.session.add(new_server)
@@ -107,7 +107,7 @@ class DNSServer(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 
@@ -118,7 +118,7 @@ class DNSServer(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 

@@ -56,7 +56,7 @@ class DNSServerStatus(Resource):
         # args = self.get_reqparse.parse_args()
         current_server = DBDNSServer.query.get(int(args['server_id']))
         if not current_server:
-            return dict(message='Failed', error="ID为 {e} 的server不存在！".format(e=args['server_id']))
+            return dict(message='Failed', error="ID为 {e} 的server不存在！".format(e=args['server_id'])), 400
         return current_server.get_server_status()
 
 

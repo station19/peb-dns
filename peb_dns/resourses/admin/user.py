@@ -60,7 +60,7 @@ class User(Resource):
         role_ids = args['role_ids']
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 200
+            return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 400
         try:
             DBUserRole.query.filter(DBUserRole.user_id==user_id, DBUserRole.role_id.notin_(tuple(role_ids))).delete()
             for role_id in role_ids:
@@ -71,14 +71,14 @@ class User(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 
     def delete(self, user_id):
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 200
+            return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 400
         try:
             DBUserRole.query.filter(DBUserRole.user_id==user_id).delete()
             db.sessoin.delete(current_u)

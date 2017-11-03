@@ -65,7 +65,7 @@ class RoleList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 
@@ -90,7 +90,7 @@ class Role(Resource):
         privilege_ids = args['privilege_ids']
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return dict(message='Failed', error="{e} 不存在！".format(e=str(role_id))), 200
+            return dict(message='Failed', error="{e} 不存在！".format(e=str(role_id))), 400
         try:
             DBRolePrivilege.query.filter(DBRolePrivilege.role_id==role_id, ~DBRolePrivilege.privilege_id.in_(tuple(privilege_ids))).delete()
             for privilege_id in privilege_ids:
@@ -101,17 +101,17 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def delete(self, role_id):
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return dict(message='Failed', error="{e} 不存在！".format(e=str(role_id))), 200
+            return dict(message='Failed', error="{e} 不存在！".format(e=str(role_id))), 400
 
         related_users = current_role.users
         if related_users:
-            return dict(message='Failed', error="这些用户依然关联当前角色 {e} ，请先解除关联！".format(e=str([u.username for u in related_users]))), 200
+            return dict(message='Failed', error="这些用户依然关联当前角色 {e} ，请先解除关联！".format(e=str([u.username for u in related_users]))), 400
 
         try:
             DBUserRole.query.filter(DBUserRole.role_id==role_id).delete()
@@ -119,7 +119,7 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
 

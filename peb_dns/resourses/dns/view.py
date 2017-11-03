@@ -38,7 +38,7 @@ class DNSViewList(Resource):
         args = dns_view_common_parser.parse_args()
         unique_view = DBView.query.filter_by(name=args['name']).first()
         if unique_view:
-            return dict(message='Failed', error='创建失败！重复的View， 相同的名字的View已存在！！')
+            return dict(message='Failed', error='创建失败！重复的View， 相同的名字的View已存在！！'), 400
         new_view = DBView(**args)
         db.session.add(new_view)
         db.session.flush()
@@ -51,7 +51,7 @@ class DNSViewList(Resource):
             new_view.make_view('create', view_list)
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e)))
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         db.session.commit()
         return dict(message='OK'), 201
 
@@ -91,7 +91,7 @@ class DNSView(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def delete(self, view_id):
@@ -99,14 +99,14 @@ class DNSView(Resource):
         print(current_view)
         current_view_related_zones = current_view.zone_name_list
         if current_view_related_zones:
-            return dict(message='Failed', error="{e}".format(e='当前View还与Zone有关联，请先解除关联，再进行删除操作！\n' + str(current_view_related_zones))), 200
+            return dict(message='Failed', error="{e}".format(e='当前View还与Zone有关联，请先解除关联，再进行删除操作！\n' + str(current_view_related_zones))), 400
         try:
             self._remove_view_privileges(current_view)
             self._delete_view(current_view)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 200
+            return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
     def _update_view(self, view, args):
