@@ -49,7 +49,7 @@ class RoleList(Resource):
 
     def __init__(self):
         self.post_reqparse = reqparse.RequestParser()
-        self.post_reqparse.add_argument('name', type = int, location = 'json', required=True, help='role name.')
+        self.post_reqparse.add_argument('name', type = str, location = 'json', required=True)
         super(RoleList, self).__init__()
 
     @marshal_with(role_fields, envelope='roles')

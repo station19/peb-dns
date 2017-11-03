@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 dns_user_common_parser = reqparse.RequestParser()
-dns_user_common_parser.add_argument('user_id', type = int, location = 'json', required=True, help='zone name.')
+# dns_user_common_parser.add_argument('user_id', type = int, location = 'json', required=True, help='zone name.')
 dns_user_common_parser.add_argument('role_ids', type = int, location = 'json', action='append', required=True)
 
 
@@ -62,7 +62,7 @@ class User(Resource):
         if not current_u:
             return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 200
         try:
-            DBUserRole.query.filter(DBUserRole.user_id==user_id, ~DBUserRole.role_id.in_(tuple(role_ids))).delete()
+            DBUserRole.query.filter(DBUserRole.user_id==user_id, DBUserRole.role_id.notin_(tuple(role_ids))).delete()
             for role_id in role_ids:
                 ur = DBUserRole.query.filter(DBUserRole.role_id==role_id, DBUserRole.user_id==user_id).first()
                 if not ur:
