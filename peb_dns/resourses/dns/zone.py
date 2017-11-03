@@ -17,7 +17,14 @@ dns_zone_common_parser.add_argument('zone_type', type = str, location = 'json', 
 dns_zone_common_parser.add_argument('forwarders', type = str, location = 'json', required=True)
 dns_zone_common_parser.add_argument('view_ids', type = int, location = 'json', action='append', required=True)
 
-
+zone_fields = {
+    'id': fields.String,
+    'name': fields.String,
+    'zone_group': fields.String,
+    'zone_type': fields.String,
+    'forwarders': fields.String,
+    'views': fields.String,
+}
 
 class DNSZoneList(Resource):
 
@@ -27,9 +34,10 @@ class DNSZoneList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSZoneList, self).__init__()
 
+    @marshal_with(zone_fields, envelope='zones')
     def get(self):
-        DBZone.query.all()
-        return { 'message' : "aaaaaaaaaaaaaa" }, 200
+        return DBZone.query.all()
+        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
     def post(self):
         args = dns_zone_common_parser.parse_args()

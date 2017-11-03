@@ -13,6 +13,13 @@ dns_view_common_parser.add_argument('name', type = str, location = 'json', requi
 dns_view_common_parser.add_argument('acl', type = str, location = 'json', required=True)
 
 
+view_fields = {
+    'id': fields.String,
+    'name': fields.String,
+    'acl': fields.String,
+}
+
+
 class DNSViewList(Resource):
 
     method_decorators = [token_required] 
@@ -21,9 +28,10 @@ class DNSViewList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSViewList, self).__init__()
 
+    @marshal_with(view_fields, envelope='views')
     def get(self):
-        DBView.query.all()
-        return { 'message' : "aaaaaaaaaaaaaa" }, 200
+        return DBView.query.all()
+        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
     def post(self):
         args = dns_view_common_parser.parse_args()
