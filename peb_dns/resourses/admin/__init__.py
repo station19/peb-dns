@@ -12,3 +12,7 @@ admin_api.add_resource(User, '/users/<int:user_id>')
 from .role import RoleList, Role
 admin_api.add_resource(RoleList, '/roles')
 admin_api.add_resource(Role, '/roles/<int:role_id>')
+
+from .privilege import PrivilegeList, Privilege
+admin_api.add_resource(PrivilegeList, '/privileges')
+admin_api.add_resource(Privilege, '/privileges/<int:privilege_id>')

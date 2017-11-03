@@ -1,10 +1,6 @@
 from flask_restful import Resource, marshal_with, fields, marshal, reqparse
 from flask import Blueprint, request, jsonify, current_app, g
 
-
-from flask_restful import Api, Resource, url_for, reqparse, abort
-from flask import current_app, g
-
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required, admin_required
@@ -16,10 +12,10 @@ from datetime import datetime
 
 dns_privilege_common_parser = reqparse.RequestParser()
 dns_privilege_common_parser.add_argument('name', type = str, location = 'json', required=True, help='role name.')
-dns_privilege_common_parser.add_argument('operation', type = int, location = 'json', action='append', required=True)
+dns_privilege_common_parser.add_argument('operation', type = int, location = 'json', required=True)
 dns_privilege_common_parser.add_argument('resource_type', type = int, location = 'json', required=True, help='role name.')
 dns_privilege_common_parser.add_argument('resource_id', type = int, location = 'json', required=True)
-dns_privilege_common_parser.add_argument('resource_id', type = str, location = 'json')
+dns_privilege_common_parser.add_argument('comment', type = str, location = 'json')
 
 
 
@@ -68,14 +64,16 @@ class PrivilegeList(Resource):
     # comment = db.Column(db.String(128))
 
     def post(self):
+        
         args = dns_privilege_common_parser.parse_args()
+        print('asdfasdfasdfdas')
         privilege_name = args['name']
         operation = args['operation']
         resource_type = args['resource_type']
         resource_id = args['resource_id']
         comment = args.get('comment', '')
         try:
-            uniq_privilege = DBPrivilege.query.filter(DBPrivilege.name==privilege_name).all()
+            uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
             if uniq_privilege:
                 return dict(message='Failed', error="{e} 已存在！".format(e=str(uniq_privilege.name))), 400
             new_privilege = DBPrivilege(name=privilege_name, operation=operation, resource_type=resource_type, resource_id=resource_id, comment=comment)
