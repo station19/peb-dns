@@ -47,7 +47,7 @@ class DBUser(db.Model):
             'cellphone': self.cellphone,
             'position': self.position,
             'location': self.location,
-            'member_since': self.member_since
+            'member_since': str(self.member_since)
         }
         return json_user
 

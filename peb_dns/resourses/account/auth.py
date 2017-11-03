@@ -29,6 +29,7 @@ class AuthLDAP(Resource):
             user = DBUser.query.filter_by(username=username).first()
             if user is not None :
                 token = jwt.encode({'user' : user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
+                print(user.to_json())
                 return { 'token' : token.decode('UTF-8'), 'user_info': user.to_json()}, 200
 
             new_user = DBUser(username=username)
