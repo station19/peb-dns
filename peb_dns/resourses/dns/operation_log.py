@@ -9,6 +9,17 @@ from sqlalchemy import and_, or_
 from datetime import datetime
 
 
+log_fields = {
+    'id': fields.String,
+    'operation_time': fields.String,
+    'operation_type': fields.String,
+    'operator': fields.String,
+    'target_type': fields.String,
+    'target_name': fields.String,
+    'target_id': fields.String,
+    'target_detail': fields.String,
+}
+
 class DNSOperationLogList(Resource):
 
     method_decorators = [token_required] 
@@ -17,10 +28,10 @@ class DNSOperationLogList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSOperationLogList, self).__init__()
 
+    @marshal_with(log_fields, envelope='operation_logs')
     def get(self):
-        DBOperationLog.query.all()
-        return { 'message' : "aaaaaaaaaaaaaa" }, 200
-
+        return DBOperationLog.query.all()
+        # return { 'message' : "aaaaaaaaaaaaaa" }, 200
 
 
 class DNSOperationLog(Resource):
