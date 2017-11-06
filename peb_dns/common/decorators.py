@@ -2,9 +2,9 @@ from functools import wraps
 from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g, request
 import jwt
-from peb_dns.models.account import DBUser, DBLocalAuth
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
-from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, Operation, ResourceType
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, DBLocalAuth
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from sqlalchemy import and_, or_
 from peb_dns import db
 

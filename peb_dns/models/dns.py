@@ -11,6 +11,7 @@ import requests
 import etcd
 import time
 from peb_dns.common.util import getETCDclient, ZBapi
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 
 
 ZONE_GROUP_MAPPING = {
@@ -18,7 +19,6 @@ ZONE_GROUP_MAPPING = {
     1:"内部域名",
     2:"劫持域名"
 }
-
 
 class DBView(db.Model):
     __tablename__ = 'dns_view'
@@ -61,6 +61,13 @@ class DBView(db.Model):
             content = prefix + '\n' + content
         return content
 
+    @property
+    def can_update(self):
+        return g.current_user.can_do(Operation.UPDATE, ResourceType.VIEW, self.id)
+
+    @property
+    def can_delete(self):
+        return g.current_user.can_do(Operation.DELETE, ResourceType.VIEW, self.id)
 
     def make_view(self, action, view_list):
         prevExist = True
@@ -135,6 +142,14 @@ class DBZone(db.Model):
             self._del_inner()
         else:
             self._del_outter()
+
+    @property
+    def can_update(self):
+        return g.current_user.can_do(Operation.UPDATE, ResourceType.ZONE, self.id)
+
+    @property
+    def can_delete(self):
+        return g.current_user.can_do(Operation.DELETE, ResourceType.ZONE, self.id)
 
     @property
     def views(self, name_only=False):
@@ -276,6 +291,13 @@ class DBRecord(db.Model):
         self._delete_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Remove'
         self._body_info = {"login_token": current_app.config.get('DNSPOD_TOKEN'), "format": current_app.config.get('DNSPOD_DATA_FORMAT')}
 
+    @property
+    def can_update(self):
+        return g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, self.zone_id)
+
+    @property
+    def can_delete(self):
+        return g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, self.zone_id)
 
     def create(self, current_zone, args):
         if current_zone.zone_group in [1, 2]:
@@ -351,6 +373,14 @@ class DBDNSServer(db.Model):
     server_log = db.Column(db.Text())
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
+
+    @property
+    def can_update(self):
+        return g.current_user.can_do(Operation.UPDATE, ResourceType.SERVER, self.id)
+
+    @property
+    def can_delete(self):
+        return g.current_user.can_do(Operation.DELETE, ResourceType.SERVER, self.id)
 
     def to_json(self):
         json_server = {

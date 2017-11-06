@@ -2,7 +2,7 @@ from flask_restful import Resource, marshal_with, fields, marshal, reqparse
 from flask import Blueprint, request, jsonify, current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required, admin_required
 from peb_dns import db
 from sqlalchemy import and_, or_

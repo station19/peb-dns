@@ -2,7 +2,8 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, OPERATION_STR_MAPPING
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns.common.util import ZONE_GROUP_MAPPING
 from peb_dns import db
@@ -18,18 +19,20 @@ dns_zone_common_parser.add_argument('forwarders', type = str, location = 'json',
 dns_zone_common_parser.add_argument('view_ids', type = int, location = 'json', action='append', required=True)
 
 zone_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
-    'zone_group': fields.String,
+    'zone_group': fields.Integer,
     'zone_type': fields.String,
     'forwarders': fields.String,
     'views': fields.String,
+    'can_update': fields.Boolean,
+    'can_delete': fields.Boolean
 }
 
 paginated_zone_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'zones': fields.List(fields.Nested(zone_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 class DNSZoneList(Resource):
@@ -79,9 +82,9 @@ class DNSZoneList(Resource):
 
 
     def _add_privilege_for_zone(self, new_zone):
-        access_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[str(Operation.ACCESS)]
-        update_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[str(Operation.UPDATE)]
-        delete_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[str(Operation.DELETE)]
+        access_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
+        update_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[Operation.UPDATE]
+        delete_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[Operation.DELETE]
         access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.ACCESS, resource_id=new_zone.id)
         update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.UPDATE, resource_id=new_zone.id)
         delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.DELETE, resource_id=new_zone.id)
@@ -97,13 +100,16 @@ class DNSZoneList(Resource):
         db.session.add(admin_delete)
 
 
-
 class DNSZone(Resource):
 
     method_decorators = [token_required]
 
     def get(self, zone_id):
         current_zone = DBZone.query.get(zone_id)
+        if not current_zone:
+            abort(404)
+        if not g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, current_zone.id):
+            return dict(message='Failed', error='无权限！您无权限访问当前Zone，请联系管理员。'), 403
         args = dns_zone_common_parser.parse_args()
         return { 'message' : "哈哈哈哈哈哈" }, 200
 
@@ -111,6 +117,8 @@ class DNSZone(Resource):
         current_zone = DBZone.query.get(zone_id)
         if not current_zone:
             abort(404)
+        if not g.current_user.can_do(Operation.UPDATE, ResourceType.ZONE, current_zone.id):
+            return dict(message='Failed', error='无权限！您无权限修改当前Zone，请联系管理员。'), 403
         args = dns_zone_common_parser.parse_args()
         try:
             self._update_zone(current_zone, args)
@@ -122,6 +130,10 @@ class DNSZone(Resource):
 
     def delete(self, zone_id):
         current_zone = DBZone.query.get(zone_id)
+        if not current_zone:
+            abort(404)
+        if not g.current_user.can_do(Operation.UPDATE, ResourceType.ZONE, current_zone.id):
+            return dict(message='Failed', error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         try:
             self._remove_zone_privileges(current_zone)
             self._delete_zone(current_zone)

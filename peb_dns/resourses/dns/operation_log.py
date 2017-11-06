@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 log_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'operation_time': fields.String,
     'operation_type': fields.String,
     'operator': fields.String,
@@ -20,9 +20,9 @@ log_fields = {
 }
 
 paginated_log_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'operation_logs': fields.List(fields.Nested(log_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 class DNSOperationLogList(Resource):

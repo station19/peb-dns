@@ -2,7 +2,8 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, OPERATION_STR_MAPPING
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from sqlalchemy import and_, or_
@@ -13,15 +14,17 @@ dns_view_common_parser.add_argument('acl', type = str, location = 'json', requir
 
 
 view_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
     'acl': fields.String,
+    'can_update': fields.Boolean,
+    'can_delete': fields.Boolean
 }
 
 paginated_view_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'views': fields.List(fields.Nested(view_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 class DNSViewList(Resource):
@@ -70,9 +73,9 @@ class DNSViewList(Resource):
         return dict(message='OK'), 201
 
     def _add_privilege_for_view(self, new_view):
-        access_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[str(Operation.ACCESS)]
-        update_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[str(Operation.UPDATE)]
-        delete_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[str(Operation.DELETE)]
+        access_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
+        update_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[Operation.UPDATE]
+        delete_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[Operation.DELETE]
         access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.ACCESS, resource_id=new_view.id)
         update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.UPDATE, resource_id=new_view.id)
         delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.DELETE, resource_id=new_view.id)
@@ -93,10 +96,19 @@ class DNSView(Resource):
     method_decorators = [token_required]
 
     def get(self, view_id):
+        current_view = DBView.query.get(view_id)
+        if not current_view:
+            abort(404)
+        if not g.current_user.can_do(Operation.ACCESS, ResourceType.VIEW, current_view.id):
+            return dict(message='Failed', error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         return { 'message' : "哈哈哈哈哈哈" }, 200
 
     def put(self, view_id):
         current_view = DBView.query.get(view_id)
+        if not current_view:
+            abort(404)
+        if not g.current_user.can_do(Operation.UPDATE, ResourceType.VIEW, current_view.id):
+            return dict(message='Failed', error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         args = dns_view_common_parser.parse_args()
         try:
             self._update_view(current_view, args)
@@ -108,7 +120,10 @@ class DNSView(Resource):
 
     def delete(self, view_id):
         current_view = DBView.query.get(view_id)
-        print(current_view)
+        if not current_view:
+            abort(404)
+        if not g.current_user.can_do(Operation.UPDATE, ResourceType.VIEW, current_view.id):
+            return dict(message='Failed', error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         current_view_related_zones = current_view.zone_name_list
         if current_view_related_zones:
             return dict(message='Failed', error="{e}".format(e='当前View还与Zone有关联，请先解除关联，再进行删除操作！\n' + str(current_view_related_zones))), 400

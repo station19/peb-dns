@@ -2,27 +2,9 @@ from flask import current_app, request
 from peb_dns.extensions import db
 from sqlalchemy import and_, or_
 from werkzeug.security import generate_password_hash, check_password_hash
-from .dns import DBZone, DBView, DBRecord, DBDNSServer
 from datetime import datetime
-
-
-class Operation(object):
-    ACCESS = 0
-    UPDATE = 1
-    DELETE = 2
-
-
-class ResourceType(object):
-    SERVER = 0
-    VIEW = 1
-    ZONE = 2
-    RECORD = 3
-    USER = 4
-    ROLE = 5
-    PRIVILEGE = 6
-    PAGE = 7
-    SERVER = 8
-
+from .mappings import ResourceType
+from .dns import DBZone, DBView, DBRecord, DBDNSServer
 
 RESOURCE_TYPE_MAPPING = {
     ResourceType.ZONE: DBZone,
@@ -30,13 +12,6 @@ RESOURCE_TYPE_MAPPING = {
     ResourceType.RECORD: DBRecord,
     ResourceType.SERVER: DBDNSServer
 }
-
-OPERATION_STR_MAPPING = {
-    Operation.ACCESS:'ACCESS',
-    Operation.UPDATE:'UPDATE',
-    Operation.DELETE:'DELETE'
-}
-
 
 class DBUser(db.Model):
     __tablename__ = 'account_user'

@@ -2,7 +2,8 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from sqlalchemy import and_, or_
@@ -24,20 +25,22 @@ dns_record_common_parser.add_argument('zone_id', type = int, location = 'json', 
 #'zone_id': fields.Nested(role_fields)，
 
 record_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'host': fields.String,
     'record_type': fields.String,
     'ttl': fields.String,
     'value': fields.String,
     'view_name': fields.String,
     'comment': fields.String,
-    'zone_id': fields.String,
+    'zone_id': fields.Integer,
+    'can_update': fields.Boolean,
+    'can_delete': fields.Boolean
 }
 
 paginated_record_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'records': fields.List(fields.Nested(record_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 
@@ -55,7 +58,8 @@ class DNSRecordList(Resource):
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
         if zone_id:
-            marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
+            marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc())\
+                    .paginate(current_page, page_size, error_out=False).items, record_fields)
             results_wrapper = {'total': DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
             return marshal(results_wrapper, paginated_record_fields)
         marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
@@ -112,7 +116,7 @@ class DNSRecord(Resource):
 
     method_decorators = [token_required]
 
-    @marshal_with(record_fields, envelope='record')
+    @marshal_with(record_fields)
     def get(self, record_id):
         # args = dns_record_common_parser.parse_args()
         current_record = DBRecord.query.get(record_id)
@@ -126,7 +130,7 @@ class DNSRecord(Resource):
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
         current_zone = DBZone.query.get(current_record.zone_id)
-        if not g.current_user.can_do(Operation.UPDATE, ResourceType.ZONE, current_zone.id):
+        if not g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, current_zone.id):
             return dict(message='Failed', error='无权限！您无权限修改当前Zone下的Record！'), 403
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
@@ -144,7 +148,7 @@ class DNSRecord(Resource):
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
         current_zone = DBZone.query.get(current_record.zone_id)
-        if not g.current_user.can_do(Operation.DELETE, ResourceType.ZONE, current_zone.id):
+        if not g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, current_zone.id):
             return dict(message='Failed', error='无权限！您无权限删除当前Zone下的Record！'), 403
         try:
             self._delete_record(current_zone, current_record)

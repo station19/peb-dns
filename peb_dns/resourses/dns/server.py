@@ -2,7 +2,8 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, OPERATION_STR_MAPPING
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from sqlalchemy import and_, or_
@@ -20,7 +21,7 @@ dns_server_common_parser.add_argument('zb_resolve_itemid', type = str, location 
 dns_server_common_parser.add_argument('zb_resolve_rate_itemid', type = str, location = 'json', required=True)
 
 server_fields = {
-    'id':fields.String,
+    'id':fields.Integer,
     'host': fields.String,
     'ip': fields.String,
     'env': fields.String,
@@ -29,12 +30,14 @@ server_fields = {
     'zb_port_itemid': fields.String,
     'zb_resolve_itemid': fields.String,
     'zb_resolve_rate_itemid': fields.String,
+    'can_update': fields.Boolean,
+    'can_delete': fields.Boolean
 }
 
 paginated_server_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'servers': fields.List(fields.Nested(server_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 class DNSServerList(Resource):
@@ -73,9 +76,9 @@ class DNSServerList(Resource):
         pass
 
     def _add_privilege_for_server(self, new_server):
-        access_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[str(Operation.ACCESS)]
-        update_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[str(Operation.UPDATE)]
-        delete_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[str(Operation.DELETE)]
+        access_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
+        update_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[Operation.UPDATE]
+        delete_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[Operation.DELETE]
         access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.SERVER, operation=Operation.ACCESS, resource_id=new_server.id)
         update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.SERVER, operation=Operation.UPDATE, resource_id=new_server.id)
         delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.SERVER, operation=Operation.DELETE, resource_id=new_server.id)
@@ -97,12 +100,20 @@ class DNSServer(Resource):
 
     def get(self, server_id):
         current_server = DBDNSServer.query.get(server_id)
+        if not current_server:
+            abort(404)
+        if not g.current_user.can_do(Operation.ACCESS, ResourceType.SERVER, current_server.id):
+            return dict(message='Failed', error='无权限！您无权访问当前Server，请联系管理员。'), 403
         args = dns_server_common_parser.parse_args()
 
         return { 'message' : "哈哈哈哈哈哈" }, 200
 
     def put(self, server_id):
         current_server = DBDNSServer.query.get(server_id)
+        if not current_server:
+            abort(404)
+        if not g.current_user.can_do(Operation.UPDATE, ResourceType.SERVER, current_server.id):
+            return dict(message='Failed', error='无权限！您无权修改当前Server，请联系管理员。'), 403
         args = dns_server_common_parser.parse_args()
         try:
             self._update_server(current_server, args)
@@ -115,6 +126,10 @@ class DNSServer(Resource):
 
     def delete(self, server_id):
         current_server = DBDNSServer.query.get(server_id)
+        if not current_server:
+            abort(404)
+        if not g.current_user.can_do(Operation.DELETE, ResourceType.SERVER, current_server.id):
+            return dict(message='Failed', error='无权限！您无权删除当前Server，请联系管理员。'), 403
         try:
             self._delete_server(current_server)
             db.session.commit()

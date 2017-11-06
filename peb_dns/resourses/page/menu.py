@@ -2,7 +2,8 @@ from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
-from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, Operation, ResourceType
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns import db
 from sqlalchemy import and_, or_
