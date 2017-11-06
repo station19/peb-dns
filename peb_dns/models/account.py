@@ -24,6 +24,20 @@ class ResourceType(object):
     SERVER = 8
 
 
+RESOURCE_TYPE_MAPPING = {
+    ResourceType.ZONE: DBZone,
+    ResourceType.VIEW: DBView,
+    ResourceType.RECORD: DBRecord,
+    ResourceType.SERVER: DBDNSServer
+}
+
+OPERATION_STR_MAPPING = {
+    Operation.ACCESS:'ACCESS',
+    Operation.UPDATE:'UPDATE',
+    Operation.DELETE:'DELETE'
+}
+
+
 class DBUser(db.Model):
     __tablename__ = 'account_user'
     id = db.Column(db.Integer, primary_key=True)
@@ -53,18 +67,16 @@ class DBUser(db.Model):
 
 
     def can(self, privilege):
-
-        current_user_privileges = db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id, DBPrivilege.name == privilege)) \
+        current_user_privileges = db.session.query(DBPrivilege) \
+            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id, DBPrivilege.name == privilege)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == self.id).all()
-        
         for current_user_privilege in current_user_privileges:
             if privilege == current_user_privilege.name:
                 return True
         return False
-
 
     def is_admin(self):
         admins = db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id, DBRole.name == "admin")) \
@@ -73,7 +85,6 @@ class DBUser(db.Model):
         if admins:
             return True
         return False
-
 
     @property
     def roles(self):
@@ -87,16 +98,8 @@ class DBUser(db.Model):
             current_user_new_role = DBUserRole(user_id=self.id, role_id=role_id)
             db.session.add(current_user_new_role)
 
-
     def can_do(self, operation, resource_type, resource_id):
-        if resource_type == ResourceType.ZONE:
-            r = DBZone
-        elif resource_type == ResourceType.VIEW:
-            r = DBView
-        elif resource_type == ResourceType.RECORD:
-            r = DBRecord
-        elif resource_type == ResourceType.SERVER:
-            r = DBDNSServer
+        r = RESOURCE_TYPE_MAPPING.get(resource_type)
         current_user_resources = db.session.query(r) \
             .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == operation)) \
             .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
@@ -104,7 +107,6 @@ class DBUser(db.Model):
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == self.id).all()
-
         if current_user_resources:
             return True
         return False

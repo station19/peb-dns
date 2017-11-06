@@ -5,7 +5,6 @@ from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRec
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required, admin_required
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 from datetime import datetime
 
@@ -92,10 +91,9 @@ class Role(Resource):
         self.role_common_parser.add_argument('privilege_ids', type = int, location = 'json', action='append', required=True)
         super(Role, self).__init__()
 
-
+    # @marshal_with(role_fields, envelope='roles')
     def get(self, role_id):
-        current_u = DBRole.query.get(role_id)
-        args = self.role_common_parser.parse_args()
+        current_role = DBRole.query.get(role_id)
         return { 'message' : "哈哈哈哈哈哈" }, 200
 
 

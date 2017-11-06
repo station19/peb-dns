@@ -2,10 +2,9 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 
 dns_view_common_parser = reqparse.RequestParser()
@@ -37,8 +36,7 @@ class DNSViewList(Resource):
         args = request.args
         zone_id = args.get('zone_id', type=int)
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
-
+        page_size = request.args.get('pageSize', 10, type=int)
         if zone_id:
             related_view_query = db.session.query(DBView).join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
                 .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
@@ -59,7 +57,7 @@ class DNSViewList(Resource):
         db.session.add(new_view)
         db.session.flush()
         log = DBOperationLog(operation_type='添加', operator=g.current_user.username, target_type='View', target_name=new_view.name, \
-                target_id=int(new_view.id), target_detail=ResourceContent.getViewContent(new_view))
+                target_id=int(new_view.id), target_detail=new_view.get_content_str())
         db.session.add(log)
         try:
             self._add_privilege_for_view(new_view)
@@ -72,9 +70,9 @@ class DNSViewList(Resource):
         return dict(message='OK'), 201
 
     def _add_privilege_for_view(self, new_view):
-        access_privilege_name =  new_view.name + '#' + str(Operation.ACCESS)
-        update_privilege_name =  new_view.name + '#' + str(Operation.UPDATE)
-        delete_privilege_name =  new_view.name + '#' + str(Operation.DELETE)
+        access_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[str(Operation.ACCESS)]
+        update_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[str(Operation.UPDATE)]
+        delete_privilege_name =  'VIEW#' + new_view.name + '#' + OPERATION_STR_MAPPING[str(Operation.DELETE)]
         access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.ACCESS, resource_id=new_view.id)
         update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.UPDATE, resource_id=new_view.id)
         delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.VIEW, operation=Operation.DELETE, resource_id=new_view.id)
@@ -95,19 +93,7 @@ class DNSView(Resource):
     method_decorators = [token_required]
 
     def get(self, view_id):
-
-        args = request.args
-        current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 10, type=int)
-        if view_id:
-            marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
-            results_wrapper = {'total': DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
-            return marshal(results_wrapper, paginated_record_fields)
-
-        marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
-        results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
-        return marshal(results_wrapper, paginated_record_fields)
-
+        return { 'message' : "哈哈哈哈哈哈" }, 200
 
     def put(self, view_id):
         current_view = DBView.query.get(view_id)
@@ -137,7 +123,7 @@ class DNSView(Resource):
 
     def _update_view(self, view, args):
         log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='View', target_name=view.name, \
-                target_id=int(view.id), target_detail=ResourceContent.getViewContent(view, prefix="修改前："))
+                target_id=int(view.id), target_detail=view.get_content_str(prefix="修改前："))
         db.session.add(log)
         view.name = args['name']
         view.acl = args['acl']
@@ -147,7 +133,7 @@ class DNSView(Resource):
 
     def _delete_view(self, view):
         log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='View', target_name=view.name, \
-                target_id=int(view.id), target_detail=ResourceContent.getViewContent(view))
+                target_id=int(view.id), target_detail=view.get_content_str(prefix="修改前："))
         db.session.add(log)
         db.session.delete(view)
         view_list = db.session.query(DBView).all()

@@ -4,7 +4,6 @@ from flask import current_app, g, request
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.common.decorators import token_required
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 from datetime import datetime
 

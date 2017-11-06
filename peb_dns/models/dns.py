@@ -51,6 +51,17 @@ class DBView(db.Model):
     def zone_name_list(self):
         return [v.name for v in self.zones]
 
+
+    def get_content_str(self, prefix=None):
+        content = 'id: ' + str(self.id) + '\n' \
+        + 'View名称: ' + str(self.name) + '\n' \
+        + 'ACL: ' + str(self.acl) + '\n'
+
+        if prefix:
+            content = prefix + '\n' + content
+        return content
+
+
     def make_view(self, action, view_list):
         prevExist = True
         if action == 'create':
@@ -139,6 +150,16 @@ class DBZone(db.Model):
     @property
     def view_name_list(self):
         return [v.name for v in self.views]
+
+    def get_content_str(self, prefix=None):
+        content = 'id: ' + str(self.id) + '\n' \
+        + 'Zone名称: ' + str(self.name) + '\n' \
+        + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(self.zone_group) + '\n' \
+        + 'Zone类型: ' + str(self.zone_type) + '\n' \
+        + '关联View: ' + str(self.view_name_list) + '\n' 
+        if prefix:
+            content = prefix + '\n' + content
+        return content
 
     def _create_inner(self):
         for related_view in self.view_name_list:
@@ -248,12 +269,71 @@ class DBRecord(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
-    def make_record(self, zone_name, record_list):
+    def __init__(self, **kwargs):
+        super(DBRecord, self).__init__(**kwargs)
+        self._create_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create'
+        self._modify_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Modify'
+        self._delete_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Remove'
+        self._body_info = {"login_token": current_app.config.get('DNSPOD_TOKEN'), "format": current_app.config.get('DNSPOD_DATA_FORMAT')}
+
+
+    def create(self, current_zone, args):
+        if current_zone.zone_group in [1, 2]:
+            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
+            self._make_record(current_zone.name, record_list)
+        else:
+            dnspod_data = {'domain': current_zone.name, 'sub_domain':args['host'], 'record_type':args['record_type'],\
+                    'record_line':args['view_name'], 'value':args['value'], 'ttl':args['ttl']}
+            self._do_dnspod(self._create_url, dnspod_data)
+
+
+    def update(self, current_zone, args):
+        if current_zone.zone_group in [1, 2]:
+            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
+            self._make_record(current_zone.name, record_list)
+        else:
+            dnspod_data = {'domain': current_zone.name, 'record_id':self.id, 'sub_domain':args['host'], 'record_type':args['record_type'],\
+                    'record_line':args['view_name'], 'value':args['value'], 'ttl':args['ttl']}
+            self._do_dnspod(self._modify_url, dnspod_data)
+
+    def delete(self, current_zone):
+        if current_zone.zone_group in [1, 2]:
+            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == self.zone_id, DBRecord.view_name == self.view_name, DBRecord.host != '@').all()
+            self._make_record(current_zone.name, record_list)
+        else:
+            dnspod_data = {'domain': current_zone.name, 'record_id':self.id}
+            self._do_dnspod(self._delete_url, dnspod_data)
+
+    def _make_record(self, zone_name, record_list):
         etcd_client = getETCDclient()
         zone_record_conf = current_app.config.get('ZONE_BASE_DIR') + self.view_name + '/zone.' + zone_name
         zone_record_conf_content = Template(current_app.config.get('RECORD_TEMPLATE')).render(zone_name=zone_name, record_list=record_list)
         etcd_client.write(zone_record_conf, zone_record_conf_content, prevExist=True)
         time.sleep(0.2)
+
+    def _do_dnspod(self, url, data):
+        res = requests.post(url, data=dict(self._body_info, **data))
+        if res.status_code == 200:
+            res_json = res.json()
+            if res_json.get('status').get('code') == '1':
+                raise Exception(str(res_json))
+            raise Exception(str(res_json))
+        raise Exception(str(res_json))
+
+    def get_content_str(self, prefix=None):
+        #'修改前内容：'
+        content = 'id: ' + str(self.id) + '\n' \
+        + '记录主机: ' + str(self.host) + '\n' \
+        + '记录类型: ' + str(self.record_type) + '\n' \
+        + '记录值: ' + str(self.value) + '\n' \
+        + 'TTL: ' + str(self.ttl) + '\n' \
+        + '线路类型: ' + str(self.view_name) + '\n' \
+        + '备注: ' + str(self.comment) + '\n' \
+        + '创建人: ' + str(self.creator) + '\n' \
+        + '创建时间: ' + str(self.gmt_create)
+        if prefix:
+            content = prefix + '\n' + content
+        return content
 
 
 class DBDNSServer(db.Model):
@@ -294,6 +374,17 @@ class DBDNSServer(db.Model):
         resolve_rate = zb.get_resolve_rate(start_time, end_time)
         # resolve_rates.append({dns_server.host: resolve_rate})
         return resolve_rate
+
+    def get_content_str(self, prefix=None):
+        #'修改前内容：'
+        content = 'id: ' + str(self.id) + '\n' \
+        + '主机名: ' + str(self.host) + '\n' \
+        + 'IP地址: ' + str(self.ip) + '\n' \
+        + '环境: ' + str(self.env) + '\n' \
+        + 'DNS类型: ' + str(self.dns_server_type) + '\n'
+        if prefix:
+            content = prefix + '\n' + content
+        return content
 
 
 class DBOperationLog(db.Model):

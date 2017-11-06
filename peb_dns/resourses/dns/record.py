@@ -5,7 +5,6 @@ from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRec
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 from datetime import datetime
 
@@ -42,7 +41,6 @@ paginated_record_fields = {
 }
 
 
-
 class DNSRecordList(Resource):
 
     method_decorators = [token_required] 
@@ -51,27 +49,26 @@ class DNSRecordList(Resource):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSRecordList, self).__init__()
 
-
     def get(self):
         args = request.args
         zone_id = args.get('zone_id')
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
         if zone_id:
             marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
             results_wrapper = {'total': DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
             return marshal(results_wrapper, paginated_record_fields)
-
         marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
         results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_record_fields)
-
 
     def post(self):
         args = dns_record_common_parser.parse_args()
         current_zone = DBZone.query.get(args['zone_id'])
         if not current_zone:
             return dict(message='Failed', error='创建失败！当前Zone不存在，请检查zone_id是否正确！'), 400
+        if not g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, current_zone.id):
+            return dict(message='Failed', error='无权限！您无权限在当前Zone下添加Record！'), 403
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
             return dict(message='Failed', error='创建失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。'), 400
@@ -80,18 +77,15 @@ class DNSRecordList(Resource):
         db.session.add(new_record)
         db.session.flush()
         log = DBOperationLog(operation_type='添加', operator=args['creator'], target_type='Record', target_name=new_record.host, \
-                target_id=int(new_record.id), target_detail=ResourceContent.getRecordContent(new_record))
+                target_id=int(new_record.id), target_detail=new_record.get_content_str())
         db.session.add(log)
         try:
-            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
-            new_record.make_record(current_zone.name, record_list)
+            # record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
+            new_record.create(current_zone, args)
         except Exception as e:
             db.session.rollback()
             return dict(message='Failed', error="{e}".format(e=str(e))), 400
-
-        self._add_privilege_for_record(current_zone, new_record)
         db.session.commit()
-
         return dict(message='OK'), 201
 
 
@@ -114,7 +108,6 @@ class DNSRecordList(Resource):
         db.session.add(admin_delete)
 
 
-
 class DNSRecord(Resource):
 
     method_decorators = [token_required]
@@ -133,6 +126,8 @@ class DNSRecord(Resource):
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
         current_zone = DBZone.query.get(current_record.zone_id)
+        if not g.current_user.can_do(Operation.UPDATE, ResourceType.ZONE, current_zone.id):
+            return dict(message='Failed', error='无权限！您无权限修改当前Zone下的Record！'), 403
         unique_record = DBRecord.query.filter_by(zone_id=args['zone_id'], host=args['host'], view_name=args['view_name']).first()
         if unique_record:
             return dict(message='Failed', error='修改失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。'), 400
@@ -149,9 +144,11 @@ class DNSRecord(Resource):
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
         current_zone = DBZone.query.get(current_record.zone_id)
+        if not g.current_user.can_do(Operation.DELETE, ResourceType.ZONE, current_zone.id):
+            return dict(message='Failed', error='无权限！您无权限删除当前Zone下的Record！'), 403
         try:
             self._delete_record(current_zone, current_record)
-            self._remove_record_privileges(current_zone, current_record)
+            # self._remove_record_privileges(current_zone, current_record)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
@@ -169,19 +166,19 @@ class DNSRecord(Resource):
         current_record.gmt_modified = datetime.now()
         db.session.add(current_record)
         log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Record', target_name=current_record.host, \
-                target_id=int(current_record.id), target_detail=ResourceContent.getRecordContent(current_record))
+                target_id=int(current_record.id), target_detail=current_record.get_content_str())
         db.session.add(log)
-        record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
-        current_record.make_record(current_zone.name, record_list)
+        # record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
+        current_record.update(current_zone, args)
 
 
     def _delete_record(self, current_zone, current_record):
         log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Record', target_name=current_record.host, \
-                target_id=int(current_record.id), target_detail=ResourceContent.getRecordContent(current_record))
+                target_id=int(current_record.id), target_detail=current_record.get_content_str())
         db.session.add(log)
         db.session.delete(current_record)
-        record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == current_record.zone_id, DBRecord.view_name == current_record.view_name, DBRecord.host != '@').all()
-        current_record.make_record(current_zone.name, record_list)
+        # record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == current_record.zone_id, DBRecord.view_name == current_record.view_name, DBRecord.host != '@').all()
+        current_record.delete(current_zone)
 
 
     def _remove_record_privileges(self, current_zone, current_record):

@@ -2,10 +2,10 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
+from peb_dns.common.util import ZONE_GROUP_MAPPING
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 from datetime import datetime
 
@@ -44,7 +44,7 @@ class DNSZoneList(Resource):
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
 
         marshal_records = marshal(DBZone.query.order_by(DBZone.id.desc()).paginate(current_page, page_size, error_out=False).items, zone_fields)
         results_wrapper = {'total': DBZone.query.count(), 'zones': marshal_records, 'current_page': current_page}
@@ -58,13 +58,12 @@ class DNSZoneList(Resource):
             return dict(message='Failed', error_msg='创建失败！重复的Zone！！相同名字的Zone，每种类型域名下只能存在一个！'), 400
         if args['zone_type'] == 'forward only':
             args['forwarders'] = '; '.join([ip.strip() for ip in args['forwarders'].strip().split()]) + ';'
-        # print(args)
         del args['view_ids']
         new_zone = DBZone(**args)
         db.session.add(new_zone)
         db.session.flush()
         log = DBOperationLog(operation_type='添加', operator=g.current_user.username, target_type='Zone', target_name=new_zone.name, \
-                target_id=int(new_zone.id), target_detail=ResourceContent.getZoneContent(new_zone))
+                target_id=int(new_zone.id), target_detail=new_zone.get_content_str())
         db.session.add(log)
         for view_id in view_ids:
             v = DBViewZone(view_id=int(view_id), zone_id=new_zone.id)
@@ -80,9 +79,9 @@ class DNSZoneList(Resource):
 
 
     def _add_privilege_for_zone(self, new_zone):
-        access_privilege_name =  new_zone.name + '#' + str(Operation.ACCESS)
-        update_privilege_name =  new_zone.name + '#' + str(Operation.UPDATE)
-        delete_privilege_name =  new_zone.name + '#' + str(Operation.DELETE)
+        access_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[str(Operation.ACCESS)]
+        update_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[str(Operation.UPDATE)]
+        delete_privilege_name =  'ZONE#' + new_zone.name + '#' + OPERATION_STR_MAPPING[str(Operation.DELETE)]
         access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.ACCESS, resource_id=new_zone.id)
         update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.UPDATE, resource_id=new_zone.id)
         delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.ZONE, operation=Operation.DELETE, resource_id=new_zone.id)
@@ -135,7 +134,7 @@ class DNSZone(Resource):
     def _update_zone(self, current_zone, args):
         pre_views = current_zone.view_name_list
         log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Zone', target_name=current_zone.name, \
-                target_id=int(current_zone.id), target_detail=ResourceContent.getZoneContent(current_zone, prefix="修改前："))
+                target_id=int(current_zone.id), target_detail=current_zone.get_content_str(prefix="修改前："))
         db.session.add(log)
         if args['zone_type'] == 'forward only':
             current_zone.forwarders = '; '.join([ip.strip() for ip in args['forwarders'].strip().split()]) + ';'
@@ -157,7 +156,7 @@ class DNSZone(Resource):
 
     def _delete_zone(self, current_zone):
         log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Zone', target_name=current_zone.name, \
-                target_id=int(current_zone.id), target_detail=ResourceContent.getZoneContent(current_zone))
+                target_id=int(current_zone.id), target_detail=current_zone.get_content_str(prefix="修改前："))
         db.session.add(log)
 
         DBViewZone.query.filter(DBViewZone.zone_id==current_zone.id).delete()
@@ -183,3 +182,6 @@ class DNSZone(Resource):
         for record_privilege in current_record_privileges:
             DBRolePrivilege.query.filter(DBRolePrivilege.privilege_id == record_privilege.id).delete()
         current_record_privileges_query.delete()
+
+
+

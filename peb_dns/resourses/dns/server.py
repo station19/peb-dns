@@ -2,10 +2,9 @@ from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with,
 from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
-from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 from datetime import datetime
 
@@ -49,7 +48,7 @@ class DNSServerList(Resource):
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
 
         marshal_records = marshal(DBDNSServer.query.order_by(DBDNSServer.id.desc()).paginate(current_page, page_size, error_out=False).items, server_fields)
         results_wrapper = {'total': DBDNSServer.query.count(), 'servers': marshal_records, 'current_page': current_page}
@@ -57,34 +56,26 @@ class DNSServerList(Resource):
 
     def post(self):
         args = dns_server_common_parser.parse_args()
-
         unique_server = db.session.query(DBDNSServer).filter(or_(DBDNSServer.host==args['host'], DBDNSServer.ip==args['ip'])).all()
         if unique_server:
             return dict(message='Failed', error='创建失败! 重复的Server，相同Host或IP地址已存在！'), 400
-
         new_server = DBDNSServer(**args)
         db.session.add(new_server)
         db.session.flush()
         self._add_privilege_for_server(new_server)
-        log = DBOperationLog(operation_type='添加', operator=g.current_user.username, target_type='DNSServer', target_name=new_server.host, \
-                target_id=int(new_server.id), target_detail=ResourceContent.getServerContent(new_server))
+        log = DBOperationLog(operation_type='添加', operator=g.current_user.username, target_type='Server', target_name=new_server.host, \
+                target_id=int(new_server.id), target_detail=new_server.get_content_str())
         db.session.add(log)
         db.session.commit()
-
-        # app_object = current_app._get_current_object()
-        # init_cmd = current_app.config['SERVER_INIT_CMD']
-        # init_server_thread = threading.Thread(target=initServer, args=(init_cmd, app_object, new_server.id))
-        # init_server_thread.start()
-        
         return dict(message='OK'), 201
 
     def init_server(self):
         pass
 
     def _add_privilege_for_server(self, new_server):
-        access_privilege_name = new_server.host + '#' + str(Operation.ACCESS)
-        update_privilege_name = new_server.host + '#' + str(Operation.UPDATE)
-        delete_privilege_name = new_server.host + '#' + str(Operation.DELETE)
+        access_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[str(Operation.ACCESS)]
+        update_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[str(Operation.UPDATE)]
+        delete_privilege_name = 'SERVER#' + new_server.host + '#' + OPERATION_STR_MAPPING[str(Operation.DELETE)]
         access_privilege = DBPrivilege(name=access_privilege_name, resource_type=ResourceType.SERVER, operation=Operation.ACCESS, resource_id=new_server.id)
         update_privilege = DBPrivilege(name=update_privilege_name, resource_type=ResourceType.SERVER, operation=Operation.UPDATE, resource_id=new_server.id)
         delete_privilege = DBPrivilege(name=delete_privilege_name, resource_type=ResourceType.SERVER, operation=Operation.DELETE, resource_id=new_server.id)
@@ -136,7 +127,7 @@ class DNSServer(Resource):
     def _update_server(self, server, args):
         try:
             log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Server', target_name=server.host, \
-                    target_id=int(server.id), target_detail=ResourceContent.getServerContent(server, prefix="修改前："))
+                    target_id=int(server.id), target_detail=server.get_content_str(prefix="修改前："))
             db.session.add(log)
             server.host = args['host']
             server.ip = args['ip']
@@ -153,7 +144,7 @@ class DNSServer(Resource):
     def _delete_server(self, server):
         try:
             log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Server', target_name=server.host, \
-                    target_id=int(server.id), target_detail=ResourceContent.getServerContent(server))
+                    target_id=int(server.id), target_detail=server.get_content_str())
             db.session.add(log)
             self._remove_server_privileges(server)
             db.session.delete(server)

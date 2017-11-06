@@ -5,7 +5,6 @@ from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRec
 from peb_dns.models.account import Operation, ResourceType, DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.common.decorators import token_required, admin_required
 from peb_dns import db
-from peb_dns.common.util import ResourceContent
 from sqlalchemy import and_, or_
 from datetime import datetime
 
@@ -46,7 +45,6 @@ class PrivilegeList(Resource):
         # self.post_reqparse.add_argument('name', type = str, location = 'json', required=True)
         super(PrivilegeList, self).__init__()
 
-    # @marshal_with(role_fields, envelope='roles')
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
@@ -56,28 +54,23 @@ class PrivilegeList(Resource):
         results_wrapper = {'total': DBPrivilege.query.count(), 'privileges': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_privilege_fields)
 
-    # id = db.Column(db.Integer, primary_key=True)
-    # name = db.Column(db.String(128))
-    # operation = db.Column(db.Integer)
-    # resource_type = db.Column(db.String(64))
-    # resource_id = db.Column(db.Integer, index=True)
-    # comment = db.Column(db.String(128))
-
     def post(self):
         
         args = dns_privilege_common_parser.parse_args()
-        print('asdfasdfasdfdas')
         privilege_name = args['name']
         operation = args['operation']
         resource_type = args['resource_type']
         resource_id = args['resource_id']
         comment = args.get('comment', '')
+        uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
+        if uniq_privilege:
+            return dict(message='Failed', error="{e} 已存在！".format(e=str(uniq_privilege.name))), 400
         try:
-            uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
-            if uniq_privilege:
-                return dict(message='Failed', error="{e} 已存在！".format(e=str(uniq_privilege.name))), 400
             new_privilege = DBPrivilege(name=privilege_name, operation=operation, resource_type=resource_type, resource_id=resource_id, comment=comment)
             db.session.add(new_privilege)
+            db.session.flush()
+            new_rp = DBRolePrivilege(role_id=1, privilege_id=new_privilege.id)
+            db.session.add(new_rp)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
@@ -129,7 +122,6 @@ class Privilege(Resource):
         current_privilege = DBPrivilege.query.get(privilege_id)
         if not current_privilege:
             return dict(message='Failed', error="{e} 不存在！".format(e=str(privilege_id))), 400
-
         try:
             db.sessoin.delete(current_privilege)
             db.session.commit()

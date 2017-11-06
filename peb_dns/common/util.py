@@ -25,6 +25,7 @@ ZONE_GROUP_MAPPING = {
     2:"劫持域名"
 }
 
+
 #获取ETCD客户端
 def getETCDclient():
     client = etcd.Client(host=current_app.config.get('ETCD_SERVER_HOST'), port=current_app.config.get('ETCD_SERVER_PORT'))
@@ -49,61 +50,6 @@ def getLogger(log_path):
     fh.setFormatter(formatter)
     logger.addHandler(fh)
     return logger
-
-
-class ResourceContent(object):
-
-    @staticmethod
-    def getViewContent(view, prefix=None):
-        content = 'id: ' + str(view.id) + '\n' \
-        + 'View名称: ' + str(view.name) + '\n' \
-        + 'ACL: ' + str(view.acl) + '\n'
-
-        if prefix:
-            content = prefix + '\n' + content
-        return content
-
-    @staticmethod
-    def getZoneContent(zone, prefix=None):
-        content = 'id: ' + str(zone.id) + '\n' \
-        + 'Zone名称: ' + str(zone.name) + '\n' \
-        + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(zone.zone_group) + '\n' \
-        + 'Zone类型: ' + str(zone.zone_type) + '\n' \
-        + '关联View: ' + str(zone.view_name_list) + '\n' 
-
-        if prefix:
-            content = prefix + '\n' + content
-        return content
-
-    @staticmethod
-    def getRecordContent(record, prefix=None):
-        #'修改前内容：'
-        content = 'id: ' + str(record.id) + '\n' \
-        + '记录主机: ' + str(record.host) + '\n' \
-        + '记录类型: ' + str(record.record_type) + '\n' \
-        + '记录值: ' + str(record.value) + '\n' \
-        + 'TTL: ' + str(record.ttl) + '\n' \
-        + '线路类型: ' + str(record.view_name) + '\n' \
-        + '备注: ' + str(record.comment) + '\n' \
-        + '创建人: ' + str(record.creator) + '\n' \
-        + '创建时间: ' + str(record.gmt_create)
-
-        if prefix:
-            content = prefix + '\n' + content
-        return content
-
-    @staticmethod
-    def getServerContent(server, prefix=None):
-        #'修改前内容：'
-        content = 'id: ' + str(server.id) + '\n' \
-        + '主机名: ' + str(server.host) + '\n' \
-        + 'IP地址: ' + str(server.ip) + '\n' \
-        + '环境: ' + str(server.env) + '\n' \
-        + 'DNS类型: ' + str(server.dns_server_type) + '\n'
-
-        if prefix:
-            content = prefix + '\n' + content
-        return content
 
 
 def killProcesses(ppid=None):
