@@ -24,7 +24,7 @@ zone_fields = {
     'zone_group': fields.Integer,
     'zone_type': fields.String,
     'forwarders': fields.String,
-    'views': fields.String,
+    'view_name_list': fields.String,
     'can_update': fields.Boolean,
     'can_delete': fields.Boolean
 }
