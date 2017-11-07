@@ -26,7 +26,8 @@ zone_fields = {
     'forwarders': fields.String,
     'view_name_list': fields.String,
     'can_update': fields.Boolean,
-    'can_delete': fields.Boolean
+    'can_delete': fields.Boolean,
+    'view_ids':fields.List(fields.Integer)
 }
 
 paginated_zone_fields = {
@@ -42,7 +43,6 @@ class DNSZoneList(Resource):
     def __init__(self):
         self.get_reqparse = reqparse.RequestParser()
         super(DNSZoneList, self).__init__()
-
 
     def get(self):
         args = request.args

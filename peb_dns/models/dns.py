@@ -161,8 +161,9 @@ class DBZone(db.Model):
     def view_name_list(self):
         return [v.name for v in self.views]
 
-    def get_views(self):
-        return '; '.join([v.name for v in self.views])
+    @property
+    def view_ids(self):
+        return [v.id for v in self.views]
 
     def get_content_str(self, prefix=None):
         content = 'id: ' + str(self.id) + '\n' \
