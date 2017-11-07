@@ -31,6 +31,11 @@ dns_user_common_parser.add_argument('role_ids', type = int, location = 'json', a
 # }
 
 
+role_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+}
+
 user_fields = {
     'id': fields.Integer,
     'username': fields.String,
@@ -40,7 +45,7 @@ user_fields = {
     'location': fields.String,
     'member_since': fields.String,
     'last_seen': fields.String,
-    'role_ids': fields.List(fields.Integer),
+    'roles': fields.List(fields.Nested(role_fields)),
 }
 
 paginated_user_fields = {
@@ -60,7 +65,7 @@ class UserList(Resource):
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
 
         marshal_records = marshal(DBUser.query.order_by(DBUser.id.desc()).paginate(current_page, page_size, error_out=False).items, user_fields)
         results_wrapper = {'total': DBUser.query.count(), 'users': marshal_records, 'current_page': current_page}

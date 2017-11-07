@@ -48,7 +48,7 @@ class PrivilegeList(Resource):
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
 
         marshal_records = marshal(DBPrivilege.query.order_by(DBPrivilege.id.desc()).paginate(current_page, page_size, error_out=False).items, privilege_fields)
         results_wrapper = {'total': DBPrivilege.query.count(), 'privileges': marshal_records, 'current_page': current_page}
