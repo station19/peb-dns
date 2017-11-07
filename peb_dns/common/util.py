@@ -138,52 +138,6 @@ def doCMDWithOutput(cmd, time_out = None):
 #             return True, output
 
 
-class DNSRecord(object):
-
-    def __init__(self, group, data, script):
-        self.__group = group
-        self.__data = data
-        self.__script = script
-        self.__create_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create'
-        self.__modify_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Modify'
-        self.__delete_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Remove'
-        self.__body_info = {"login_token":current_app.config.get('DNSPOD_TOKEN'), "format": current_app.config.get('DNSPOD_DATA_FORMAT')}
-
-    def create(self):
-        if self.__group == 'outter':
-            return self.__outter_execute(self.__create_url, self.__data)
-        return doCMDWithOutput(self.__script)
-
-    def modify(self):
-        if self.__group == 'outter':
-            return self.__outter_execute(self.__modify_url, self.__data)
-        return doCMDWithOutput(self.__script)
-
-    def delete(self):
-        if self.__group == 'outter':
-            return self.__outter_execute(self.__delete_url, self.__data)
-        return doCMDWithOutput(self.__script)
-
-    def __outter_execute(self, url, data):
-        try:
-            res = requests.post(url, data=dict(self.__body_info, **data))
-            if res.status_code == 200:
-                res_json = res.json()
-                if res_json.get('status').get('code') == '1':
-                    return 0, res_json
-                return 1, [str(res_json)]
-            return 1, [str(res_json)]
-        except Exception as e:
-            return 1, [e.__str__]
-
-    def failHandler(self):
-        pass
-
-    def isDomainExists(self):
-        pass
-
-
-
 class DNSPod(object):
 
     @staticmethod
