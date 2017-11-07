@@ -15,21 +15,38 @@ dns_user_common_parser = reqparse.RequestParser()
 dns_user_common_parser.add_argument('role_ids', type = int, location = 'json', action='append', required=True)
 
 
-role_fields = {
-    'id': fields.String,
-    'name': fields.String,
-}
+# privilege_fields = {
+#     'id': fields.Integer,
+#     'name': fields.String,
+#     'operation': fields.Integer,
+#     'resource_type': fields.Integer,
+#     'resource_id': fields.Integer,
+#     'comment': fields.String,
+# }
+
+# role_fields = {
+#     'id': fields.Integer,
+#     'name': fields.String,
+#     'privileges': fields.List(fields.Nested(privilege_fields)),
+# }
+
 
 user_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'username': fields.String,
-    'roles': fields.List(fields.Nested(role_fields))
+    'chinese_name': fields.String,
+    'cellphone': fields.String,
+    'position': fields.String,
+    'location': fields.String,
+    'member_since': fields.String,
+    'last_seen': fields.String,
+    'role_ids': fields.List(fields.Integer),
 }
 
 paginated_user_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'users': fields.List(fields.Nested(user_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 class UserList(Resource):
@@ -54,11 +71,11 @@ class User(Resource):
 
     method_decorators = [token_required]
 
+    @marshal_with(user_fields)
     def get(self, user_id):
         current_u = DBUser.query.get(user_id)
         args = dns_user_common_parser.parse_args()
         return { 'message' : "哈哈哈哈哈哈" }, 200
-
 
     def put(self, user_id):
         args = dns_user_common_parser.parse_args()

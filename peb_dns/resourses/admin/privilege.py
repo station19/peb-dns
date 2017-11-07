@@ -20,19 +20,19 @@ dns_privilege_common_parser.add_argument('comment', type = str, location = 'json
 
 
 privilege_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
-    'operation': fields.String,
-    'resource_type': fields.String,
-    'resource_id': fields.String,
+    'operation': fields.Integer,
+    'resource_type': fields.Integer,
+    'resource_id': fields.Integer,
     'comment': fields.String,
 }
 
 
 paginated_privilege_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'privileges': fields.List(fields.Nested(privilege_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 

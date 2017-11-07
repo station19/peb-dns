@@ -15,33 +15,34 @@ dns_role_common_parser.add_argument('privilege_ids', type = int, location = 'jso
 
 
 user_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'username': fields.String,
 }
 
 
 privilege_fields = {
-    'id': fields.String,
-    'name': fields.String,
-    'operation': fields.String,
-    'resource_type': fields.String,
-    'resource_id': fields.String,
-    'comment': fields.String,
+    'id': fields.Integer,
+    # 'name': fields.String,
+    # 'operation': fields.Integer,
+    # 'resource_type': fields.Integer,
+    # 'resource_id': fields.Integer,
+    # 'comment': fields.String,
 }
 
 
 role_fields = {
-    'id': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
-    'users': fields.List(fields.Nested(user_fields)),
-    'privileges': fields.List(fields.Nested(privilege_fields))
+    # 'users': fields.List(fields.Nested(user_fields)),
+    # 'privileges': fields.List(fields.Nested(privilege_fields))
+    'privilege_ids': fields.List(fields.Integer)
 }
 
 
 paginated_role_fields = {
-    'total': fields.String,
+    'total': fields.Integer,
     'roles': fields.List(fields.Nested(role_fields)),
-    'current_page': fields.String
+    'current_page': fields.Integer
 }
 
 
@@ -58,7 +59,7 @@ class RoleList(Resource):
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
 
         marshal_records = marshal(DBRole.query.order_by(DBRole.id.desc()).paginate(current_page, page_size, error_out=False).items, role_fields)
         results_wrapper = {'total': DBRole.query.count(), 'roles': marshal_records, 'current_page': current_page}
@@ -91,10 +92,12 @@ class Role(Resource):
         self.role_common_parser.add_argument('privilege_ids', type = int, location = 'json', action='append', required=True)
         super(Role, self).__init__()
 
-    # @marshal_with(role_fields, envelope='roles')
+    @marshal_with(role_fields)
     def get(self, role_id):
         current_role = DBRole.query.get(role_id)
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+        # return current_role
+        # return { 'message' : "哈哈哈哈哈哈" }, 200
+        return current_role
 
 
     def put(self, role_id):

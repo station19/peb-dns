@@ -64,8 +64,14 @@ class DBUser(db.Model):
     @property
     def roles(self):
         return db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-            .join(DBUser, and_(DBRole.id == DBUserRole.user_id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == self.id).all()
+
+    @property
+    def role_ids(self):
+        return [r.id for r in db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == self.id).all()]
 
     @roles.setter
     def roles(self, role_ids):
@@ -132,6 +138,12 @@ class DBRole(db.Model):
         return db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .filter(DBRole.id == self.id).all()
+
+    @property
+    def privilege_ids(self):
+        return [p.id for p in db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .filter(DBRole.id == self.id).all()]
 
     @privileges.setter
     def privileges(self, privilege_ids):
