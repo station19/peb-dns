@@ -1,4 +1,4 @@
-from flask_restful import Resource, marshal_with, fields, marshal, reqparse
+from flask_restful import Resource, marshal_with, fields, marshal, reqparse, abort
 from flask import Blueprint, request, jsonify, current_app, g
 
 
@@ -79,8 +79,10 @@ class User(Resource):
     @marshal_with(user_fields)
     def get(self, user_id):
         current_u = DBUser.query.get(user_id)
-        args = dns_user_common_parser.parse_args()
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+        if not current_u:
+            abort(404)
+        return current_u
+        # return { 'message' : "哈哈哈哈哈哈" }, 200
 
     def put(self, user_id):
         args = dns_user_common_parser.parse_args()

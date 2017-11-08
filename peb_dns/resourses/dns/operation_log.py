@@ -37,7 +37,7 @@ class DNSOperationLogList(Resource):
     def get(self):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 3, type=int)
+        page_size = request.args.get('pageSize', 10, type=int)
 
         marshal_records = marshal(DBOperationLog.query.order_by(DBOperationLog.id.desc()).paginate(current_page, page_size, error_out=False).items, log_fields)
         results_wrapper = {'total': DBOperationLog.query.count(), 'operation_logs': marshal_records, 'current_page': current_page}

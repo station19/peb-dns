@@ -1,4 +1,4 @@
-from flask_restful import Resource, marshal_with, fields, marshal, reqparse
+from flask_restful import Resource, marshal_with, fields, marshal, reqparse, abort
 from flask import Blueprint, request, jsonify, current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
@@ -87,11 +87,14 @@ class Privilege(Resource):
         self.role_common_parser.add_argument('privilege_ids', type = int, location = 'json', action='append', required=True)
         super(Privilege, self).__init__()
 
-
+    @marshal_with(privilege_fields)
     def get(self, privilege_id):
         current_p = DBPrivilege.query.get(privilege_id)
+        if not current_p:
+            abort(404)
         # args = self.role_common_parser.parse_args()
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+        # return { 'message' : "哈哈哈哈哈哈" }, 200
+        return current_p
 
 
     def put(self, privilege_id):

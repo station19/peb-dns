@@ -1,4 +1,4 @@
-from flask_restful import Resource, marshal_with, fields, marshal, reqparse
+from flask_restful import Resource, marshal_with, fields, marshal, reqparse, abort
 from flask import Blueprint, request, jsonify, current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
@@ -95,6 +95,8 @@ class Role(Resource):
     @marshal_with(role_fields)
     def get(self, role_id):
         current_role = DBRole.query.get(role_id)
+        if not current_role:
+            abort(404)
         # return current_role
         # return { 'message' : "哈哈哈哈哈哈" }, 200
         return current_role
