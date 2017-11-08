@@ -170,6 +170,7 @@ class ZBapi(object):
         self._url = current_app.config.get('ZABBIX_URL')
         self._header = {"Content-Type":"application/json"}
         self._server = server
+        self._num = 30
 
     def _get_authid(self):
         data = {
@@ -213,8 +214,8 @@ class ZBapi(object):
 
     def _get_resolve_rate_by_itemid(self, itemid, limit_num):
 
-        time_slot_minutes = int(limit_num/12)
-        all_num = time_slot_minutes * 13
+        time_slot_minutes = int(limit_num/self._num)
+        all_num = time_slot_minutes * (self._num + 1)
 
         zb_data_default = copy.deepcopy(current_app.config.get('ZABBIX_POST_DATA'))
         zb_post_data = self._configure_post_data(zb_data_default, itemid, 3)
@@ -226,12 +227,13 @@ class ZBapi(object):
         results = json.loads(r.text).get("result")
         # print('xxxxx --- ' + str(len(results)))
         results_dct = OrderedDict()
-        for i in range(13):
+        for i in range(self._num + 1):
             end = time_slot_minutes*(i+1)
-            if i >= 12:
+            if i >= self._num:
                 end = time_slot_minutes*(i+1) - 1
             # print(len(results))
             # print(end)
+            # print(time_slot_minutes*i, end)
             resolving_slot = results[time_slot_minutes*i : end]
             time_flag = results[end]['clock']
             time_flag_str = datetime.fromtimestamp(int(time_flag)).strftime("%m-%d %H:%M")
@@ -256,7 +258,7 @@ class ZBapi(object):
         # time_slot = (end_time - start_time)/11
         time_slot = end_time - start_time
         total_minutes = time_slot.total_seconds()/60
-        time_slot_minutes = int(total_minutes/12)
+        time_slot_minutes = int(total_minutes/self._num)
         # dns_servers = Server.query.all()  
         return self._get_resolve_rate_by_itemid(self._server.zb_resolve_rate_itemid, total_minutes)
 
