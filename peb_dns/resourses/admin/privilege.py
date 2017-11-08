@@ -49,9 +49,16 @@ class PrivilegeList(Resource):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
+        role_id = request.args.get('role_id', type=int)
 
-        marshal_records = marshal(DBPrivilege.query.order_by(DBPrivilege.id.desc()).paginate(current_page, page_size, error_out=False).items, privilege_fields)
-        results_wrapper = {'total': DBPrivilege.query.count(), 'privileges': marshal_records, 'current_page': current_page}
+        privilege_query = db.session.query(DBPrivilege)
+        if role_id:
+            privilege_query = privilege_query.join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .filter(DBRole.id == role_id)
+
+        marshal_records = marshal(privilege_query.order_by(DBPrivilege.id.desc()).paginate(current_page, page_size, error_out=False).items, privilege_fields)
+        results_wrapper = {'total': privilege_query.count(), 'privileges': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_privilege_fields)
 
     def post(self):

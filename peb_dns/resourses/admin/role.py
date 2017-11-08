@@ -35,7 +35,7 @@ role_fields = {
     'name': fields.String,
     # 'users': fields.List(fields.Nested(user_fields)),
     # 'privileges': fields.List(fields.Nested(privilege_fields))
-    'privilege_ids': fields.List(fields.Integer)
+    # 'privilege_ids': fields.List(fields.Integer)
 }
 
 
@@ -60,9 +60,16 @@ class RoleList(Resource):
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
+        user_id = request.args.get('user_id', type=int)
 
-        marshal_records = marshal(DBRole.query.order_by(DBRole.id.desc()).paginate(current_page, page_size, error_out=False).items, role_fields)
-        results_wrapper = {'total': DBRole.query.count(), 'roles': marshal_records, 'current_page': current_page}
+        role_query = db.session.query(DBRole)
+        if user_id:
+            role_query = role_query.join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+                .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+                .filter(DBUser.id == user_id)
+        
+        marshal_records = marshal(role_query.order_by(DBRole.id.desc()).paginate(current_page, page_size, error_out=False).items, role_fields)
+        results_wrapper = {'total': role_query.count(), 'roles': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_role_fields)
 
     def post(self):
