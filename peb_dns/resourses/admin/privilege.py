@@ -133,7 +133,7 @@ class Privilege(Resource):
         if not current_privilege:
             return dict(message='Failed', error="{e} 不存在！".format(e=str(privilege_id))), 400
         try:
-            db.sessoin.delete(current_privilege)
+            db.session.delete(current_privilege)
             db.session.commit()
         except Exception as e:
             db.session.rollback()

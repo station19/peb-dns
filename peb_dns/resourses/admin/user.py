@@ -113,7 +113,7 @@ class User(Resource):
             return dict(message='Failed', error="{e} 不存在！".format(e=str(user_id))), 400
         try:
             DBUserRole.query.filter(DBUserRole.user_id==user_id).delete()
-            db.sessoin.delete(current_u)
+            db.session.delete(current_u)
             db.session.commit()
         except Exception as e:
             db.session.rollback()

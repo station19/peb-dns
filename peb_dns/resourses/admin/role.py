@@ -140,7 +140,7 @@ class Role(Resource):
             return dict(message='Failed', error="这些用户依然关联当前角色 {e} ，请先解除关联！".format(e=str([u.username for u in related_users]))), 400
         try:
             DBUserRole.query.filter(DBUserRole.role_id==role_id).delete()
-            db.sessoin.delete(current_role)
+            db.session.delete(current_role)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
