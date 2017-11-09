@@ -190,7 +190,7 @@ class DBZone(db.Model):
         if res.status_code == 200:
             res_json = res.json()
             if res_json.get('status').get('code') == '1':
-                raise Exception(str(res_json))
+                return
         raise Exception(str(res_json))
 
     def _modify_inner(self, pre_views):

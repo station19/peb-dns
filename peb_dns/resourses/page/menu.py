@@ -40,10 +40,11 @@ class MenuSidebar(Resource):
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == g.current_user.id)
 
-        print(zone_query.all())
+        # print(zone_query.all())
         inner_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 1).all()]
         intercepted_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 2).all()]
         outter_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 0).all()]
+        print(inner_zones, intercepted_zones, outter_zones)
 
         zone_groups = {'menu' : 
             [{'title':'内部域名', 'items':inner_zones}, \

@@ -73,6 +73,7 @@ class DNSZoneList(Resource):
             db.session.add(v)
         try:
             new_zone.create()
+            # print("xxxxxx")
             self._add_privilege_for_zone(new_zone)
         except Exception as e:
             db.session.rollback()
