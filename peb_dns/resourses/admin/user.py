@@ -45,7 +45,7 @@ user_fields = {
     'location': fields.String,
     'member_since': fields.String,
     'last_seen': fields.String,
-    # 'roles': fields.List(fields.Nested(role_fields)),
+    'roles': fields.List(fields.Nested(role_fields)),
 }
 
 paginated_user_fields = {

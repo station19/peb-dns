@@ -22,11 +22,11 @@ user_fields = {
 
 privilege_fields = {
     'id': fields.Integer,
-    # 'name': fields.String,
-    # 'operation': fields.Integer,
-    # 'resource_type': fields.Integer,
-    # 'resource_id': fields.Integer,
-    # 'comment': fields.String,
+    'name': fields.String,
+    'operation': fields.Integer,
+    'resource_type': fields.Integer,
+    'resource_id': fields.Integer,
+    'comment': fields.String,
 }
 
 
@@ -34,7 +34,7 @@ role_fields = {
     'id': fields.Integer,
     'name': fields.String,
     # 'users': fields.List(fields.Nested(user_fields)),
-    # 'privileges': fields.List(fields.Nested(privilege_fields))
+    'privileges': fields.List(fields.Nested(privilege_fields))
     # 'privilege_ids': fields.List(fields.Integer)
 }
 
