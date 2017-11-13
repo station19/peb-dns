@@ -104,10 +104,7 @@ class Role(Resource):
         current_role = DBRole.query.get(role_id)
         if not current_role:
             abort(404)
-        # return current_role
-        # return { 'message' : "哈哈哈哈哈哈" }, 200
         return current_role
-
 
     def put(self, role_id):
         args = self.role_common_parser.parse_args()
@@ -134,7 +131,6 @@ class Role(Resource):
         current_role = DBRole.query.get(role_id)
         if not current_role:
             return dict(message='Failed', error="{e} 不存在！".format(e=str(role_id))), 400
-
         related_users = current_role.users
         if related_users:
             return dict(message='Failed', error="这些用户依然关联当前角色 {e} ，请先解除关联！".format(e=str([u.username for u in related_users]))), 400

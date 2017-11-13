@@ -106,7 +106,6 @@ class User(Resource):
             return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
-
     def delete(self, user_id):
         current_u = DBUser.query.get(user_id)
         if not current_u:

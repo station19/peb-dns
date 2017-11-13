@@ -98,15 +98,17 @@ class DNSServer(Resource):
 
     method_decorators = [token_required]
 
+    @marshal_with(server_fields)
     def get(self, server_id):
         current_server = DBDNSServer.query.get(server_id)
         if not current_server:
             abort(404)
         if not g.current_user.can_do(Operation.ACCESS, ResourceType.SERVER, current_server.id):
             return dict(message='Failed', error='无权限！您无权访问当前Server，请联系管理员。'), 403
-        args = dns_server_common_parser.parse_args()
+        # args = dns_server_common_parser.parse_args()
+        # return { 'message' : "哈哈哈哈哈哈" }, 200
+        return current_server
 
-        return { 'message' : "哈哈哈哈哈哈" }, 200
 
     def put(self, server_id):
         current_server = DBDNSServer.query.get(server_id)
@@ -122,7 +124,6 @@ class DNSServer(Resource):
             db.session.rollback()
             return dict(message='Failed', error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
-
 
     def delete(self, server_id):
         current_server = DBDNSServer.query.get(server_id)
@@ -140,31 +141,25 @@ class DNSServer(Resource):
 
 
     def _update_server(self, server, args):
-        try:
-            log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Server', target_name=server.host, \
-                    target_id=int(server.id), target_detail=server.get_content_str(prefix="修改前："))
-            db.session.add(log)
-            server.host = args['host']
-            server.ip = args['ip']
-            server.env = args['env']
-            server.dns_server_type = args['dns_server_type']
-            server.zb_process_itemid = args['zb_process_itemid']
-            server.zb_port_itemid = args['zb_port_itemid']
-            server.zb_resolve_itemid = args['zb_resolve_itemid']
-            server.zb_resolve_rate_itemid = args['zb_resolve_rate_itemid']
-            db.session.add(server)
-        except Exception as e:
-            raise e
+        log = DBOperationLog(operation_type='修改', operator=g.current_user.username, target_type='Server', target_name=server.host, \
+                target_id=int(server.id), target_detail=server.get_content_str(prefix="修改前："))
+        db.session.add(log)
+        server.host = args['host']
+        server.ip = args['ip']
+        server.env = args['env']
+        server.dns_server_type = args['dns_server_type']
+        server.zb_process_itemid = args['zb_process_itemid']
+        server.zb_port_itemid = args['zb_port_itemid']
+        server.zb_resolve_itemid = args['zb_resolve_itemid']
+        server.zb_resolve_rate_itemid = args['zb_resolve_rate_itemid']
+        db.session.add(server)
 
     def _delete_server(self, server):
-        try:
-            log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Server', target_name=server.host, \
-                    target_id=int(server.id), target_detail=server.get_content_str())
-            db.session.add(log)
-            self._remove_server_privileges(server)
-            db.session.delete(server)
-        except Exception as e:
-            raise e
+        log = DBOperationLog(operation_type='删除', operator=g.current_user.username, target_type='Server', target_name=server.host, \
+                target_id=int(server.id), target_detail=server.get_content_str())
+        db.session.add(log)
+        self._remove_server_privileges(server)
+        db.session.delete(server)
 
     def _remove_server_privileges(self, current_server):
         current_record_privileges_query = DBPrivilege.query.filter(DBPrivilege.resource_id==current_server.id, DBPrivilege.resource_type==ResourceType.SERVER)

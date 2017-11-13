@@ -105,14 +105,17 @@ class DNSZone(Resource):
 
     method_decorators = [token_required]
 
+    @marshal_with(zone_fields)
     def get(self, zone_id):
         current_zone = DBZone.query.get(zone_id)
         if not current_zone:
             abort(404)
         if not g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, current_zone.id):
             return dict(message='Failed', error='无权限！您无权限访问当前Zone，请联系管理员。'), 403
-        args = dns_zone_common_parser.parse_args()
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+        # args = dns_zone_common_parser.parse_args()
+        # return { 'message' : "哈哈哈哈哈哈" }, 200
+        return current_zone
+        
 
     def put(self, zone_id):
         current_zone = DBZone.query.get(zone_id)

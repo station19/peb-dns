@@ -20,10 +20,6 @@ dns_record_common_parser.add_argument('comment', type = str, location = 'json', 
 dns_record_common_parser.add_argument('zone_id', type = int, location = 'json', required=True, help='zone id')
 
 
-# zone_field()
-
-#'zone_id': fields.Nested(role_fields)，
-
 record_fields = {
     'id': fields.Integer,
     'host': fields.String,

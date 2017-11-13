@@ -17,8 +17,6 @@ dns_privilege_common_parser.add_argument('resource_id', type = int, location = '
 dns_privilege_common_parser.add_argument('comment', type = str, location = 'json')
 
 
-
-
 privilege_fields = {
     'id': fields.Integer,
     'name': fields.String,

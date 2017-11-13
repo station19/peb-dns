@@ -186,7 +186,10 @@ class DBZone(db.Model):
             time.sleep(0.1)
 
     def _create_outter(self):
-        res = requests.post(self.__create_url, data=dict(login_token=current_app.config.get('DNSPOD_TOKEN'), domain=self.name, format=current_app.config.get('DNSPOD_DATA_FORMAT')))
+        res = requests.post(self.__create_url,
+                    data=dict(login_token=current_app.config.get('DNSPOD_TOKEN'),
+                    domain=self.name, 
+                    format=current_app.config.get('DNSPOD_DATA_FORMAT')))
         if res.status_code == 200:
             res_json = res.json()
             if res_json.get('status').get('code') == '1':
@@ -194,7 +197,8 @@ class DBZone(db.Model):
         raise Exception(str(res_json))
 
     def _modify_inner(self, pre_views):
-        zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
+        zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, 
+                    DBZone.zone_group == 2)).all()
         current_views = set(self.view_name_list)
         pre_views = set(pre_views)
         # 清除当前zone 解除绑定view所对应的record

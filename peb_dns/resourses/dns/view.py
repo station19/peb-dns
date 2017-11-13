@@ -95,13 +95,15 @@ class DNSView(Resource):
 
     method_decorators = [token_required]
 
+    @marshal_with(view_fields)
     def get(self, view_id):
         current_view = DBView.query.get(view_id)
         if not current_view:
             abort(404)
         if not g.current_user.can_do(Operation.ACCESS, ResourceType.VIEW, current_view.id):
             return dict(message='Failed', error='无权限！您无权删除当前Zone，请联系管理员。'), 403
-        return { 'message' : "哈哈哈哈哈哈" }, 200
+        # return { 'message' : "哈哈哈哈哈哈" }, 200
+        return current_view
 
     def put(self, view_id):
         current_view = DBView.query.get(view_id)
@@ -153,7 +155,6 @@ class DNSView(Resource):
         db.session.delete(view)
         view_list = db.session.query(DBView).all()
         view.make_view('delete', view_list)
-
 
     def _remove_view_privileges(self, current_view):
         current_view_privileges_query = DBPrivilege.query.filter(DBPrivilege.resource_id==current_view.id, DBPrivilege.resource_type==ResourceType.VIEW)
