@@ -38,6 +38,7 @@ role_fields = {
 
 user_fields = {
     'id': fields.Integer,
+    'email': fields.String,
     'username': fields.String,
     'chinese_name': fields.String,
     'cellphone': fields.String,
