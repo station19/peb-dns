@@ -51,15 +51,36 @@ class DNSRecordList(Resource):
     def get(self):
         args = request.args
         zone_id = args.get('zone_id')
-        current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 10, type=int)
+        current_page = args.get('currentPage', 1, type=int)
+        page_size = args.get('pageSize', 10, type=int)
+
+        id = args.get('id', type=int)
+        host = args.get('host', type=str)
+        record_type = args.get('record_type', type=str)
+        ttl = args.get('ttl', type=str)
+        value = args.get('value', type=str)
+        view_name = args.get('view_name', type=str)
+
+        record_query = DBRecord.query
+        if id:
+            record_query = record_query.filter_by(id=id)
+        if host:
+            record_query = record_query.filter_by(host=host)
+        if record_type:
+            record_query = record_query.filter_by(record_type=record_type)
+        if ttl:
+            record_query = record_query.filter_by(ttl=ttl)
+        if value:
+            record_query = record_query.filter_by(value=value)
+        if view_name:
+            record_query = record_query.filter_by(view_name=view_name)
         if zone_id:
-            marshal_records = marshal(DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc())\
+            marshal_records = marshal(record_query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc())\
                     .paginate(current_page, page_size, error_out=False).items, record_fields)
-            results_wrapper = {'total': DBRecord.query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
+            results_wrapper = {'total': record_query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}
             return marshal(results_wrapper, paginated_record_fields)
-        marshal_records = marshal(DBRecord.query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
-        results_wrapper = {'total': DBRecord.query.count(), 'records': marshal_records, 'current_page': current_page}
+        marshal_records = marshal(record_query.order_by(DBRecord.id.desc()).paginate(current_page, page_size, error_out=False).items, record_fields)
+        results_wrapper = {'total': record_query.count(), 'records': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_record_fields)
 
     def post(self):

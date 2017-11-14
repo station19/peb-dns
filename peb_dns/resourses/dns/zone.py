@@ -49,8 +49,22 @@ class DNSZoneList(Resource):
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
 
-        marshal_records = marshal(DBZone.query.order_by(DBZone.id.desc()).paginate(current_page, page_size, error_out=False).items, zone_fields)
-        results_wrapper = {'total': DBZone.query.count(), 'zones': marshal_records, 'current_page': current_page}
+        id = args.get('id', type=int)
+        name = args.get('name', type=str)
+        zone_group = args.get('zone_group', type=int)
+        zone_type = args.get('zone_type', type=str)
+        zone_query = DBZone.query
+        if id:
+            zone_query = zone_query.filter_by(id=id)
+        if name:
+            zone_query = zone_query.filter_by(name=name)
+        if zone_group:
+            zone_query = zone_query.filter_by(zone_group=zone_group)
+        if zone_type:
+            zone_query = zone_query.filter_by(zone_type=zone_type)
+
+        marshal_records = marshal(zone_query.order_by(DBZone.id.desc()).paginate(current_page, page_size, error_out=False).items, zone_fields)
+        results_wrapper = {'total': zone_query.count(), 'zones': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_zone_fields)
 
     def post(self):

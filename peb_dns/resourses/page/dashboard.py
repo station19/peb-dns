@@ -58,5 +58,3 @@ class DNSServerStatus(Resource):
         return current_server.get_server_status()
 
 
-
-

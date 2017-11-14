@@ -40,15 +40,23 @@ class DNSViewList(Resource):
         zone_id = args.get('zone_id', type=int)
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
+
+        id = args.get('id', type=int)
+        name = args.get('name', type=str)
+        view_query = DBView.query
+        if id:
+            view_query = view_query.filter_by(id=id)
+        if name:
+            view_query = view_query.filter_by(name=name)
         if zone_id:
-            related_view_query = db.session.query(DBView).join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
+            view_query = view_query.join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
                 .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
                 .filter(DBZone.id == int(zone_id))
-            marshal_records = marshal(related_view_query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
-            results_wrapper = {'total': DBView.query.count(), 'views': marshal_records, 'current_page': current_page}
+            marshal_records = marshal(view_query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
+            results_wrapper = {'total': view_query.count(), 'views': marshal_records, 'current_page': current_page}
             return marshal(results_wrapper, paginated_view_fields)
-        marshal_records = marshal(DBView.query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
-        results_wrapper = {'total': DBView.query.count(), 'views': marshal_records, 'current_page': current_page}
+        marshal_records = marshal(view_query.order_by(DBView.id.desc()).paginate(current_page, page_size, error_out=False).items, view_fields)
+        results_wrapper = {'total': view_query.count(), 'views': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_view_fields)
 
     def post(self):

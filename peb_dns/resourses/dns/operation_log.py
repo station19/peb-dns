@@ -35,13 +35,31 @@ class DNSOperationLogList(Resource):
 
     def get(self):
         args = request.args
-        current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 10, type=int)
+        current_page = args.get('currentPage', 1, type=int)
+        page_size = args.get('pageSize', 10, type=int)
 
-        marshal_records = marshal(DBOperationLog.query
+        id = args.get('id', type=int)
+        operation_type = args.get('operation_type', type=str)
+        operator = args.get('operator', type=str)
+        target_type = args.get('target_type', type=str)
+        target_name = args.get('target_name', type=str)
+        oplog_query = DBOperationLog.query
+        if id:
+            oplog_query = oplog_query.filter_by(id=id)
+        if operation_type:
+            oplog_query = oplog_query.filter_by(operation_type=operation_type)
+        if operator:
+            oplog_query = oplog_query.filter_by(operator=operator)
+        if target_type:
+            oplog_query = oplog_query.filter_by(target_type=target_type)
+        if target_name:
+            oplog_query = oplog_query.filter_by(target_name=target_name)
+
+
+        marshal_records = marshal(oplog_query
                     .order_by(DBOperationLog.id.desc())
                     .paginate(current_page, page_size, error_out=False).items, log_fields)
-        results_wrapper = {'total': DBOperationLog.query.count(), 
+        results_wrapper = {'total': oplog_query.count(), 
                            'operation_logs': marshal_records, 
                            'current_page': current_page}
         return marshal(results_wrapper, paginated_log_fields)

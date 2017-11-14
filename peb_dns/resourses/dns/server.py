@@ -53,8 +53,25 @@ class DNSServerList(Resource):
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
 
-        marshal_records = marshal(DBDNSServer.query.order_by(DBDNSServer.id.desc()).paginate(current_page, page_size, error_out=False).items, server_fields)
-        results_wrapper = {'total': DBDNSServer.query.count(), 'servers': marshal_records, 'current_page': current_page}
+        id = args.get('id', type=int)
+        host = args.get('host', type=str)
+        ip = args.get('ip', type=str)
+        env = args.get('env', type=str)
+        dns_server_type = args.get('dns_server_type', type=str)
+        server_query = DBDNSServer.query
+        if id:
+            server_query = server_query.filter_by(id=id)
+        if host:
+            server_query = server_query.filter_by(host=host)
+        if ip:
+            server_query = server_query.filter_by(ip=ip)
+        if env:
+            server_query = server_query.filter_by(env=env)
+        if dns_server_type:
+            server_query = server_query.filter_by(dns_server_type=dns_server_type)
+
+        marshal_records = marshal(server_query.order_by(DBDNSServer.id.desc()).paginate(current_page, page_size, error_out=False).items, server_fields)
+        results_wrapper = {'total': server_query.count(), 'servers': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_server_fields)
 
     def post(self):
