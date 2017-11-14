@@ -16,14 +16,14 @@ RESOURCE_TYPE_MAPPING = {
 class DBUser(db.Model):
     __tablename__ = 'account_user'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), unique=True, index=True)
+    email = db.Column(db.String(64), default='', unique=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    chinese_name = db.Column(db.String(64))
-    cellphone = db.Column(db.String(64))
+    chinese_name = db.Column(db.String(64), default='')
+    cellphone = db.Column(db.String(64), default='')
     actived = db.Column(db.Boolean, default=False)
-    position = db.Column(db.String(64))
-    location = db.Column(db.String(64))
-    acitve = db.Column(db.Integer)
+    position = db.Column(db.String(64), default='')
+    location = db.Column(db.String(64), default='')
+    acitve = db.Column(db.Integer, default=1)
     member_since = db.Column(db.DateTime(), default=datetime.now)
     last_seen = db.Column(db.DateTime(), default=datetime.now)
 

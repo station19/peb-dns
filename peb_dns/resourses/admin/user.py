@@ -64,11 +64,31 @@ class UserList(Resource):
 
     def get(self):
         args = request.args
-        current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 10, type=int)
+        current_page = args.get('currentPage', 1, type=int)
+        page_size = args.get('pageSize', 10, type=int)
 
-        marshal_records = marshal(DBUser.query.order_by(DBUser.id.desc()).paginate(current_page, page_size, error_out=False).items, user_fields)
-        results_wrapper = {'total': DBUser.query.count(), 'users': marshal_records, 'current_page': current_page}
+
+        id = args.get('id', type=int)
+        email = args.get('email', type=str)
+        username = args.get('username', type=str)
+        chinese_name = args.get('chinese_name', type=str)
+        cellphone = args.get('cellphone', type=str)
+
+        user_query = DBUser.query
+
+        if id:
+            user_query = user_query.filter_by(id=id)
+        if email:
+            user_query = user_query.filter_by(email=email)
+        if username:
+            user_query = user_query.filter_by(username=username)
+        if chinese_name:
+            user_query = user_query.filter_by(chinese_name=chinese_name)
+        if cellphone:
+            user_query = user_query.filter_by(cellphone=cellphone)
+
+        marshal_records = marshal(user_query.order_by(DBUser.id.desc()).paginate(current_page, page_size, error_out=False).items, user_fields)
+        results_wrapper = {'total': user_query.count(), 'users': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_user_fields)
 
 
