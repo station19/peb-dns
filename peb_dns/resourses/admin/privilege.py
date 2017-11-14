@@ -45,11 +45,26 @@ class PrivilegeList(Resource):
 
     def get(self):
         args = request.args
-        current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 10, type=int)
-        role_id = request.args.get('role_id', type=int)
+        current_page = args.get('currentPage', 1, type=int)
+        page_size = args.get('pageSize', 10, type=int)
+        role_id = args.get('role_id', type=int)
 
-        privilege_query = db.session.query(DBPrivilege)
+        id = args.get('id', type=int)
+        name = args.get('name', type=str)
+        operation = args.get('operation', type=int)
+        resource_type = args.get('resource_type', type=int)
+        resource_id = args.get('resource_id', type=int)
+        privilege_query = DBPrivilege.query
+        if id:
+            privilege_query = privilege_query.filter_by(id=id)
+        if name:
+            privilege_query = privilege_query.filter_by(name=name)
+        if operation:
+            privilege_query = privilege_query.filter_by(operation=operation)
+        if resource_type:
+            privilege_query = privilege_query.filter_by(resource_type=resource_type)
+        if resource_id:
+            privilege_query = privilege_query.filter_by(resource_id=resource_id)
         if role_id:
             privilege_query = privilege_query.join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
@@ -59,8 +74,8 @@ class PrivilegeList(Resource):
         results_wrapper = {'total': privilege_query.count(), 'privileges': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_privilege_fields)
 
-    def post(self):
-        
+
+    def post(self):        
         args = dns_privilege_common_parser.parse_args()
         privilege_name = args['name']
         operation = args['operation']

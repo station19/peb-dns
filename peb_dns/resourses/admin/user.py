@@ -67,15 +67,12 @@ class UserList(Resource):
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
 
-
         id = args.get('id', type=int)
         email = args.get('email', type=str)
         username = args.get('username', type=str)
         chinese_name = args.get('chinese_name', type=str)
         cellphone = args.get('cellphone', type=str)
-
         user_query = DBUser.query
-
         if id:
             user_query = user_query.filter_by(id=id)
         if email:

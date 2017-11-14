@@ -58,11 +58,17 @@ class RoleList(Resource):
     # @marshal_with(role_fields, envelope='roles')
     def get(self):
         args = request.args
-        current_page = request.args.get('currentPage', 1, type=int)
-        page_size = request.args.get('pageSize', 10, type=int)
-        user_id = request.args.get('user_id', type=int)
+        current_page = args.get('currentPage', 1, type=int)
+        page_size = args.get('pageSize', 10, type=int)
+        user_id = args.get('user_id', type=int)
 
-        role_query = db.session.query(DBRole)
+        id = args.get('id', type=int)
+        name = args.get('name', type=str)
+        role_query = DBRole.query
+        if id:
+            role_query = role_query.filter_by(id=id)
+        if name:
+            role_query = role_query.filter_by(name=name)
         if user_id:
             role_query = role_query.join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
                 .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
