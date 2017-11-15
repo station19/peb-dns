@@ -319,16 +319,6 @@ class DBRecord(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
-    def __init__(self, **kwargs):
-        super(DBRecord, self).__init__(**kwargs)
-        self._create_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create'
-        self._modify_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Modify'
-        self._delete_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Remove'
-        self._body_info = {
-            "login_token": current_app.config.get('DNSPOD_TOKEN'), 
-            "format": current_app.config.get('DNSPOD_DATA_FORMAT')
-            }
-
     @property
     def can_update(self):
         return g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, self.zone_id)
@@ -345,6 +335,7 @@ class DBRecord(db.Model):
                 ).all()
             self._make_record(current_zone.name, record_list)
         else:
+            create_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create'
             dnspod_data = {
                 'domain': current_zone.name, 
                 'sub_domain':args['host'], 
@@ -353,7 +344,7 @@ class DBRecord(db.Model):
                 'value':args['value'], 
                 'ttl':args['ttl']
                 }
-            self._do_dnspod(self._create_url, dnspod_data)
+            self._do_dnspod(create_url, dnspod_data)
 
     def update(self, current_zone, args):
         if current_zone.zone_group in [1, 2]:
@@ -364,6 +355,7 @@ class DBRecord(db.Model):
                 ).all()
             self._make_record(current_zone.name, record_list)
         else:
+            modify_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Modify'
             dnspod_data = {
                 'domain': current_zone.name, 
                 'record_id': self.outter_record_id, 
@@ -373,7 +365,7 @@ class DBRecord(db.Model):
                 'value':args['value'], 
                 'ttl':args['ttl']
                 }
-            self._do_dnspod(self._modify_url, dnspod_data)
+            self._do_dnspod(modify_url, dnspod_data)
 
     def delete(self, current_zone):
         if current_zone.zone_group in [1, 2]:
@@ -384,11 +376,12 @@ class DBRecord(db.Model):
                 ).all()
             self._make_record(current_zone.name, record_list)
         else:
+            delete_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Remove'
             dnspod_data = {
                 'domain': current_zone.name, 
                 'record_id': self.outter_record_id
                 }
-            self._do_dnspod(self._delete_url, dnspod_data)
+            self._do_dnspod(delete_url, dnspod_data)
 
     def _make_record(self, zone_name, record_list):
         etcd_client = getETCDclient()
@@ -404,11 +397,15 @@ class DBRecord(db.Model):
         time.sleep(0.2)
 
     def _do_dnspod(self, url, data):
-        res = requests.post(url, data=dict(self._body_info, **data))
+        body_info = {
+            "login_token": current_app.config.get('DNSPOD_TOKEN'), 
+            "format": current_app.config.get('DNSPOD_DATA_FORMAT')
+            }
+        res = requests.post(url, data=dict(body_info, **data))
         if res.status_code == 200:
             res_json = res.json()
             if res_json.get('status').get('code') == '1':
-                if self._create_url == url:
+                if current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create' == url:
                     self.outter_record_id = res_json.get('record').get('id')
                     db.session.add(self)
                     return
