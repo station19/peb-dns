@@ -234,7 +234,6 @@ class DNSRecord(Resource):
                     同样的View 的记录只能存在一个。'), 400
         try:
             self._update_record(current_zone, current_record, args)
-            current_record.update(current_zone, args)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
@@ -254,7 +253,6 @@ class DNSRecord(Resource):
                 error='无权限！您无权限删除当前Zone下的Record！'), 403
         try:
             self._delete_record(current_zone, current_record)
-            current_record.delete(current_zone)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
