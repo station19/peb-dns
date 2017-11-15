@@ -411,6 +411,7 @@ class DBRecord(db.Model):
                 if self._create_url == url:
                     self.outter_record_id = res_json.get('record').get('id')
                     db.session.add(self)
+                    return
             raise Exception(str(res_json))
         raise Exception(str(res_json))
 
