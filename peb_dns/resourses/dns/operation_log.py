@@ -26,7 +26,6 @@ paginated_log_fields = {
 }
 
 class DNSOperationLogList(Resource):
-
     method_decorators = [token_required] 
 
     def __init__(self):
@@ -54,19 +53,21 @@ class DNSOperationLogList(Resource):
             oplog_query = oplog_query.filter_by(target_type=target_type)
         if target_name is not None:
             oplog_query = oplog_query.filter_by(target_name=target_name)
-
-
-        marshal_records = marshal(oplog_query
-                    .order_by(DBOperationLog.id.desc())
-                    .paginate(current_page, page_size, error_out=False).items, log_fields)
-        results_wrapper = {'total': oplog_query.count(), 
-                           'operation_logs': marshal_records, 
-                           'current_page': current_page}
+        marshal_records = marshal(
+                    oplog_query.order_by(DBOperationLog.id.desc()).paginate(
+                        current_page, 
+                        page_size, 
+                        error_out=False).items, log_fields
+                    )
+        results_wrapper = {
+            'total': oplog_query.count(), 
+            'operation_logs': marshal_records, 
+            'current_page': current_page
+            }
         return marshal(results_wrapper, paginated_log_fields)
 
 
 class DNSOperationLog(Resource):
-
     method_decorators = [token_required] 
 
     def __init__(self):

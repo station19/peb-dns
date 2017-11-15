@@ -11,12 +11,6 @@ import json
 import copy
 from datetime import datetime
 from collections import OrderedDict
-# current_app._get_current_object()
-
-# from peb_dns.models.dns import DBDNSServer
-# from peb_dns.common.decorators import token_required
-# from peb_dns import db
-
 
 
 ZONE_GROUP_MAPPING = {
@@ -28,7 +22,10 @@ ZONE_GROUP_MAPPING = {
 
 #获取ETCD客户端
 def getETCDclient():
-    client = etcd.Client(host=current_app.config.get('ETCD_SERVER_HOST'), port=current_app.config.get('ETCD_SERVER_PORT'))
+    client = etcd.Client(
+        host=current_app.config.get('ETCD_SERVER_HOST'), 
+        port=current_app.config.get('ETCD_SERVER_PORT')
+        )
     try:
         client.read(current_app.config.get('BIND_CONF'))
     except etcd.EtcdKeyNotFound:
@@ -139,12 +136,18 @@ def doCMDWithOutput(cmd, time_out = None):
 
 
 class DNSPod(object):
-
     @staticmethod
     def getDNSPodLines(domain):
-        body_info = {"login_token": current_app.config.get('DNSPOD_TOKEN'), "format": current_app.config.get('DNSPOD_DATA_FORMAT'), "domain": domain}
+        body_info = {
+            "login_token": current_app.config.get('DNSPOD_TOKEN'), 
+            "format": current_app.config.get('DNSPOD_DATA_FORMAT'), 
+            "domain": domain
+            }
         try:
-            res = requests.post(current_app.config.get('DNSPOD_LINE_URL'), data=body_info)
+            res = requests.post(
+                current_app.config.get('DNSPOD_LINE_URL'),
+                data=body_info
+                )
         except Exception as e:
             return []
         if res.status_code >= 200 and res.status_code <= 220:
@@ -153,16 +156,21 @@ class DNSPod(object):
 
     @staticmethod
     def getDNSPodTypes(domain):
-        body_info = {"login_token": current_app.config.get('DNSPOD_TOKEN'), "format": current_app.config.get('DNSPOD_DATA_FORMAT'), "domain": domain}
+        body_info = {
+            "login_token": current_app.config.get('DNSPOD_TOKEN'), 
+            "format": current_app.config.get('DNSPOD_DATA_FORMAT'), 
+            "domain": domain
+            }
         try:
-            res = requests.post(current_app.config.get('DNSPOD_TYPE_URL'), data=body_info)
+            res = requests.post(
+                current_app.config.get('DNSPOD_TYPE_URL'), 
+                data=body_info
+                )
         except Exception as e:
             return []
         if res.status_code >= 200 and res.status_code <= 220:
             return res.json()['lines']
         return []
-
-
 
 
 class ZBapi(object):
@@ -191,13 +199,11 @@ class ZBapi(object):
         authid = json.loads(r.text).get("result")
         return authid
 
-
     def _configure_post_data(self, zb_post_data, itemid, history):
         zb_post_data['auth'] = self._get_authid()
         zb_post_data['params']['itemids'] = itemid
         zb_post_data['params']['history'] = history
         return zb_post_data
-
 
     def _get_server_status_by_itemid(self, itemid):
         zb_data_default = copy.deepcopy(current_app.config.get('ZABBIX_POST_DATA'))
@@ -210,7 +216,6 @@ class ZBapi(object):
         if result:
             return result[0].get('value')
         return '0'
-
 
     def _get_resolve_rate_by_itemid(self, itemid, limit_num):
 
@@ -241,18 +246,13 @@ class ZBapi(object):
             for ss in resolving_slot:
                 resolving_slot_amount += int(ss['value'])
             results_dct[time_flag_str] = resolving_slot_amount
-        
         return {'name':self._server.host, 'data':results_dct}
-
 
     def get_server_status(self):
         # itemids = [self._server.zb_process_itemid, self._server.zb_port_itemid, self._server.zb_resolve_itemid]
-
         return {'process':self._get_server_status_by_itemid(self._server.zb_process_itemid),
                 'port':self._get_server_status_by_itemid(self._server.zb_port_itemid),
-                'resolve':self._get_server_status_by_itemid(self._server.zb_resolve_itemid)
-            }
-
+                'resolve':self._get_server_status_by_itemid(self._server.zb_resolve_itemid)}
 
     def get_resolve_rate(self, start_time, end_time):
         # time_slot = (end_time - start_time)/11

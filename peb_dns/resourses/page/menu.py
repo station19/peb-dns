@@ -33,17 +33,26 @@ class MenuSidebar(Resource):
 
     def _get_zones(self):
         zone_query = db.session.query(DBZone) \
-            .join(DBPrivilege, and_(DBZone.id == DBPrivilege.resource_id, DBPrivilege.resource_type == ResourceType.ZONE, DBPrivilege.operation == Operation.ACCESS)) \
-            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
+            .join(DBPrivilege, and_(
+                DBZone.id == DBPrivilege.resource_id, 
+                DBPrivilege.resource_type == ResourceType.ZONE, 
+                DBPrivilege.operation == Operation.ACCESS
+                )) \
+            .join(DBRolePrivilege, and_(
+                DBPrivilege.id == DBRolePrivilege.privilege_id
+                )) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == g.current_user.id)
 
         # print(zone_query.all())
-        inner_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 1).all()]
-        intercepted_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 2).all()]
-        outter_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} for zone in zone_query.filter(DBZone.zone_group == 0).all()]
+        inner_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} 
+                for zone in zone_query.filter(DBZone.zone_group == 1).all()]
+        intercepted_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} 
+                for zone in zone_query.filter(DBZone.zone_group == 2).all()]
+        outter_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} 
+                for zone in zone_query.filter(DBZone.zone_group == 0).all()]
         print(inner_zones, intercepted_zones, outter_zones)
 
         zone_groups = {'menu' : 

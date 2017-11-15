@@ -10,17 +10,11 @@ from peb_dns import db
 
 
 class AuthLDAP(Resource):
-
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('username', type = str, location = 'json')
         self.reqparse.add_argument('password', type = str, location = 'json')
         super(AuthLDAP, self).__init__()
-
-
-    def get(self):
-        return { 'message' : "哈哈哈哈哈哈" }, 200
-
 
     def post(self):
         args = self.reqparse.parse_args()
@@ -28,31 +22,45 @@ class AuthLDAP(Resource):
         if self._auth_via_ldap(username, password):
             user = DBUser.query.filter_by(username=username).first()
             if user is not None :
-                token = jwt.encode({'user' : user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
-                print(user.to_json())
-                return { 'token' : token.decode('UTF-8'), 'user_info': user.to_json()}, 200
-
+                token = jwt.encode({
+                    'user' : user.username, 
+                    'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
+                    }, current_app.config['SECRET_KEY'])
+                return {
+                    'token' : token.decode('UTF-8'), 
+                    'user_info': user.to_json()
+                    }, 200
             new_user = DBUser(username=username)
             db.session.add(new_user)
             db.session.commit()
-            token = jwt.encode({'user' : new_user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
-            return { 'token' : token.decode('UTF-8'), 'user_info': new_user.to_json()}, 200
-
+            token = jwt.encode({
+                'user' : new_user.username,
+                'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
+                }, current_app.config['SECRET_KEY'])
+            return {
+                'token' : token.decode('UTF-8'),
+                'user_info': new_user.to_json()
+                }, 200
         return { 'message' : "认证失败！"}, 401
-
 
     def _auth_via_ldap(self, username, passwd):
         try:
-            server = LDAPServer(current_app.config.get('LDAP_SERVER'), port=int(current_app.config.get('LDAP_SERVER_PORT')), use_ssl=True, get_info=ALL)
-            _connection = Connection(server, 'cn=' + username + current_app.config.get('LDAP_CONFIG'), passwd, auto_bind=True)
+            server = LDAPServer(
+                current_app.config.get('LDAP_SERVER'), 
+                port=int(current_app.config.get('LDAP_SERVER_PORT')
+                ), use_ssl=True, get_info=ALL)
+            _connection = Connection(
+                server, 
+                'cn=' + username + current_app.config.get('LDAP_CONFIG'), 
+                passwd, 
+                auto_bind=True
+                )
         except Exception as e:
             return False
         return True
 
 
-
 class AuthLocal(Resource):
-
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('username', type = str, location = 'json')
@@ -67,8 +75,10 @@ class AuthLocal(Resource):
             return { 'message' : "认证失败！" }, 401
         if auth_user.verify_password(args['password']) :
             return { 'message' : "认证失败！" }, 401
-        token = jwt.encode({'user' : auth_user.username, 'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)}, current_app.config['SECRET_KEY'])
-
+        token = jwt.encode({
+            'user' : auth_user.username, 
+            'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
+            }, current_app.config['SECRET_KEY'])
         return {'token':token, 'user_info': auth_user.to_json()}, 200
 
 
