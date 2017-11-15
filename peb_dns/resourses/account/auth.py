@@ -8,7 +8,6 @@ from peb_dns.models.account import DBUser, DBLocalAuth
 from peb_dns import db
 
 
-
 class AuthLDAP(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()

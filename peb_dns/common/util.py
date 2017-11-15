@@ -34,7 +34,8 @@ def getETCDclient():
     try:
         client.read(current_app.config.get('VIEW_DEFINE_CONF'))
     except etcd.EtcdKeyNotFound:
-        client.write(current_app.config.get('VIEW_DEFINE_CONF'), '', prevExist=False)
+        client.write(current_app.config.get('VIEW_DEFINE_CONF'), 
+                    '', prevExist=False)
     return client
 
 
@@ -43,7 +44,8 @@ def getLogger(log_path):
     logger = logging.getLogger('DNS')
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(log_path)
-    formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
+    formatter = logging.Formatter(
+                '[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
     fh.setFormatter(formatter)
     logger.addHandler(fh)
     return logger
@@ -75,7 +77,6 @@ def killProcesses(ppid=None):
                 return False
 
 
-
 DEFAULT_CMD_TIMEOUT = 1200
 def doCMDWithOutput(cmd, time_out = None):
     if time_out is None:
@@ -85,8 +86,8 @@ def doCMDWithOutput(cmd, time_out = None):
     output = []
     cmd_return_code = 1
     cmd_proc = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-
+        cmd, stdout=subprocess.PIPE, 
+        stderr=subprocess.STDOUT, shell=True)
     while True:
         output_line = cmd_proc.stdout.readline().decode().strip("\r\n")
         cmd_return_code = cmd_proc.poll()
@@ -94,12 +95,9 @@ def doCMDWithOutput(cmd, time_out = None):
         if cmd_return_code is None:
             if elapsed_time >= time_out:
                 killProcesses(ppid=cmd_proc.pid)
-                # LOG.error("Timeout to exe CMD")
                 return False
         elif output_line == '' and cmd_return_code is not None:
             break
-
-        # sys.stdout.write("%s\n" % output_line)
         sys.stdout.flush()
         if output_line.strip() != '':
             output.append(output_line)
@@ -191,9 +189,9 @@ class ZBapi(object):
             "id": 1,
             "auth":None
         }
-
         try:
-            r = requests.post(self._url, data=json.dumps(data), headers=self._header, timeout=10)
+            r = requests.post(self._url, 
+                    data=json.dumps(data), headers=self._header, timeout=10)
         except Exception as e:
             raise e
         authid = json.loads(r.text).get("result")
@@ -206,10 +204,13 @@ class ZBapi(object):
         return zb_post_data
 
     def _get_server_status_by_itemid(self, itemid):
-        zb_data_default = copy.deepcopy(current_app.config.get('ZABBIX_POST_DATA'))
+        zb_data_default = copy.deepcopy(
+                        current_app.config.get('ZABBIX_POST_DATA'))
         zb_post_data = self._configure_post_data(zb_data_default, itemid, 3)
         try:
-            r = requests.post(self._url, data=json.dumps(zb_post_data), headers=self._header, timeout=10)
+            r = requests.post(self._url, 
+                    data=json.dumps(zb_post_data), 
+                    headers=self._header, timeout=10)
         except Exception as e:
             raise e
         result = json.loads(r.text).get("result")
@@ -218,27 +219,23 @@ class ZBapi(object):
         return '0'
 
     def _get_resolve_rate_by_itemid(self, itemid, limit_num):
-
         time_slot_minutes = int(limit_num/self._num)
         all_num = time_slot_minutes * (self._num + 1)
-
         zb_data_default = copy.deepcopy(current_app.config.get('ZABBIX_POST_DATA'))
         zb_post_data = self._configure_post_data(zb_data_default, itemid, 3)
         zb_post_data['params']['limit'] = all_num
         try:
-            r = requests.post(self._url, data=json.dumps(zb_post_data), headers=self._header, timeout=10)
+            r = requests.post(self._url, 
+                    data=json.dumps(zb_post_data), 
+                    headers=self._header, timeout=10)
         except Exception as e:
             raise e
         results = json.loads(r.text).get("result")
-        # print('xxxxx --- ' + str(len(results)))
         results_dct = OrderedDict()
         for i in range(self._num + 1):
             end = time_slot_minutes*(i+1)
             if i >= self._num:
                 end = time_slot_minutes*(i+1) - 1
-            # print(len(results))
-            # print(end)
-            # print(time_slot_minutes*i, end)
             resolving_slot = results[time_slot_minutes*i : end]
             time_flag = results[end]['clock']
             time_flag_str = datetime.fromtimestamp(int(time_flag)).strftime("%m-%d %H:%M")
@@ -249,7 +246,6 @@ class ZBapi(object):
         return {'name':self._server.host, 'data':results_dct}
 
     def get_server_status(self):
-        # itemids = [self._server.zb_process_itemid, self._server.zb_port_itemid, self._server.zb_resolve_itemid]
         return {'process':self._get_server_status_by_itemid(self._server.zb_process_itemid),
                 'port':self._get_server_status_by_itemid(self._server.zb_port_itemid),
                 'resolve':self._get_server_status_by_itemid(self._server.zb_resolve_itemid)}
@@ -260,6 +256,7 @@ class ZBapi(object):
         total_minutes = time_slot.total_seconds()/60
         time_slot_minutes = int(total_minutes/self._num)
         # dns_servers = Server.query.all()  
-        return self._get_resolve_rate_by_itemid(self._server.zb_resolve_rate_itemid, total_minutes)
+        return self._get_resolve_rate_by_itemid(
+                        self._server.zb_resolve_rate_itemid, total_minutes)
 
 

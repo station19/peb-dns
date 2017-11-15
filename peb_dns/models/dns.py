@@ -30,14 +30,14 @@ class DBView(db.Model):
 
     def __init__(self, **kwargs):
         super(DBView, self).__init__(**kwargs)
-        # self.zone_name_list = [v.name for v in self.zones]
 
     def __repr__(self):
         return '<DBView %r>' % self.name
 
     @property
     def zones(self):
-        related_zones = db.session.query(DBZone).join(DBViewZone, and_(DBViewZone.zone_id == DBZone.id)) \
+        related_zones = db.session.query(DBZone).join(
+            DBViewZone, and_(DBViewZone.zone_id == DBZone.id)) \
             .join(DBView, and_(DBView.id == DBViewZone.view_id)) \
             .filter(DBView.id == self.id).all()
         if not related_zones:
@@ -60,39 +60,44 @@ class DBView(db.Model):
 
     @property
     def can_update(self):
-        return g.current_user.can_do(Operation.UPDATE, ResourceType.VIEW, self.id)
+        return g.current_user.can_do(
+                Operation.UPDATE, ResourceType.VIEW, self.id)
 
     @property
     def can_delete(self):
-        return g.current_user.can_do(Operation.DELETE, ResourceType.VIEW, self.id)
+        return g.current_user.can_do(
+                Operation.DELETE, ResourceType.VIEW, self.id)
 
     def make_view(self, action, view_list):
         prevExist = True
         if action == 'create':
             prevExist = False
-
         etcd_client = getETCDclient()
-
         if action == 'del':
             view_base_dir = current_app.config.get('ETCD_BASE_DIR') + self.name
             etcd_client.delete(view_base_dir, recursive=True)
             time.sleep(0.2)
             return
-
         if action == 'create':
             view_zone_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/view.conf'
-            view_zone_conf_content = Template(current_app.config.get('VIEW_TEMPLATE')).render(view_name=self.name)
+            view_zone_conf_content = Template(
+                        current_app.config.get('VIEW_TEMPLATE')).render(view_name=self.name)
             etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=prevExist)
             time.sleep(0.2)   #连续几个提交速度过快，etcd server检测不到提交
 
-            view_define_conf_content = Template(current_app.config.get('VIEW_DEFINE_TEMPLATE')).render(view_list=view_list)
-            print(current_app.config.get('VIEW_DEFINE_CONF'))
-            print(view_define_conf_content)
-            etcd_client.write(current_app.config.get('VIEW_DEFINE_CONF'), view_define_conf_content, prevExist=True)
+            view_define_conf_content = Template(
+                current_app.config.get('VIEW_DEFINE_TEMPLATE')).render(view_list=view_list)
+            # print(current_app.config.get('VIEW_DEFINE_CONF'))
+            # print(view_define_conf_content)
+            etcd_client.write(
+                current_app.config.get('VIEW_DEFINE_CONF'), 
+                view_define_conf_content, 
+                prevExist=True)
             time.sleep(0.2)
 
         acl_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/acl.conf'
-        acl_conf_content = Template(current_app.config.get('ACL_TEMPLATE')).render(view_name=self.name, ip_list=self.acl.split())
+        acl_conf_content = Template(current_app.config.get('ACL_TEMPLATE')).render(
+            view_name=self.name, ip_list=self.acl.split())
         etcd_client.write(acl_conf, acl_conf_content, prevExist=prevExist)
         time.sleep(0.2)
 
@@ -150,7 +155,8 @@ class DBZone(db.Model):
 
     @property
     def views(self):
-        related_views = db.session.query(DBView).join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
+        related_views = db.session.query(DBView).join(
+            DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
             .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
             .filter(DBZone.id == self.id).all()
         if not related_views:
@@ -177,10 +183,12 @@ class DBZone(db.Model):
 
     def _create_inner(self):
         for related_view in self.view_name_list:
-            ns_record = DBRecord(host='@', record_type='NS', value='master.'+self.name+'.' , \
-                    ttl='86400', view_name=related_view, creator=g.current_user.username, zone_id=self.id)
+            ns_record = DBRecord(host='@', record_type='NS', value='master.'+self.name+'.' ,
+                    ttl='86400', view_name=related_view, creator=g.current_user.username, 
+                    zone_id=self.id)
             db.session.add(ns_record)
-        zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
+        zone_list = db.session.query(DBZone).filter(
+            or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
         for z_view in self.view_name_list:
             self._make_zone('create', z_view, zone_list, [])
             time.sleep(0.1)
@@ -203,31 +211,45 @@ class DBZone(db.Model):
         pre_views = set(pre_views)
         # 清除当前zone 解除绑定view所对应的record
         del_views = pre_views - current_views
-        del_records = db.session.query(DBRecord).filter(DBRecord.zone_id==self.id, DBRecord.view_name.in_(tuple(del_views))).all()
+        del_records = db.session.query(DBRecord).filter(
+            DBRecord.zone_id==self.id, 
+            DBRecord.view_name.in_(tuple(del_views))
+            ).all()
         for del_record in del_records:
             db.session.delete(del_record)
         # 添加当前zone新增绑定view时候，所对应的默认record （默认host为@的record）
         add_views = current_views - pre_views
         for add_view in add_views:
-            ns_record = DBRecord(host='@', record_type='NS', value='master.'+self.name+'.' , \
-                    ttl='86400', view_name=add_view, creator=g.current_user.username, zone_id=self.id)
+            ns_record = DBRecord(host='@', record_type='NS', 
+                    value='master.'+self.name+'.' , 
+                    ttl='86400', view_name=add_view, 
+                    creator=g.current_user.username, zone_id=self.id)
             db.session.add(ns_record)
         for del_view in del_views:
             self._make_zone('del', del_view, zone_list, [])
         for z_view in current_views:
-            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == self.id, DBRecord.view_name == z_view.strip(), DBRecord.host != '@').all()
+            record_list = db.session.query(DBRecord).filter(
+                DBRecord.zone_id == self.id, 
+                DBRecord.view_name == z_view.strip(), 
+                DBRecord.host != '@'
+                ).all()
             self._make_zone('modify', z_view, zone_list, record_list)
 
     def _modify_outter(self):
         raise Exception('外部域名不支持修改！')
 
     def _del_inner(self):
-        zone_list = db.session.query(DBZone).filter(or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
+        zone_list = db.session.query(DBZone).filter(
+            or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
         for z_view in self.view_name_list:
             self._make_zone('del', z_view, zone_list, [])
 
     def _del_outter(self):
-        res = requests.post(self.__delete_url, data=dict(login_token=current_app.config.get('DNSPOD_TOKEN'), domain=self.name, format=current_app.config.get('DNSPOD_DATA_FORMAT')))
+        res = requests.post(self.__delete_url, data=dict(
+            login_token=current_app.config.get('DNSPOD_TOKEN'), 
+            domain=self.name, 
+            format=current_app.config.get('DNSPOD_DATA_FORMAT'))
+            )
         if res.status_code == 200:
             res_json = res.json()
             if res_json.get('status').get('code') != '1':
@@ -237,33 +259,42 @@ class DBZone(db.Model):
     def _make_zone(self, action, view_name, zone_list, record_list):
         etcd_client = getETCDclient()
         view_zone_conf = current_app.config.get('ETCD_BASE_DIR') + view_name + '/view.conf'
-        # copy_zone_list = zone_list[:]
         if action == 'del':
             bind_zones = []
             for zz in zone_list:
                 if view_name in self.view_name_list and zz.name != self.name :
                     bind_zones.append(zz)
-            view_zone_conf_content = Template(current_app.config.get('ZONE_TEMPLATE')).render(view_name=view_name, zone_list=bind_zones)
+            view_zone_conf_content = Template(
+                current_app.config.get('ZONE_TEMPLATE')).render(
+                view_name=view_name, zone_list=bind_zones)
         else:
             bind_zones = []
             for zz in zone_list:
                 if view_name in self.view_name_list:
                     bind_zones.append(zz)
-            view_zone_conf_content = Template(current_app.config.get('ZONE_TEMPLATE')).render(view_name=view_name, zone_list=bind_zones)
+            view_zone_conf_content = Template(current_app.config.get('ZONE_TEMPLATE')).render(
+                view_name=view_name, zone_list=bind_zones)
         etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=True)
         time.sleep(0.2)
         # view_zone_confiig 文件操作
         # forward only类型的zone，不生成 zone.xx.xx 文件
         # 修改zone不需要更改zone.xx.xx 文件
         if self.zone_type != 'forward only':
-            zone_record_conf = current_app.config.get('ZONE_BASE_DIR') + view_name + '/zone.' + self.name
+            zone_record_conf = current_app.config.get('ZONE_BASE_DIR') + \
+                    view_name + '/zone.' + self.name
             if action == 'create' or action == 'modify':
-                zone_record_conf_content = Template(current_app.config.get('RECORD_TEMPLATE')).render(zone_name=self.name, record_list=record_list)
+                zone_record_conf_content = Template(
+                    current_app.config.get('RECORD_TEMPLATE')).render(
+                    zone_name=self.name, record_list=record_list)
                 try:
-                    etcd_client.write(zone_record_conf, zone_record_conf_content, prevExist=True)
+                    etcd_client.write(
+                        zone_record_conf, zone_record_conf_content, prevExist=True)
                 except etcd.EtcdKeyNotFound:
-                    zone_record_conf_content = Template(current_app.config.get('RECORD_TEMPLATE')).render(zone_name=self.name, record_list=[])
-                    etcd_client.write(zone_record_conf, zone_record_conf_content, prevExist=False)
+                    zone_record_conf_content = Template(
+                        current_app.config.get('RECORD_TEMPLATE')).render(
+                        zone_name=self.name, record_list=[])
+                    etcd_client.write(
+                        zone_record_conf, zone_record_conf_content, prevExist=False)
                 time.sleep(0.2)
             if action == 'del':
                 etcd_client.delete(zone_record_conf)
@@ -283,6 +314,7 @@ class DBRecord(db.Model):
     status = db.Column(db.String(64), default='enabled')
     enabled = db.Column(db.String(64), default='1')
     alive = db.Column(db.String(64), default='ON')
+    outter_record_id = db.Column(db.String(64), default='')
     zone_id = db.Column(db.Integer, index=True)
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
@@ -292,7 +324,10 @@ class DBRecord(db.Model):
         self._create_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create'
         self._modify_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Modify'
         self._delete_url = current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Remove'
-        self._body_info = {"login_token": current_app.config.get('DNSPOD_TOKEN'), "format": current_app.config.get('DNSPOD_DATA_FORMAT')}
+        self._body_info = {
+            "login_token": current_app.config.get('DNSPOD_TOKEN'), 
+            "format": current_app.config.get('DNSPOD_DATA_FORMAT')
+            }
 
     @property
     def can_update(self):
@@ -304,36 +339,68 @@ class DBRecord(db.Model):
 
     def create(self, current_zone, args):
         if current_zone.zone_group in [1, 2]:
-            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
+            record_list = db.session.query(DBRecord).filter(
+                DBRecord.zone_id == args['zone_id'], 
+                DBRecord.view_name == args['view_name'], DBRecord.host != '@'
+                ).all()
             self._make_record(current_zone.name, record_list)
         else:
-            dnspod_data = {'domain': current_zone.name, 'sub_domain':args['host'], 'record_type':args['record_type'],\
-                    'record_line':args['view_name'], 'value':args['value'], 'ttl':args['ttl']}
+            dnspod_data = {
+                'domain': current_zone.name, 
+                'sub_domain':args['host'], 
+                'record_type':args['record_type'],
+                'record_line':args['view_name'], 
+                'value':args['value'], 
+                'ttl':args['ttl']
+                }
             self._do_dnspod(self._create_url, dnspod_data)
-
 
     def update(self, current_zone, args):
         if current_zone.zone_group in [1, 2]:
-            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == args['zone_id'], DBRecord.view_name == args['view_name'], DBRecord.host != '@').all()
+            record_list = db.session.query(DBRecord).filter(
+                DBRecord.zone_id == args['zone_id'], 
+                DBRecord.view_name == args['view_name'], 
+                DBRecord.host != '@'
+                ).all()
             self._make_record(current_zone.name, record_list)
         else:
-            dnspod_data = {'domain': current_zone.name, 'record_id':self.id, 'sub_domain':args['host'], 'record_type':args['record_type'],\
-                    'record_line':args['view_name'], 'value':args['value'], 'ttl':args['ttl']}
+            dnspod_data = {
+                'domain': current_zone.name, 
+                'record_id': self.outter_record_id, 
+                'sub_domain':args['host'], 
+                'record_type':args['record_type'],
+                'record_line':args['view_name'], 
+                'value':args['value'], 
+                'ttl':args['ttl']
+                }
             self._do_dnspod(self._modify_url, dnspod_data)
 
     def delete(self, current_zone):
         if current_zone.zone_group in [1, 2]:
-            record_list = db.session.query(DBRecord).filter(DBRecord.zone_id == self.zone_id, DBRecord.view_name == self.view_name, DBRecord.host != '@').all()
+            record_list = db.session.query(DBRecord).filter(
+                DBRecord.zone_id == self.zone_id, 
+                DBRecord.view_name == self.view_name, 
+                DBRecord.host != '@'
+                ).all()
             self._make_record(current_zone.name, record_list)
         else:
-            dnspod_data = {'domain': current_zone.name, 'record_id':self.id}
+            dnspod_data = {
+                'domain': current_zone.name, 
+                'record_id': self.outter_record_id
+                }
             self._do_dnspod(self._delete_url, dnspod_data)
 
     def _make_record(self, zone_name, record_list):
         etcd_client = getETCDclient()
-        zone_record_conf = current_app.config.get('ZONE_BASE_DIR') + self.view_name + '/zone.' + zone_name
-        zone_record_conf_content = Template(current_app.config.get('RECORD_TEMPLATE')).render(zone_name=zone_name, record_list=record_list)
-        etcd_client.write(zone_record_conf, zone_record_conf_content, prevExist=True)
+        zone_record_conf = current_app.config.get('ZONE_BASE_DIR') + \
+                self.view_name + '/zone.' + zone_name
+        zone_record_conf_content = Template(
+            current_app.config.get('RECORD_TEMPLATE')).render(
+                zone_name=zone_name, 
+                record_list=record_list
+                )
+        etcd_client.write(
+            zone_record_conf, zone_record_conf_content, prevExist=True)
         time.sleep(0.2)
 
     def _do_dnspod(self, url, data):
@@ -341,7 +408,9 @@ class DBRecord(db.Model):
         if res.status_code == 200:
             res_json = res.json()
             if res_json.get('status').get('code') == '1':
-                raise Exception(str(res_json))
+                if self._create_url == url:
+                    self.outter_record_id = res_json.get('record').get('id')
+                    db.session.add(self)
             raise Exception(str(res_json))
         raise Exception(str(res_json))
 
@@ -359,7 +428,6 @@ class DBRecord(db.Model):
         if prefix:
             content = prefix + '\n' + content
         return content
-
 
 class DBDNSServer(db.Model):
     __tablename__ = 'dns_server'
@@ -379,11 +447,13 @@ class DBDNSServer(db.Model):
 
     @property
     def can_update(self):
-        return g.current_user.can_do(Operation.UPDATE, ResourceType.SERVER, self.id)
+        return g.current_user.can_do(
+                    Operation.UPDATE, ResourceType.SERVER, self.id)
 
     @property
     def can_delete(self):
-        return g.current_user.can_do(Operation.DELETE, ResourceType.SERVER, self.id)
+        return g.current_user.can_do(
+                    Operation.DELETE, ResourceType.SERVER, self.id)
 
     def to_json(self):
         json_server = {

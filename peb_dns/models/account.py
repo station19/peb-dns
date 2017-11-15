@@ -27,7 +27,6 @@ class DBUser(db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.now)
     last_seen = db.Column(db.DateTime(), default=datetime.now)
 
-
     def to_json(self):
         json_user = {
             'id': self.id,
@@ -40,10 +39,11 @@ class DBUser(db.Model):
         }
         return json_user
 
-
     def can(self, privilege):
         current_user_privileges = db.session.query(DBPrivilege) \
-            .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id, DBPrivilege.name == privilege)) \
+            .join(DBRolePrivilege, and_(
+                DBPrivilege.id == DBRolePrivilege.privilege_id, 
+                DBPrivilege.name == privilege)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
@@ -54,7 +54,8 @@ class DBUser(db.Model):
         return False
 
     def is_admin(self):
-        admins = db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id, DBRole.name == "admin")) \
+        admins = db.session.query(DBRole).join(
+            DBUserRole, and_(DBUserRole.role_id == DBRole.id, DBRole.name == "admin")) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == self.id).all()
         if admins:
@@ -63,13 +64,15 @@ class DBUser(db.Model):
 
     @property
     def roles(self):
-        return db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+        return db.session.query(DBRole).join(
+            DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == self.id).all()
 
     @property
     def role_ids(self):
-        return [r.id for r in db.session.query(DBRole).join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+        return [r.id for r in db.session.query(DBRole).join(
+            DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == self.id).all()]
 
@@ -82,7 +85,11 @@ class DBUser(db.Model):
     def can_do(self, operation, resource_type, resource_id):
         r = RESOURCE_TYPE_MAPPING.get(resource_type)
         current_user_resources = db.session.query(r) \
-            .join(DBPrivilege, and_(r.id == resource_id, r.id == DBPrivilege.resource_id, DBPrivilege.resource_type == resource_type, DBPrivilege.operation == operation)) \
+            .join(DBPrivilege, and_(
+                r.id == resource_id, 
+                r.id == DBPrivilege.resource_id, 
+                DBPrivilege.resource_type == resource_type, 
+                DBPrivilege.operation == operation)) \
             .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
@@ -129,26 +136,30 @@ class DBRole(db.Model):
 
     @property
     def users(self):
-        return db.session.query(DBUser).join(DBUserRole, and_(DBUserRole.user_id == DBUser.id)) \
+        return db.session.query(DBUser).join(
+            DBUserRole, and_(DBUserRole.user_id == DBUser.id)) \
             .join(DBRole, and_(DBRole.id == DBUserRole.role_id)) \
             .filter(DBRole.id == self.id).all()
 
     @property
     def privileges(self):
-        return db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
+        return db.session.query(DBPrivilege).join(
+            DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .filter(DBRole.id == self.id).all()
 
     @property
     def privilege_ids(self):
-        return [p.id for p in db.session.query(DBPrivilege).join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
+        return [p.id for p in db.session.query(DBPrivilege).join(
+            DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .filter(DBRole.id == self.id).all()]
 
     @privileges.setter
     def privileges(self, privilege_ids):
         for privilege_id in privilege_ids:
-            current_role_new_privilege = DBRolePrivilege(role_id=self.id, privilege_id=privilege_id)
+            current_role_new_privilege = DBRolePrivilege(
+                        role_id=self.id, privilege_id=privilege_id)
             db.session.add(current_role_new_privilege)
 
 
