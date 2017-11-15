@@ -65,11 +65,11 @@ class RoleList(Resource):
         id = args.get('id', type=int)
         name = args.get('name', type=str)
         role_query = DBRole.query
-        if id:
+        if id is not None:
             role_query = role_query.filter_by(id=id)
-        if name:
+        if name is not None:
             role_query = role_query.filter_by(name=name)
-        if user_id:
+        if user_id is not None:
             role_query = role_query.join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
                 .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
                 .filter(DBUser.id == user_id)

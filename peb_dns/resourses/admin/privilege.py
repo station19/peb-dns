@@ -55,17 +55,17 @@ class PrivilegeList(Resource):
         resource_type = args.get('resource_type', type=int)
         resource_id = args.get('resource_id', type=int)
         privilege_query = DBPrivilege.query
-        if id:
+        if id is not None:
             privilege_query = privilege_query.filter_by(id=id)
-        if name:
+        if name is not None:
             privilege_query = privilege_query.filter_by(name=name)
-        if operation:
+        if operation is not None:
             privilege_query = privilege_query.filter_by(operation=operation)
-        if resource_type:
+        if resource_type is not None:
             privilege_query = privilege_query.filter_by(resource_type=resource_type)
-        if resource_id:
+        if resource_id is not None:
             privilege_query = privilege_query.filter_by(resource_id=resource_id)
-        if role_id:
+        if role_id is not None:
             privilege_query = privilege_query.join(DBRolePrivilege, and_(DBRolePrivilege.privilege_id == DBPrivilege.id)) \
             .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
             .filter(DBRole.id == role_id)

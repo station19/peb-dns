@@ -44,15 +44,15 @@ class DNSOperationLogList(Resource):
         target_type = args.get('target_type', type=str)
         target_name = args.get('target_name', type=str)
         oplog_query = DBOperationLog.query
-        if id:
+        if id is not None:
             oplog_query = oplog_query.filter_by(id=id)
-        if operation_type:
+        if operation_type is not None:
             oplog_query = oplog_query.filter_by(operation_type=operation_type)
-        if operator:
+        if operator is not None:
             oplog_query = oplog_query.filter_by(operator=operator)
-        if target_type:
+        if target_type is not None:
             oplog_query = oplog_query.filter_by(target_type=target_type)
-        if target_name:
+        if target_name is not None:
             oplog_query = oplog_query.filter_by(target_name=target_name)
 
 

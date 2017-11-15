@@ -44,11 +44,11 @@ class DNSViewList(Resource):
         id = args.get('id', type=int)
         name = args.get('name', type=str)
         view_query = DBView.query
-        if id:
+        if id is not None:
             view_query = view_query.filter_by(id=id)
-        if name:
+        if name is not None:
             view_query = view_query.filter_by(name=name)
-        if zone_id:
+        if zone_id is not None:
             view_query = view_query.join(DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
                 .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
                 .filter(DBZone.id == int(zone_id))

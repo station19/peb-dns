@@ -62,19 +62,19 @@ class DNSRecordList(Resource):
         view_name = args.get('view_name', type=str)
 
         record_query = DBRecord.query
-        if id:
+        if id is not None:
             record_query = record_query.filter_by(id=id)
-        if host:
+        if host is not None:
             record_query = record_query.filter_by(host=host)
-        if record_type:
+        if record_type is not None:
             record_query = record_query.filter_by(record_type=record_type)
-        if ttl:
+        if ttl is not None:
             record_query = record_query.filter_by(ttl=ttl)
-        if value:
+        if value is not None:
             record_query = record_query.filter_by(value=value)
-        if view_name:
+        if view_name is not None:
             record_query = record_query.filter_by(view_name=view_name)
-        if zone_id:
+        if zone_id is not None:
             marshal_records = marshal(record_query.filter(DBRecord.zone_id==int(zone_id)).order_by(DBRecord.id.desc())\
                     .paginate(current_page, page_size, error_out=False).items, record_fields)
             results_wrapper = {'total': record_query.filter(DBRecord.zone_id==int(zone_id)).count(), 'records': marshal_records, 'current_page': current_page}

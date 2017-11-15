@@ -59,15 +59,15 @@ class DNSServerList(Resource):
         env = args.get('env', type=str)
         dns_server_type = args.get('dns_server_type', type=str)
         server_query = DBDNSServer.query
-        if id:
+        if id is not None:
             server_query = server_query.filter_by(id=id)
-        if host:
+        if host is not None:
             server_query = server_query.filter_by(host=host)
-        if ip:
+        if ip is not None:
             server_query = server_query.filter_by(ip=ip)
-        if env:
+        if env is not None:
             server_query = server_query.filter_by(env=env)
-        if dns_server_type:
+        if dns_server_type is not None:
             server_query = server_query.filter_by(dns_server_type=dns_server_type)
 
         marshal_records = marshal(server_query.order_by(DBDNSServer.id.desc()).paginate(current_page, page_size, error_out=False).items, server_fields)

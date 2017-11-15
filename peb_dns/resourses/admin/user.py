@@ -74,15 +74,15 @@ class UserList(Resource):
         chinese_name = args.get('chinese_name', type=str)
         cellphone = args.get('cellphone', type=str)
         user_query = DBUser.query
-        if id:
+        if id is not None:
             user_query = user_query.filter_by(id=id)
-        if email:
+        if email is not None:
             user_query = user_query.filter_by(email=email)
-        if username:
+        if username is not None:
             user_query = user_query.filter_by(username=username)
-        if chinese_name:
+        if chinese_name is not None:
             user_query = user_query.filter_by(chinese_name=chinese_name)
-        if cellphone:
+        if cellphone is not None:
             user_query = user_query.filter_by(cellphone=cellphone)
 
         marshal_records = marshal(user_query.order_by(DBUser.id.desc()).paginate(current_page, page_size, error_out=False).items, user_fields)

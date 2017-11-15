@@ -54,15 +54,14 @@ class DNSZoneList(Resource):
         zone_group = args.get('zone_group', type=int)
         zone_type = args.get('zone_type', type=str)
         zone_query = DBZone.query
-        if id:
+        if id is not None:
             zone_query = zone_query.filter_by(id=id)
-        if name:
+        if name is not None:
             zone_query = zone_query.filter_by(name=name)
-        if zone_group:
+        if zone_group is not None:
             zone_query = zone_query.filter_by(zone_group=zone_group)
-        if zone_type:
+        if zone_type is not None:
             zone_query = zone_query.filter_by(zone_type=zone_type)
-
         marshal_records = marshal(zone_query.order_by(DBZone.id.desc()).paginate(current_page, page_size, error_out=False).items, zone_fields)
         results_wrapper = {'total': zone_query.count(), 'zones': marshal_records, 'current_page': current_page}
         return marshal(results_wrapper, paginated_zone_fields)
