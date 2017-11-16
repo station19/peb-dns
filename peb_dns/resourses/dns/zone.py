@@ -70,7 +70,19 @@ class DNSZoneList(Resource):
         name = args.get('name', type=str)
         zone_group = args.get('zone_group', type=int)
         zone_type = args.get('zone_type', type=str)
-        zone_query = DBZone.query
+        zone_query = db.session.query(DBZone) \
+            .join(DBPrivilege, and_(
+                DBZone.id == DBPrivilege.resource_id, 
+                DBPrivilege.resource_type == ResourceType.ZONE, 
+                DBPrivilege.operation == Operation.ACCESS
+                )) \
+            .join(DBRolePrivilege, and_(
+                DBPrivilege.id == DBRolePrivilege.privilege_id
+                )) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == g.current_user.id)
         if id is not None:
             zone_query = zone_query.filter_by(id=id)
         if name is not None:
@@ -92,6 +104,9 @@ class DNSZoneList(Resource):
         return marshal(results_wrapper, paginated_zone_fields)
 
     def post(self):
+        if not g.current_user.can_add_zone:
+            return dict(message='Failed', 
+                error='无权限！您无权限添加Zone，请联系管理员。'), 403
         args = dns_zone_common_parser.parse_args()
         view_ids = args['view_ids']
         unique_zone = db.session.query(DBZone).filter(

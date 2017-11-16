@@ -78,6 +78,9 @@ class DNSRecordList(Resource):
     def get(self):
         args = request.args
         zone_id = args.get('zone_id')
+        current_zone = DBZone.query.get(int(zone_id))
+        if not current_zone.can_access:
+            abort(403)
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
         id = args.get('id', type=int)
@@ -86,7 +89,6 @@ class DNSRecordList(Resource):
         ttl = args.get('ttl', type=str)
         value = args.get('value', type=str)
         view_name = args.get('view_name', type=str)
-
         record_query = DBRecord.query
         if id is not None:
             record_query = record_query.filter_by(id=id)
@@ -210,6 +212,9 @@ class DNSRecord(Resource):
         current_record = DBRecord.query.get(record_id)
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
+        if not current_record.zone.can_access:
+            abort(403, message="无权限！您无权访问ID为 {} 的记录！".format(str(record_id)))
+
         return current_record
 
     def put(self, record_id):

@@ -33,6 +33,8 @@ class DNSOperationLogList(Resource):
         super(DNSOperationLogList, self).__init__()
 
     def get(self):
+        if not g.current_user.can_access_log():
+            abort(403)
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)

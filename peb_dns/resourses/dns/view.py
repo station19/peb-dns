@@ -77,6 +77,9 @@ class DNSViewList(Resource):
         return marshal(results_wrapper, paginated_view_fields)
 
     def post(self):
+        if not g.current_user.can_add_view:
+            return dict(message='Failed', 
+                error='无权限！您无权限添加View，请联系管理员。'), 403
         args = dns_view_common_parser.parse_args()
         unique_view = DBView.query.filter_by(name=args['name']).first()
         if unique_view:

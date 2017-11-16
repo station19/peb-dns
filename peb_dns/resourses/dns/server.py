@@ -82,7 +82,19 @@ class DNSServerList(Resource):
         ip = args.get('ip', type=str)
         env = args.get('env', type=str)
         dns_server_type = args.get('dns_server_type', type=str)
-        server_query = DBDNSServer.query
+        server_query = db.session.query(DBDNSServer) \
+            .join(DBPrivilege, and_(
+                DBZone.id == DBPrivilege.resource_id, 
+                DBPrivilege.resource_type == ResourceType.SERVER, 
+                DBPrivilege.operation == Operation.ACCESS
+                )) \
+            .join(DBRolePrivilege, and_(
+                DBPrivilege.id == DBRolePrivilege.privilege_id
+                )) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == g.current_user.id)
         if id is not None:
             server_query = server_query.filter_by(id=id)
         if host is not None:
@@ -107,6 +119,9 @@ class DNSServerList(Resource):
         return marshal(results_wrapper, paginated_server_fields)
 
     def post(self):
+        if not g.current_user.can_add_server:
+            return dict(message='Failed', 
+                error='无权限！您无权限添加Server，请联系管理员。'), 403
         args = dns_server_common_parser.parse_args()
         unique_server = db.session.query(DBDNSServer).filter(
                 or_(DBDNSServer.host==args['host'], DBDNSServer.ip==args['ip'])).all()

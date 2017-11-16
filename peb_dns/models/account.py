@@ -16,7 +16,7 @@ RESOURCE_TYPE_MAPPING = {
 class DBUser(db.Model):
     __tablename__ = 'account_user'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), default='', unique=True)
+    email = db.Column(db.String(64), default='')
     username = db.Column(db.String(64), unique=True, index=True)
     chinese_name = db.Column(db.String(64), default='')
     cellphone = db.Column(db.String(64), default='')
@@ -61,6 +61,21 @@ class DBUser(db.Model):
         if admins:
             return True
         return False
+
+    @property
+    def can_add_server(self):
+        return self.can("SERVER_ADD")
+
+    @property
+    def can_add_view(self):
+        return self.can("VIEW_ADD")
+
+    @property
+    def can_add_zone(self):
+        return self.can("ZONE_ADD")
+
+    def can_access_log(self):
+        return self.can("LOG_PAGE_ACCESS")
 
     @property
     def roles(self):

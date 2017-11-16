@@ -154,6 +154,10 @@ class DBZone(db.Model):
         return g.current_user.can_do(Operation.DELETE, ResourceType.ZONE, self.id)
 
     @property
+    def can_access(self):
+        return g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, self.id)
+
+    @property
     def views(self):
         related_views = db.session.query(DBView).join(
             DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
@@ -321,11 +325,19 @@ class DBRecord(db.Model):
 
     @property
     def can_update(self):
-        return g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, self.zone_id)
+        return g.current_user.can_do(Operation.UPDATE, ResourceType.ZONE, self.zone_id)
 
     @property
     def can_delete(self):
+        return g.current_user.can_do(Operation.DELETE, ResourceType.ZONE, self.zone_id)
+    
+    @property
+    def can_access(self):
         return g.current_user.can_do(Operation.ACCESS, ResourceType.ZONE, self.zone_id)
+
+    @property
+    def zone(self):
+        return DBZone.query.get(self.zone_id)
 
     def create(self, current_zone, args):
         if current_zone.zone_group in [1, 2]:

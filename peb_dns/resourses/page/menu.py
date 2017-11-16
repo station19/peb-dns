@@ -26,7 +26,7 @@ class MenuSidebar(Resource):
         menu_group['menu'].append({'title':'DNS服务器', 'items':None, 'url':'/dns/servers'})
         if g.current_user.is_admin():
             menu_group['menu'].append({'title':'后台管理系统', 'items':None, 'url':'/dns/admin'})
-        if g.current_user.can("LOG_PAGE_ACCESS"):
+        if g.current_user.can_access_log:
             menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
         return dict(menu_group)
 

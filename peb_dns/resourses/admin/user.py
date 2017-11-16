@@ -38,6 +38,23 @@ user_fields = {
 }
 
 
+single_user_fields = {
+    'id': fields.Integer,
+    'email': fields.String,
+    'username': fields.String,
+    'chinese_name': fields.String,
+    'cellphone': fields.String,
+    'position': fields.String,
+    'location': fields.String,
+    'member_since': fields.String,
+    'last_seen': fields.String,
+    'can_add_server': fields.Boolean,
+    'can_add_view': fields.Boolean,
+    'can_add_zone': fields.Boolean,
+    'roles': fields.List(fields.Nested(role_fields)),
+}
+
+
 paginated_user_fields = {
     'total': fields.Integer,
     'users': fields.List(fields.Nested(user_fields)),
@@ -72,7 +89,6 @@ class UserList(Resource):
             user_query = user_query.filter_by(chinese_name=chinese_name)
         if cellphone is not None:
             user_query = user_query.filter_by(cellphone=cellphone)
-
         marshal_records = marshal(
             user_query.order_by(DBUser.id.desc()).paginate(
                 current_page, 
@@ -90,7 +106,7 @@ class UserList(Resource):
 class User(Resource):
     method_decorators = [token_required]
 
-    @marshal_with(user_fields)
+    @marshal_with(single_user_fields)
     def get(self, user_id):
         current_u = DBUser.query.get(user_id)
         if not current_u:

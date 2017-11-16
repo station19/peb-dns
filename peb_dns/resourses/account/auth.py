@@ -92,18 +92,19 @@ class AuthLocal(Resource):
 
     def post(self):
         args = self.reqparse.parse_args()
+        print(args)
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
         local_user = DBUser.query.filter_by(
             username = args['username']).first()
         if auth_user or local_user:
             return { 'message': "Failed", "error": "用户已存在！" }, 400
-        new_local_user = DBLocalAuth(
+        new_auth_user = DBLocalAuth(
             username=args['username'], email=args['email'])
-        new_local_user.password = args['password']
-        new_user = DBUser(username=args['username'])
-        db.session.add(new_user)
+        new_auth_user.password = args['password']
+        new_local_user = DBUser(username=args['username'], email=args['email'])
         db.session.add(new_local_user)
+        db.session.add(new_auth_user)
         db.session.commit()
         return { 'message': "OK" }, 200
         
