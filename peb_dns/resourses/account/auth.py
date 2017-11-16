@@ -74,29 +74,32 @@ class AuthLocal(Resource):
 
     def get(self):
         get_args = request.args
-        # print(args)
-        print(get_args.get('username'), get_args.get('password'))
         auth_user = DBLocalAuth.query.filter_by(
             username = get_args['username']).first()
         if auth_user is None:
             return { 'message' : "认证失败！用户不存在！" }, 401
-        if auth_user.verify_password(get_args['password']) :
+        if not auth_user.verify_password(get_args['password']) :
             return { 'message' : "认证失败！账号或密码错误！" }, 401
+        local_user = DBUser.query.filter_by(username=get_args['username']).first()
         token = jwt.encode({
-            'user' : auth_user.username, 
+            'user' : local_user.username, 
             'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
             }, current_app.config['SECRET_KEY'])
-        return {'token':token, 'user_info': auth_user.to_json()}, 200
+        return {
+            'token' : token.decode('UTF-8'),
+            'user_info': local_user.to_json()
+            }, 200
 
     def post(self):
         args = self.reqparse.parse_args()
-        uniq_user_local = DBLocalAuth.query.filter_by(
+        auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
-        uniq_user_profile = DBUser.query.filter_by(
+        local_user = DBUser.query.filter_by(
             username = args['username']).first()
-        if uniq_user_local or uniq_user_profile:
+        if auth_user or local_user:
             return { 'message': "Failed", "error": "用户已存在！" }, 400
-        new_local_user = DBLocalAuth(username=args['username'], email=args['email'])
+        new_local_user = DBLocalAuth(
+            username=args['username'], email=args['email'])
         new_local_user.password = args['password']
         new_user = DBUser(username=args['username'])
         db.session.add(new_user)
