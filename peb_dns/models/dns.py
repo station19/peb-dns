@@ -402,16 +402,16 @@ class DBRecord(db.Model):
             "format": current_app.config.get('DNSPOD_DATA_FORMAT')
             }
         res = requests.post(url, data=dict(body_info, **data))
-        if res.status_code == 200:
-            res_json = res.json()
-            if res_json.get('status').get('code') == '1':
-                if current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create' == url:
-                    self.outter_record_id = res_json.get('record').get('id')
-                    db.session.add(self)
-                    return
+        res_json = res.json()
+        print(res_json)
+        if res.status_code != 200:
             raise Exception(str(res_json))
-        raise Exception(str(res_json))
-
+        if res_json.get('status').get('code') != '1':
+            raise Exception(str(res_json))
+        if current_app.config.get('DNSPOD_RECORD_BASE_URL') + 'Create' == url:
+            self.outter_record_id = res_json.get('record').get('id')
+            db.session.add(self)
+        
     def get_content_str(self, prefix=None):
         #'修改前内容：'
         content = 'id: ' + str(self.id) + '\n' \
