@@ -84,7 +84,7 @@ class DNSServerList(Resource):
         dns_server_type = args.get('dns_server_type', type=str)
         server_query = db.session.query(DBDNSServer) \
             .join(DBPrivilege, and_(
-                DBZone.id == DBPrivilege.resource_id, 
+                DBDNSServer.id == DBPrivilege.resource_id, 
                 DBPrivilege.resource_type == ResourceType.SERVER, 
                 DBPrivilege.operation == Operation.ACCESS
                 )) \

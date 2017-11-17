@@ -76,3 +76,12 @@ def token_required(f):
             return {'message' : 'Token is invalid!'}, 403
         return f(*args, **kwargs)
     return decorated
+
+
+def owner_or_admin_required(f):
+    def wrapper(*args, **kwargs):
+        print(kwargs)
+        if not (g.current_user.is_admin() or g.current_user.id == kwargs.get('user_id')):
+            abort(403)
+        return f(*args, **kwargs)
+    return wrapper

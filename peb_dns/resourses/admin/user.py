@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify, current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.common.decorators import token_required, admin_required
+from peb_dns.common.decorators import token_required, admin_required, owner_or_admin_required
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -106,6 +106,7 @@ class UserList(Resource):
 class User(Resource):
     method_decorators = [token_required]
 
+    @owner_or_admin_required
     @marshal_with(single_user_fields)
     def get(self, user_id):
         current_u = DBUser.query.get(user_id)
@@ -113,6 +114,7 @@ class User(Resource):
             abort(404)
         return current_u
 
+    @owner_or_admin_required
     def put(self, user_id):
         args = dns_user_common_parser.parse_args()
         role_ids = args['role_ids']
@@ -141,6 +143,7 @@ class User(Resource):
                 error="{e}".format(e=str(e))), 400
         return dict(message='OK'), 200
 
+    @admin_required
     def delete(self, user_id):
         current_u = DBUser.query.get(user_id)
         if not current_u:

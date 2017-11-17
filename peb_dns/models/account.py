@@ -32,9 +32,13 @@ class DBUser(db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'chinese_name': self.chinese_name,
             'cellphone': self.cellphone,
             'position': self.position,
             'location': self.location,
+            'can_add_server': self.can_add_server,
+            'can_add_view': self.can_add_view,
+            'can_add_zone': self.can_add_zone,
             'member_since': str(self.member_since)
         }
         return json_user

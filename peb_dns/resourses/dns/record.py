@@ -78,9 +78,14 @@ class DNSRecordList(Resource):
     def get(self):
         args = request.args
         zone_id = args.get('zone_id')
-        current_zone = DBZone.query.get(int(zone_id))
-        if not current_zone.can_access:
-            abort(403)
+        if zone_id:
+            if not g.current_user.is_admin():
+                current_zone = DBZone.query.get(int(zone_id))
+                if not current_zone.can_access:
+                    abort(403)
+        else:
+            if not g.current_user.is_admin():
+                abort(403)
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
         id = args.get('id', type=int)

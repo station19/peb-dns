@@ -63,14 +63,14 @@ class DNSZoneList(Resource):
 
     def get(self):
         args = request.args
+        print(args)
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
-
         id = args.get('id', type=int)
         name = args.get('name', type=str)
         zone_group = args.get('zone_group', type=int)
         zone_type = args.get('zone_type', type=str)
-        zone_query = db.session.query(DBZone) \
+        zone_query = DBZone.query \
             .join(DBPrivilege, and_(
                 DBZone.id == DBPrivilege.resource_id, 
                 DBPrivilege.resource_type == ResourceType.ZONE, 
@@ -84,13 +84,13 @@ class DNSZoneList(Resource):
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == g.current_user.id)
         if id is not None:
-            zone_query = zone_query.filter_by(id=id)
+            zone_query = zone_query.filter(DBZone.id==id)
         if name is not None:
-            zone_query = zone_query.filter_by(name=name)
+            zone_query = zone_query.filter(DBZone.name==name)
         if zone_group is not None:
-            zone_query = zone_query.filter_by(zone_group=zone_group)
+            zone_query = zone_query.filter(DBZone.zone_group==zone_group)
         if zone_type is not None:
-            zone_query = zone_query.filter_by(zone_type=zone_type)
+            zone_query = zone_query.filter(DBZone.zone_type==zone_type)
         marshal_records = marshal(
                 zone_query.order_by(DBZone.id.desc()).paginate(
                     current_page, 

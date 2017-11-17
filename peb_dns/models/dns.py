@@ -176,11 +176,14 @@ class DBZone(db.Model):
         return [v.id for v in self.views]
 
     def get_content_str(self, prefix=None):
+        related_view_list = self.view_name_list
+        if self.zone_group == 0:
+            related_view_list = ''
         content = 'id: ' + str(self.id) + '\n' \
         + 'Zone名称: ' + str(self.name) + '\n' \
         + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(self.zone_group) + '\n' \
         + 'Zone类型: ' + str(self.zone_type) + '\n' \
-        + '关联View: ' + str(self.view_name_list) + '\n' 
+        + '关联View: ' + related_view_list + '\n' 
         if prefix:
             content = prefix + '\n' + content
         return content
