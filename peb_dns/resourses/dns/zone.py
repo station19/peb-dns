@@ -23,18 +23,14 @@ dns_zone_common_parser.add_argument('zone_group',
                                     required=True)
 dns_zone_common_parser.add_argument('zone_type', 
                                     type = str, 
-                                    location = 'json', 
-                                    required=True)
+                                    location = 'json')
 dns_zone_common_parser.add_argument('forwarders', 
                                     type = str, 
-                                    location = 'json', 
-                                    required=True)
+                                    location = 'json')
 dns_zone_common_parser.add_argument('view_ids', 
                                     type = int, 
-                                    location = 
-                                    'json', 
-                                    action='append', 
-                                    required=True)
+                                    location = 'json', 
+                                    action='append')
 
 zone_fields = {
     'id': fields.Integer,
@@ -63,7 +59,6 @@ class DNSZoneList(Resource):
 
     def get(self):
         args = request.args
-        print(args)
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
         id = args.get('id', type=int)
@@ -108,21 +103,33 @@ class DNSZoneList(Resource):
             return dict(message='Failed', 
                 error='无权限！您无权限添加Zone，请联系管理员。'), 403
         args = dns_zone_common_parser.parse_args()
-        view_ids = args['view_ids']
-        unique_zone = db.session.query(DBZone).filter(
-                    and_(DBZone.name==args['name'].strip(), 
-                    DBZone.zone_group.in_((1,2)))).first()
-        if unique_zone:
-            return dict(message='Failed', 
-                    error_msg='创建失败！重复的Zone！！相同名字的Zone，\
-                        每种类型域名下只能存在一个！'), 400
-        if args['zone_type'] == 'forward only':
-            args['forwarders'] = '; '.join(
-                    [ip.strip() for ip in args['forwarders'].strip().split()]) + ';'
-        del args['view_ids']
-        new_zone = DBZone(**args)
-        db.session.add(new_zone)
-        db.session.flush()
+        zone_group = args['zone_group']
+        if zone_group in (1, 2):
+            view_ids = args['view_ids']
+            unique_zone = db.session.query(DBZone).filter(
+                        and_(DBZone.name==args['name'].strip(), 
+                        DBZone.zone_group.in_((1,2)))).first()
+            if unique_zone:
+                return dict(message='Failed', 
+                        error_msg='创建失败！重复的Zone！！相同名字的Zone，\
+                            每种类型域名下只能存在一个！'), 400
+            if args['zone_type'] == 'forward only':
+                args['forwarders'] = '; '.join(
+                        [ip.strip() for ip in args['forwarders'].strip().split()]) + ';'
+            new_zone = DBZone(**args)
+            db.session.add(new_zone)
+            db.session.flush()
+            for view_id in view_ids:
+                v = DBViewZone(
+                        view_id=int(view_id),
+                        zone_id=new_zone.id
+                        )
+                db.session.add(v)
+            del args['view_ids']
+        elif zone_group == 0:
+            new_zone = DBZone(name=args['name'], zone_group=zone_group)
+            db.session.add(new_zone)
+            db.session.flush()
         log = DBOperationLog(
                     operation_type='添加', 
                     operator=g.current_user.username, 
@@ -132,12 +139,6 @@ class DNSZoneList(Resource):
                     target_detail=new_zone.get_content_str()
                     )
         db.session.add(log)
-        for view_id in view_ids:
-            v = DBViewZone(
-                    view_id=int(view_id),
-                    zone_id=new_zone.id
-                    )
-            db.session.add(v)
         try:
             new_zone.create()
             self._add_privilege_for_zone(new_zone)

@@ -115,9 +115,9 @@ class DBZone(db.Model):
     __tablename__ = 'dns_zone'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
-    zone_group = db.Column(db.Integer)
-    zone_type = db.Column(db.String(64))
-    forwarders = db.Column(db.String(64))
+    zone_group = db.Column(db.Integer, default=1)
+    zone_type = db.Column(db.String(64), default='')
+    forwarders = db.Column(db.String(64), default='')
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
@@ -176,14 +176,15 @@ class DBZone(db.Model):
         return [v.id for v in self.views]
 
     def get_content_str(self, prefix=None):
-        # related_view_list = self.view_name_list
-        # if self.zone_group == 0:
-        #     related_view_list = ''
+        if self.zone_group == 0:
+            related_view_list = ''
+        if self.zone_group in [1, 2]:
+            related_view_list = self.view_name_list
         content = 'id: ' + str(self.id) + '\n' \
         + 'Zone名称: ' + str(self.name) + '\n' \
         + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(self.zone_group) + '\n' \
         + 'Zone类型: ' + str(self.zone_type) + '\n' \
-        # + '关联View: ' + related_view_list + '\n' 
+        + '关联View: ' + related_view_list + '\n' 
         if prefix:
             content = prefix + '\n' + content
         return content
