@@ -179,7 +179,7 @@ class DBZone(db.Model):
         if self.zone_group == 0:
             related_view_list = ''
         if self.zone_group in [1, 2]:
-            related_view_list = self.view_name_list
+            related_view_list = str(self.view_name_list)
         content = 'id: ' + str(self.id) + '\n' \
         + 'Zone名称: ' + str(self.name) + '\n' \
         + 'Zone归属: ' + ZONE_GROUP_MAPPING.get(self.zone_group) + '\n' \

@@ -116,6 +116,7 @@ class DNSZoneList(Resource):
             if args['zone_type'] == 'forward only':
                 args['forwarders'] = '; '.join(
                         [ip.strip() for ip in args['forwarders'].strip().split()]) + ';'
+            del args['view_ids']
             new_zone = DBZone(**args)
             db.session.add(new_zone)
             db.session.flush()
@@ -125,7 +126,6 @@ class DNSZoneList(Resource):
                         zone_id=new_zone.id
                         )
                 db.session.add(v)
-            del args['view_ids']
         elif zone_group == 0:
             new_zone = DBZone(name=args['name'], zone_group=zone_group)
             db.session.add(new_zone)
