@@ -14,9 +14,27 @@ dns_user_common_parser = reqparse.RequestParser()
 dns_user_common_parser.add_argument('role_ids', 
                                 type = int, 
                                 location = 'json', 
-                                action='append', 
-                                required=True)
-
+                                action='append')
+dns_user_common_parser.add_argument('email', 
+                                type = str, 
+                                location = 'json', 
+                                action='append')
+dns_user_common_parser.add_argument('chinese_name', 
+                                type = str, 
+                                location = 'json', 
+                                action='append')
+dns_user_common_parser.add_argument('cellphone', 
+                                type = str, 
+                                location = 'json', 
+                                action='append')
+dns_user_common_parser.add_argument('position', 
+                                type = str, 
+                                location = 'json', 
+                                action='append')
+dns_user_common_parser.add_argument('location', 
+                                type = str, 
+                                location = 'json', 
+                                action='append')
 
 role_fields = {
     'id': fields.Integer,
@@ -116,31 +134,38 @@ class User(Resource):
 
     @owner_or_admin_required
     def put(self, user_id):
-        args = dns_user_common_parser.parse_args()
-        role_ids = args['role_ids']
-        print(role_ids)
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return dict(message='Failed', 
                 error="{e} 不存在！".format(e=str(user_id))), 400
+        args = dns_user_common_parser.parse_args()
+        role_ids = args.get('role_ids')
         try:
-            for del_ur in DBUserRole.query.filter(
-                    DBUserRole.user_id==user_id, 
-                    DBUserRole.role_id.notin_(role_ids)).all():
-                db.session.delete(del_ur)
-            for role_id in role_ids:
-                ur = DBUserRole.query.filter(
-                    DBUserRole.role_id==role_id, 
-                    DBUserRole.user_id==user_id).first()
-                if not ur:
-                    new_user_role = DBUserRole(
-                            user_id=user_id, role_id=role_id)
-                    db.session.add(new_user_role)
-            db.session.commit()
+            current_u.cellphone = args.get('cellphone', '')
+            current_u.chinese_name = args.get('chinese_name', '')
+            current_u.email = args.get('email', '')
+            current_u.location = args.get('location', '')
+            current_u.position = args.get('position', '')
+            if role_ids is not None:
+                for del_ur in DBUserRole.query.filter(
+                        DBUserRole.user_id==user_id, 
+                        DBUserRole.role_id.notin_(role_ids)).all():
+                    db.session.delete(del_ur)
+                for role_id in role_ids:
+                    ur = DBUserRole.query.filter(
+                        DBUserRole.role_id==role_id, 
+                        DBUserRole.user_id==user_id).first()
+                    if not ur:
+                        new_user_role = DBUserRole(
+                                user_id=user_id, role_id=role_id)
+                        db.session.add(new_user_role)
+                db.session.commit()
         except Exception as e:
             db.session.rollback()
             return dict(message='Failed', 
                 error="{e}".format(e=str(e))), 400
+
+
         return dict(message='OK'), 200
 
     @admin_required

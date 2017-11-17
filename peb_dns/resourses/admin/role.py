@@ -11,7 +11,7 @@ from datetime import datetime
 
 dns_role_common_parser = reqparse.RequestParser()
 dns_role_common_parser.add_argument('name', 
-                                type = int, 
+                                type = str, 
                                 location = 'json', 
                                 required=True, 
                                 help='role name.')
