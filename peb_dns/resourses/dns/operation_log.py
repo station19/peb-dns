@@ -46,15 +46,15 @@ class DNSOperationLogList(Resource):
         target_name = args.get('target_name', type=str)
         oplog_query = DBOperationLog.query
         if id is not None:
-            oplog_query = oplog_query.filter_by(id=id)
+            oplog_query = oplog_query.filter(DBOperationLog.id==id)
         if operation_type is not None:
-            oplog_query = oplog_query.filter_by(operation_type=operation_type)
+            oplog_query = oplog_query.filter(DBOperationLog.operation_type==operation_type)
         if operator is not None:
-            oplog_query = oplog_query.filter_by(operator=operator)
+            oplog_query = oplog_query.filter(DBOperationLog.operator==operator)
         if target_type is not None:
-            oplog_query = oplog_query.filter_by(target_type=target_type)
+            oplog_query = oplog_query.filter(DBOperationLog.target_type==target_type)
         if target_name is not None:
-            oplog_query = oplog_query.filter_by(target_name=target_name)
+            oplog_query = oplog_query.filter(DBOperationLog.target_name==target_name) 
         marshal_records = marshal(
                     oplog_query.order_by(DBOperationLog.id.desc()).paginate(
                         current_page, 

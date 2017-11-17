@@ -116,17 +116,6 @@ class RoleList(Resource):
 class Role(Resource):
     method_decorators = [admin_required, token_required]
 
-    def __init__(self):
-        self.role_common_parser = reqparse.RequestParser()
-        self.role_common_parser.add_argument(
-            'privilege_ids', 
-            type = int, 
-            location = 'json', 
-            action='append', 
-            required=True
-            )
-        super(Role, self).__init__()
-
     @marshal_with(role_fields)
     def get(self, role_id):
         current_role = DBRole.query.get(role_id)
@@ -135,13 +124,15 @@ class Role(Resource):
         return current_role
 
     def put(self, role_id):
-        args = self.role_common_parser.parse_args()
+        args = dns_role_common_parser.parse_args()
+        role_name = args['name']
         privilege_ids = args['privilege_ids']
         current_role = DBRole.query.get(role_id)
         if not current_role:
             return dict(message='Failed', 
                 error="{e} 不存在！".format(e=str(role_id))), 400
         try:
+            current_role.name = role_name
             for del_rp in DBRolePrivilege.query.filter(
                     DBRolePrivilege.role_id==role_id, 
                     DBRolePrivilege.privilege_id.notin_(privilege_ids)
