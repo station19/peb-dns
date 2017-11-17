@@ -96,15 +96,15 @@ class DNSServerList(Resource):
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == g.current_user.id)
         if id is not None:
-            server_query = server_query.filter_by(id=id)
+            server_query = server_query.filter(DBDNSServer.id==id)
         if host is not None:
-            server_query = server_query.filter_by(host=host)
+            server_query = server_query.filter(DBDNSServer.host==host)
         if ip is not None:
-            server_query = server_query.filter_by(ip=ip)
+            server_query = server_query.filter(DBDNSServer.ip==ip)
         if env is not None:
-            server_query = server_query.filter_by(env=env)
+            server_query = server_query.filter(DBDNSServer.env==env)
         if dns_server_type is not None:
-            server_query = server_query.filter_by(dns_server_type=dns_server_type)
+            server_query = server_query.filter(DBDNSServer.dns_server_type==dns_server_type)
         marshal_records = marshal(
                 server_query.order_by(DBDNSServer.id.desc()).paginate(
                     current_page, 
