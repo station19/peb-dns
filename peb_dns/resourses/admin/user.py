@@ -17,24 +17,19 @@ dns_user_common_parser.add_argument('role_ids',
                                 action='append')
 dns_user_common_parser.add_argument('email', 
                                 type = str, 
-                                location = 'json', 
-                                action='append')
+                                location = 'json')
 dns_user_common_parser.add_argument('chinese_name', 
                                 type = str, 
-                                location = 'json', 
-                                action='append')
+                                location = 'json')
 dns_user_common_parser.add_argument('cellphone', 
                                 type = str, 
-                                location = 'json', 
-                                action='append')
+                                location = 'json')
 dns_user_common_parser.add_argument('position', 
                                 type = str, 
-                                location = 'json', 
-                                action='append')
+                                location = 'json')
 dns_user_common_parser.add_argument('location', 
                                 type = str, 
-                                location = 'json', 
-                                action='append')
+                                location = 'json')
 
 role_fields = {
     'id': fields.Integer,
@@ -146,6 +141,7 @@ class User(Resource):
             current_u.email = args.get('email', '')
             current_u.location = args.get('location', '')
             current_u.position = args.get('position', '')
+            db.session.add(current_u)
             if role_ids is not None:
                 for del_ur in DBUserRole.query.filter(
                         DBUserRole.user_id==user_id, 
@@ -164,8 +160,6 @@ class User(Resource):
             db.session.rollback()
             return dict(message='Failed', 
                 error="{e}".format(e=str(e))), 400
-
-
         return dict(message='OK'), 200
 
     @admin_required
