@@ -6,8 +6,10 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 auth_api = Api(auth_bp)
 
 
-from .auth import AuthLDAP, AuthLocal
+from .auth import AuthLDAP, AuthLocal, RegisterLocal
 auth_api.add_resource(AuthLDAP, '/login_ldap')
 auth_api.add_resource(AuthLocal, '/login_local')
+auth_api.add_resource(RegisterLocal, '/register_local')
+
 
 

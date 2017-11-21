@@ -61,7 +61,34 @@ class AuthLDAP(Resource):
 
 class AuthLocal(Resource):
     def __init__(self):
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('username', type = str, location = 'json')
+        self.reqparse.add_argument('password', type = str, location = 'json')
         super(AuthLocal, self).__init__()
+
+    def post(self):
+        args = self.reqparse.parse_args()
+        username, password = args['username'], args['password']
+        auth_user = DBLocalAuth.query.filter_by(
+            username = args['username']).first()
+        if auth_user is None:
+            return { 'message' : "认证失败！用户不存在！" }, 401
+        if not auth_user.verify_password(args['password']) :
+            return { 'message' : "认证失败！账号或密码错误！" }, 401
+        local_user = DBUser.query.filter_by(username=args['username']).first()
+        token = jwt.encode({
+            'user' : local_user.username, 
+            'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
+            }, current_app.config['SECRET_KEY'])
+        return {
+            'token' : token.decode('UTF-8'),
+            'user_info': local_user.to_json()
+            }, 200
+
+
+class RegisterLocal(Resource):
+    def __init__(self):
+        super(RegisterLocal, self).__init__()
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('username', type = str, 
                                     location = 'json', required=True)
@@ -72,27 +99,8 @@ class AuthLocal(Resource):
         self.reqparse.add_argument('email', type = str, 
                                     location = 'json', required=True)
 
-    def get(self):
-        get_args = request.args
-        auth_user = DBLocalAuth.query.filter_by(
-            username = get_args['username']).first()
-        if auth_user is None:
-            return { 'message' : "认证失败！用户不存在！" }, 401
-        if not auth_user.verify_password(get_args['password']) :
-            return { 'message' : "认证失败！账号或密码错误！" }, 401
-        local_user = DBUser.query.filter_by(username=get_args['username']).first()
-        token = jwt.encode({
-            'user' : local_user.username, 
-            'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
-            }, current_app.config['SECRET_KEY'])
-        return {
-            'token' : token.decode('UTF-8'),
-            'user_info': local_user.to_json()
-            }, 200
-
     def post(self):
         args = self.reqparse.parse_args()
-        print(args)
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
         local_user = DBUser.query.filter_by(
@@ -107,4 +115,5 @@ class AuthLocal(Resource):
         db.session.add(new_auth_user)
         db.session.commit()
         return { 'message': "OK" }, 200
-        
+
+
