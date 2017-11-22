@@ -3,7 +3,7 @@ from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS
 from peb_dns.common.decorators import token_required
 from peb_dns.common.util import DNSPod
 from peb_dns import db
@@ -136,18 +136,20 @@ class DNSViewList(Resource):
         db.session.add(update_privilege)
         db.session.add(delete_privilege)
         db.session.flush()
-        admin_access =  DBRolePrivilege(
-                            role_id=1, 
-                            privilege_id=access_privilege.id)
-        admin_update =  DBRolePrivilege(
-                            role_id=1, 
-                            privilege_id=update_privilege.id)
-        admin_delete =  DBRolePrivilege(
-                            role_id=1, 
-                            privilege_id=delete_privilege.id)
-        db.session.add(admin_access)
-        db.session.add(admin_update)
-        db.session.add(admin_delete)
+        for role in ['admin', 'view_admin', 'view_guest']:
+            role_access =  DBRolePrivilege(
+                                role_id=ROLE_MAPPINGS[role],
+                                privilege_id=access_privilege.id)
+            db.session.add(role_access)
+            if role not in ['view_guest']:
+                role_update =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS[role],
+                                    privilege_id=update_privilege.id)
+                role_delete =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS[role],
+                                    privilege_id=delete_privilege.id)
+                db.session.add(role_update)
+                db.session.add(role_delete)
 
 
 class DNSView(Resource):

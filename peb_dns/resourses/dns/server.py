@@ -175,21 +175,20 @@ class DNSServerList(Resource):
         db.session.add(update_privilege)
         db.session.add(delete_privilege)
         db.session.flush()
-        admin_access =  DBRolePrivilege(
-                role_id=1, 
-                privilege_id=access_privilege.id
-                )
-        admin_update =  DBRolePrivilege(
-                role_id=1, 
-                privilege_id=update_privilege.id
-                )
-        admin_delete =  DBRolePrivilege(
-                role_id=1, 
-                privilege_id=delete_privilege.id
-                )
-        db.session.add(admin_access)
-        db.session.add(admin_update)
-        db.session.add(admin_delete)
+        for role in ['admin', 'server_admin', 'server_guest']:
+            role_access =  DBRolePrivilege(
+                                role_id=ROLE_MAPPINGS[role],
+                                privilege_id=access_privilege.id)
+            db.session.add(role_access)
+            if role not in ['server_guest']:
+                role_update =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS[role],
+                                    privilege_id=update_privilege.id)
+                role_delete =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS[role],
+                                    privilege_id=delete_privilege.id)
+                db.session.add(role_update)
+                db.session.add(role_delete)
 
 
 class DNSServer(Resource):

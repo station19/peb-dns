@@ -219,7 +219,6 @@ class DNSRecord(Resource):
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
         if not current_record.zone.can_access:
             abort(403, message="无权限！您无权访问ID为 {} 的记录！".format(str(record_id)))
-
         return current_record
 
     def put(self, record_id):

@@ -10,7 +10,8 @@ from .resourses.page import page_bp
 import os
 import click
 from .models.mappings import ROLE_MAPPINGS
-from .models.account import DBUser, DBUserRole, DBRole, DBLocalAuth
+from .models.account import DBUser, DBUserRole, DBRole, DBLocalAuth, \
+                            DBPrivilege, DBRolePrivilege
 
 
 APP_NAME = 'PEB-DNS'
@@ -20,72 +21,99 @@ def configure_extensions(app):
     db.init_app(app)
     migrate = Migrate(app, db)
 
-
 def configure_blueprints(app, blueprints):
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
+def init_privilege():
+    privilege_count = db.session.query(DBPrivilege).count()
+    if privilege_count < 1:
+        for p in ['SERVER_ADD', 'ZONE_ADD', 'VIEW_ADD']:
+            new_p = DBPrivilege(name=p)
+            db.session.add(new_p)
+            db.session.flush()
+            admin_rp =  DBRolePrivilege(
+                                role_id=ROLE_MAPPINGS['admin'],
+                                privilege_id=new_p.id
+                                )
+            db.session.add(admin_rp)
+            if p == 'SERVER_ADD':
+                server_admim_rp =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS['server_admin'],
+                                    privilege_id=new_p.id
+                                    )
+                db.session.add(server_admim_rp)
+            if p == 'ZONE_ADD':
+                zone_admin_rp =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS['zone_admin'],
+                                    privilege_id=new_p.id
+                                    )
+                db.session.add(zone_admin_rp)
+            if p == 'VIEW_ADD':
+                view_admin_rp =  DBRolePrivilege(
+                                    role_id=ROLE_MAPPINGS['view_admin'],
+                                    privilege_id=new_p.id
+                                    )
+                db.session.add(view_admin_rp)
+
+def init_user_role(app):
+    auth_user_count = db.session.query(DBLocalAuth).count()
+    local_user_count = db.session.query(DBUser).count()
+    if auth_user_count < 1 and local_user_count < 1:
+        default_admin = DBLocalAuth(
+            id=ROLE_MAPPINGS['admin'], 
+            username=app.config.get("DEFAULT_ADMIN_USERNAME"),
+            email=app.config.get("DEFAULT_ADMIN_EMAIL")
+            )
+        default_admin.password = app.config.get("DEFAULT_ADMIN_PASSWD")
+        default_admin_local = DBUser(
+            id=ROLE_MAPPINGS['admin'], 
+            username=app.config.get("DEFAULT_ADMIN_USERNAME"),
+            email=app.config.get("DEFAULT_ADMIN_EMAIL")
+            )
+        db.session.add(default_admin)
+        db.session.add(default_admin_local)
+    role_count = db.session.query(DBRole).count()
+    if role_count < 1:
+        for k,v in ROLE_MAPPINGS:
+            new_role = DBRole(id=v, name=k)
+            db.session.add(new_role)
+    user_role_count = db.session.query(DBUserRole).count()
+    if role_count < 1:
+        admin_user_role = DBUserRole(
+            id=ROLE_MAPPINGS['admin'], 
+            user_id=ROLE_MAPPINGS['admin'], 
+            role_id=ROLE_MAPPINGS['admin'], 
+            )
+        db.session.add(admin_user_role)
+
 
 def configure_db(app):
     with app.app_context(): 
-        auth_user_count = db.session.query(DBLocalAuth).count()
-        local_user_count = db.session.query(DBUser).count()
-        if auth_user_count < 1 and local_user_count < 1:
-            default_admin = DBLocalAuth(
-                id=ROLE_MAPPINGS['admin'], 
-                username=app.config.get("DEFAULT_ADMIN_USERNAME"),
-                email=app.config.get("DEFAULT_ADMIN_EMAIL")
-                )
-            default_admin.password = app.config.get("DEFAULT_ADMIN_PASSWD")
-            default_admin_local = DBUser(
-                id=ROLE_MAPPINGS['admin'], 
-                username=app.config.get("DEFAULT_ADMIN_USERNAME"),
-                email=app.config.get("DEFAULT_ADMIN_EMAIL")
-                )
-            db.session.add(default_admin)
-            db.session.add(default_admin_local)
-        role_count = db.session.query(DBRole).count()
-        if role_count < 1:
-            for k,v in ROLE_MAPPINGS:
-                new_role = DBRole(id=v, name=k)
-                db.session.add(new_role)
-        user_role_count = db.session.query(DBUserRole).count()
-        if role_count < 1:
-            admin_user_role = DBUserRole(
-                id=ROLE_MAPPINGS['admin'], 
-                user_id=ROLE_MAPPINGS['admin'], 
-                role_id=ROLE_MAPPINGS['admin'], 
-                )
-            db.session.add(admin_user_role)
+        init_user_role(app)
+        init_privilege()
         db.session.commit()
-
 
 def configure_error_handlers(app):
     pass
 
-
 def configure_hooks(app):
     pass
-
 
 def configure_crossdomain(app):
     CORS(app, supports_credentials=True)
 
-
 def create_app(config_name='default'):
     app = Flask(APP_NAME)
-
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     app.config.from_pyfile(config_pyfiles[config_name])
     app.config.from_pyfile('configs/dns_templates.cfg')
-
     configure_extensions(app)
+    configure_db(app)
     configure_blueprints(app, [auth_bp, dns_bp, admin, page_bp])
     configure_error_handlers(app)
-    # configure_db(app)
     # configure_hooks(app)
     configure_crossdomain(app)
-
     return app
 

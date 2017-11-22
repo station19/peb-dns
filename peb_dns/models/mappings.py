@@ -28,9 +28,11 @@ OPERATION_STR_MAPPING = {
 ROLE_MAPPINGS = OrderedDict({
     'admin': 1,
     'server_admin': 2,
-    'view_admin': 3,
-    'server_guest': 4,
-    'view_guest': 5
+    'server_guest': 3,
+    'view_admin': 4,
+    'view_guest': 5,
+    'zone_admin': 6,
+    'zone_guest': 7
 })
 
 

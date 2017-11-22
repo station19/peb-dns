@@ -31,10 +31,9 @@ class MenuSidebar(Resource):
                 {'item_name':'权限管理', 'url':'/admin/privileges'}
             ]
             menu_group['menu'].append({'title':'后台管理系统', 'items': admin_items})
-        if g.current_user.can_access_log:
-            menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
+        menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
         return dict(menu_group)
-    
+
     def _get_zones(self):
         zone_query = db.session.query(DBZone) \
             .join(DBPrivilege, and_(
