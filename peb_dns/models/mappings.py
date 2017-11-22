@@ -1,3 +1,4 @@
+from collections import OrderedDict
 
 class Operation(object):
     ACCESS = 0
@@ -21,3 +22,15 @@ OPERATION_STR_MAPPING = {
     Operation.UPDATE:'UPDATE',
     Operation.DELETE:'DELETE'
 }
+
+
+
+ROLE_MAPPINGS = OrderedDict({
+    'admin': 1,
+    'server_admin': 2,
+    'view_admin': 3,
+    'server_guest': 4,
+    'view_guest': 5
+})
+
+

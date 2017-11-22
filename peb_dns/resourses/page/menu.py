@@ -25,12 +25,16 @@ class MenuSidebar(Resource):
         menu_group['menu'].append({'title':'View管理', 'items':None, 'url':'/dns/views'})
         menu_group['menu'].append({'title':'DNS服务器', 'items':None, 'url':'/dns/servers'})
         if g.current_user.is_admin():
-            menu_group['menu'].append({'title':'后台管理系统', 'items':None, 'url':'/dns/admin'})
+            admin_items = [
+                {'item_name':'用户管理', 'url':'/admin/users'},
+                {'item_name':'角色管理', 'url':'/admin/roles'},
+                {'item_name':'权限管理', 'url':'/admin/privileges'}
+            ]
+            menu_group['menu'].append({'title':'后台管理系统', 'items': admin_items})
         if g.current_user.can_access_log:
             menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
         return dict(menu_group)
-
-
+    
     def _get_zones(self):
         zone_query = db.session.query(DBZone) \
             .join(DBPrivilege, and_(
@@ -45,23 +49,18 @@ class MenuSidebar(Resource):
             .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
             .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
             .filter(DBUser.id == g.current_user.id)
-
-        # print(zone_query.all())
         inner_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} 
                 for zone in zone_query.filter(DBZone.zone_group == 1).all()]
         intercepted_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} 
                 for zone in zone_query.filter(DBZone.zone_group == 2).all()]
         outter_zones = [{'item_name':zone.name, 'url':'/#/dns/records/zoneId/'+ str(zone.id)} 
                 for zone in zone_query.filter(DBZone.zone_group == 0).all()]
-        print(inner_zones, intercepted_zones, outter_zones)
-
-        zone_groups = {'menu' : 
-            [{'title':'内部域名', 'items':inner_zones}, \
+        zone_groups = {'menu' : [
+                {'title':'内部域名', 'items':inner_zones},
                 {'title':'劫持域名', 'items':intercepted_zones},
                 {'title':'外部域名', 'items':outter_zones}
             ]
         }
-        
         return zone_groups
 
 

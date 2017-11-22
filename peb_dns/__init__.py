@@ -9,6 +9,8 @@ from .resourses.dns import dns_bp
 from .resourses.page import page_bp
 import os
 import click
+from .models.mappings import ROLE_MAPPINGS
+from .models.account import DBUser, DBUserRole, DBRole, DBLocalAuth
 
 
 APP_NAME = 'PEB-DNS'
@@ -24,15 +26,38 @@ def configure_blueprints(app, blueprints):
         app.register_blueprint(blueprint)
 
 
-# def configure_db(app):
-#     with app.app_context(): 
-#         user_count = db.session.query(User).count()
-#         if user_count < 1:
-#             user = User(username=app.config.get("DEFAULT_ADMIN_USERNAME"),
-#                         password=app.config.get("DEFAULT_ADMIN_PASSWD"),
-#                         admin=2)
-#             db.session.add(user)
-#             db.session.commit()
+def configure_db(app):
+    with app.app_context(): 
+        auth_user_count = db.session.query(DBLocalAuth).count()
+        local_user_count = db.session.query(DBUser).count()
+        if auth_user_count < 1 and local_user_count < 1:
+            default_admin = DBLocalAuth(
+                id=ROLE_MAPPINGS['admin'], 
+                username=app.config.get("DEFAULT_ADMIN_USERNAME"),
+                email=app.config.get("DEFAULT_ADMIN_EMAIL")
+                )
+            default_admin.password = app.config.get("DEFAULT_ADMIN_PASSWD")
+            default_admin_local = DBUser(
+                id=ROLE_MAPPINGS['admin'], 
+                username=app.config.get("DEFAULT_ADMIN_USERNAME"),
+                email=app.config.get("DEFAULT_ADMIN_EMAIL")
+                )
+            db.session.add(default_admin)
+            db.session.add(default_admin_local)
+        role_count = db.session.query(DBRole).count()
+        if role_count < 1:
+            for k,v in ROLE_MAPPINGS:
+                new_role = DBRole(id=v, name=k)
+                db.session.add(new_role)
+        user_role_count = db.session.query(DBUserRole).count()
+        if role_count < 1:
+            admin_user_role = DBUserRole(
+                id=ROLE_MAPPINGS['admin'], 
+                user_id=ROLE_MAPPINGS['admin'], 
+                role_id=ROLE_MAPPINGS['admin'], 
+                )
+            db.session.add(admin_user_role)
+        db.session.commit()
 
 
 def configure_error_handlers(app):
