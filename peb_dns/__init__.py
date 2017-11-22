@@ -75,7 +75,7 @@ def init_user_role(app):
         db.session.add(default_admin_local)
     role_count = db.session.query(DBRole).count()
     if role_count < 1:
-        for k,v in ROLE_MAPPINGS:
+        for k,v in ROLE_MAPPINGS.items():
             new_role = DBRole(id=v, name=k)
             db.session.add(new_role)
     user_role_count = db.session.query(DBUserRole).count()
@@ -87,18 +87,16 @@ def init_user_role(app):
             )
         db.session.add(admin_user_role)
 
-
-def configure_db(app):
-    with app.app_context(): 
-        init_user_role(app)
-        init_privilege()
-        db.session.commit()
-
 def configure_error_handlers(app):
     pass
 
 def configure_hooks(app):
-    pass
+    @app.before_first_request
+    def init_db_data():
+        with app.app_context(): 
+            init_user_role(app)
+            init_privilege()
+            db.session.commit()
 
 def configure_crossdomain(app):
     CORS(app, supports_credentials=True)
@@ -110,10 +108,9 @@ def create_app(config_name='default'):
     app.config.from_pyfile(config_pyfiles[config_name])
     app.config.from_pyfile('configs/dns_templates.cfg')
     configure_extensions(app)
-    configure_db(app)
     configure_blueprints(app, [auth_bp, dns_bp, admin, page_bp])
     configure_error_handlers(app)
-    # configure_hooks(app)
+    configure_hooks(app)
     configure_crossdomain(app)
     return app
 

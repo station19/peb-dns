@@ -13,8 +13,6 @@ def permission_required(operation_type, resource_type):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            # if not g.current_user.can(permission):
-            #     abort(403)
             if resource_type == ResourceType.ZONE:
                 r = DBZone
             elif resource_type == ResourceType.VIEW:
@@ -62,8 +60,6 @@ def access_permission_required(f):
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        # token = request.args.get('token') 
-        # #http://127.0.0.1:5000/route?token=alshfjfjdklsfj89549834ur
         token = request.headers.get('Authorization')
         if not token:
             return {'message' : 'Token is missing!'}, 403
