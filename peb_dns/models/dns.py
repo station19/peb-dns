@@ -256,8 +256,8 @@ class DBZone(db.Model):
             )
         if res.status_code == 200:
             res_json = res.json()
-            if res_json.get('status').get('code') != '1':
-                raise Exception(str(res_json))
+            if res_json.get('status').get('code') == '1':
+                return
         raise Exception(str(res_json))
 
     def _make_zone(self, action, view_name, zone_list, record_list):
