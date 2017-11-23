@@ -6,6 +6,7 @@ from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, 
 from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from peb_dns.common.decorators import token_required
 from peb_dns.common.util import ZONE_GROUP_MAPPING
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
