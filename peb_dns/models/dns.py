@@ -121,12 +121,6 @@ class DBZone(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
-    def __init__(self, **kwargs):
-        super(DBZone, self).__init__(**kwargs)
-        self.__create_url = current_app.config.get('DNSPOD_DOMAIN_BASE_URL') + 'Create'
-        self.__modify_url = current_app.config.get('DNSPOD_DOMAIN_BASE_URL') + 'Modify'
-        self.__delete_url = current_app.config.get('DNSPOD_DOMAIN_BASE_URL') + 'Remove'
-
     def create(self):
         if self.zone_group in [1, 2]:
             self._create_inner()
@@ -202,7 +196,8 @@ class DBZone(db.Model):
             time.sleep(0.1)
 
     def _create_outter(self):
-        res = requests.post(self.__create_url,
+        create_url = current_app.config.get('DNSPOD_DOMAIN_BASE_URL') + 'Create'
+        res = requests.post(create_url,
                     data=dict(login_token=current_app.config.get('DNSPOD_TOKEN'),
                     domain=self.name, 
                     format=current_app.config.get('DNSPOD_DATA_FORMAT')))
@@ -253,7 +248,8 @@ class DBZone(db.Model):
             self._make_zone('del', z_view, zone_list, [])
 
     def _del_outter(self):
-        res = requests.post(self.__delete_url, data=dict(
+        delete_url = current_app.config.get('DNSPOD_DOMAIN_BASE_URL') + 'Remove'
+        res = requests.post(delete_url, data=dict(
             login_token=current_app.config.get('DNSPOD_TOKEN'), 
             domain=self.name, 
             format=current_app.config.get('DNSPOD_DATA_FORMAT'))

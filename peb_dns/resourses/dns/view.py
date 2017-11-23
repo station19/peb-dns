@@ -54,7 +54,7 @@ class DNSViewList(Resource):
         if id is not None:
             view_query = view_query.filter_by(id=id)
         if name is not None:
-            view_query = view_query.filter_by(name=name)
+            view_query = view_query.filter(DBView.name.like('%'+name+'%'))
         if zone_id is not None:
             current_zone = DBZone.query.get(zone_id)
             if current_zone.zone_group == 0:

@@ -95,11 +95,11 @@ class DNSServerList(Resource):
         if id is not None:
             server_query = server_query.filter(DBDNSServer.id==id)
         if host is not None:
-            server_query = server_query.filter(DBDNSServer.host==host)
+            server_query = server_query.filter(DBDNSServer.host.like('%'+host+'%'))
         if ip is not None:
-            server_query = server_query.filter(DBDNSServer.ip==ip)
+            server_query = server_query.filter(DBDNSServer.ip.like('%'+ip+'%'))
         if env is not None:
-            server_query = server_query.filter(DBDNSServer.env==env)
+            server_query = server_query.filter(DBDNSServer.env.like('%'+env+'%'))
         if dns_server_type is not None:
             server_query = server_query.filter(DBDNSServer.dns_server_type==dns_server_type)
         marshal_records = marshal(

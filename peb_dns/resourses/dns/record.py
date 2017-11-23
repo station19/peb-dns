@@ -98,7 +98,7 @@ class DNSRecordList(Resource):
         if id is not None:
             record_query = record_query.filter(DBRecord.id==id)
         if host is not None:
-            record_query = record_query.filter(DBRecord.host==host)
+            record_query = record_query.filter(DBRecord.host.like('%'+host+'%'))
         if record_type is not None:
             record_query = record_query.filter(DBRecord.record_type==record_type)
         if ttl is not None:
