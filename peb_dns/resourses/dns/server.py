@@ -4,7 +4,8 @@ from flask import current_app, g, request
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
 from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
-from peb_dns.common.decorators import token_required
+from peb_dns.common.decorators import token_required, admin_required
+from peb_dns.common.util import getETCDclient
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -67,10 +68,6 @@ paginated_server_fields = {
 
 class DNSServerList(Resource):
     method_decorators = [token_required]
-
-    def __init__(self):
-        self.get_reqparse = reqparse.RequestParser()
-        super(DNSServerList, self).__init__()
 
     def get(self):
         args = request.args
@@ -281,7 +278,8 @@ class DNSServer(Resource):
     def _remove_server_privileges(self, current_server):
         current_record_privileges_query = DBPrivilege.query.filter(
                         DBPrivilege.resource_id==current_server.id, 
-                        DBPrivilege.resource_type==ResourceType.SERVER)
+                        DBPrivilege.resource_type==ResourceType.SERVER
+                        )
         current_record_privileges = current_record_privileges_query.all()
         for record_privilege in current_record_privileges:
             DBRolePrivilege.query.filter(
@@ -289,4 +287,41 @@ class DNSServer(Resource):
                         ).delete()
         current_record_privileges_query.delete()
 
+
+
+class DNSBindConf(Resource):
+    method_decorators = [admin_required, token_required] 
+
+    def __init__(self):
+        super(DNSBindConf, self).__init__()
+        self.post_reqparse = reqparse.RequestParser()
+        self.post_reqparse.add_argument('bind_conf', 
+                                    type = str, 
+                                    location = 'json', 
+                                    required=True)
+
+    def get(self):
+        try:
+            etcd_client = getETCDclient()
+            bind_conf_content = etcd_client.read(
+                current_app.config.get('BIND_CONF')).value
+            return dict(message='OK', bind_conf=bind_conf_content), 200
+        except Exception as e:
+            return dict(message='Failed', 
+                        error='获取数据失败 !!!' + str(e)), 400
+
+    def post(self):
+        try:
+            req = self.post_reqparse.parse_args()
+            bind_conf_content = req.get('bind_conf')
+            etcd_client = getETCDclient()
+            etcd_client.write(
+                current_app.config.get('BIND_CONF'), 
+                bind_conf_content, 
+                prevExist=True
+                )
+            return dict(message='OK'), 200
+        except Exception as e:
+            return dict(message='Failed', 
+                        error='提交数据失败 !!!' + str(e)), 400
 

@@ -64,6 +64,7 @@ single_user_fields = {
     'can_add_server': fields.Boolean,
     'can_add_view': fields.Boolean,
     'can_add_zone': fields.Boolean,
+    'can_edit_bind_conf': fields.Boolean,
     'roles': fields.List(fields.Nested(role_fields)),
 }
 

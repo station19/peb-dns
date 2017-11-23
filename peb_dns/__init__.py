@@ -9,7 +9,7 @@ from .resourses.dns import dns_bp
 from .resourses.page import page_bp
 import os
 import click
-from .models.mappings import ROLE_MAPPINGS
+from .models.mappings import ROLE_MAPPINGS, DefaultPrivilege
 from .models.account import DBUser, DBUserRole, DBRole, DBLocalAuth, \
                             DBPrivilege, DBRolePrivilege
 
@@ -28,7 +28,13 @@ def configure_blueprints(app, blueprints):
 def init_privilege():
     privilege_count = db.session.query(DBPrivilege).count()
     if privilege_count < 1:
-        for p in ['SERVER_ADD', 'ZONE_ADD', 'VIEW_ADD']:
+        default_privileges = [
+            DefaultPrivilege.SERVER_ADD,
+            DefaultPrivilege.ZONE_ADD,
+            DefaultPrivilege.VIEW_ADD,
+            DefaultPrivilege.BIND_CONF_EDIT
+            ]
+        for p in default_privileges:
             new_p = DBPrivilege(name=p)
             db.session.add(new_p)
             db.session.flush()
@@ -37,19 +43,19 @@ def init_privilege():
                                 privilege_id=new_p.id
                                 )
             db.session.add(admin_rp)
-            if p == 'SERVER_ADD':
+            if p == DefaultPrivilege.SERVER_ADD:
                 server_admim_rp =  DBRolePrivilege(
                                     role_id=ROLE_MAPPINGS['server_admin'],
                                     privilege_id=new_p.id
                                     )
                 db.session.add(server_admim_rp)
-            if p == 'ZONE_ADD':
+            if p == DefaultPrivilege.ZONE_ADD:
                 zone_admin_rp =  DBRolePrivilege(
                                     role_id=ROLE_MAPPINGS['zone_admin'],
                                     privilege_id=new_p.id
                                     )
                 db.session.add(zone_admin_rp)
-            if p == 'VIEW_ADD':
+            if p == DefaultPrivilege.VIEW_ADD:
                 view_admin_rp =  DBRolePrivilege(
                                     role_id=ROLE_MAPPINGS['view_admin'],
                                     privilege_id=new_p.id

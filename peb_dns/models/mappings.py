@@ -17,6 +17,14 @@ class ResourceType(object):
     PAGE = 7
 
 
+class DefaultPrivilege(object):
+    SERVER_ADD = 'SERVER_ADD'
+    ZONE_ADD = 'ZONE_ADD'
+    VIEW_ADD = 'VIEW_ADD'
+    BIND_CONF_EDIT = 'BIND_CONF_EDIT'
+    LOG_PAGE_ACCESS = 'LOG_PAGE_ACCESS'
+
+
 OPERATION_STR_MAPPING = {
     Operation.ACCESS:'ACCESS',
     Operation.UPDATE:'UPDATE',

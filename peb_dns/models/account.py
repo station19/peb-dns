@@ -3,7 +3,7 @@ from peb_dns.extensions import db
 from sqlalchemy import and_, or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from .mappings import ResourceType
+from .mappings import ResourceType, DefaultPrivilege
 from .dns import DBZone, DBView, DBRecord, DBDNSServer
 
 RESOURCE_TYPE_MAPPING = {
@@ -68,18 +68,22 @@ class DBUser(db.Model):
 
     @property
     def can_add_server(self):
-        return self.can("SERVER_ADD")
+        return self.can(DefaultPrivilege.SERVER_ADD)
 
     @property
     def can_add_view(self):
-        return self.can("VIEW_ADD")
+        return self.can(DefaultPrivilege.VIEW_ADD)
 
     @property
     def can_add_zone(self):
-        return self.can("ZONE_ADD")
+        return self.can(DefaultPrivilege.ZONE_ADD)
+
+    @property
+    def can_edit_bind_conf(self):
+        return self.can(DefaultPrivilege.BIND_CONF_EDIT)
 
     def can_access_log(self):
-        return self.can("LOG_PAGE_ACCESS")
+        return self.can(DefaultPrivilege.LOG_PAGE_ACCESS)
 
     @property
     def roles(self):
