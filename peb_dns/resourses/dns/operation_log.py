@@ -33,6 +33,7 @@ class DNSOperationLogList(Resource):
         super(DNSOperationLogList, self).__init__()
 
     def get(self):
+        """Get zone list."""
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -72,6 +73,7 @@ class DNSOperationLog(Resource):
 
     @marshal_with(log_fields)
     def get(self, log_id):
+        """Get the detail info of the single log."""
         current_log = DBRecord.query.get(log_id)
         if not current_log:
             abort(404, message="当前记录 {} 不存在！".format(str(log_id)))

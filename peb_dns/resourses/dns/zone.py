@@ -59,6 +59,7 @@ class DNSZoneList(Resource):
         super(DNSZoneList, self).__init__()
 
     def get(self):
+        """Get zone list."""
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
@@ -100,6 +101,7 @@ class DNSZoneList(Resource):
         return marshal(results_wrapper, paginated_zone_fields)
 
     def post(self):
+        """Create new zone."""
         if not g.current_user.can_add_zone:
             return dict(message='Failed', 
                 error='无权限！您无权限添加Zone，请联系管理员。'), 403
@@ -151,6 +153,7 @@ class DNSZoneList(Resource):
 
 
     def _add_privilege_for_zone(self, new_zone):
+        """Add privilege for the new zone."""
         access_privilege_name =  'ZONE#' + new_zone.name + \
                         '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
         update_privilege_name =  'ZONE#' + new_zone.name + \
@@ -200,6 +203,7 @@ class DNSZone(Resource):
 
     @marshal_with(zone_fields)
     def get(self, zone_id):
+        """Get the detail info of the indicated zone."""
         current_zone = DBZone.query.get(zone_id)
         if not current_zone:
             abort(404)
@@ -213,6 +217,7 @@ class DNSZone(Resource):
         
 
     def put(self, zone_id):
+        """Update the indicated zone ."""
         current_zone = DBZone.query.get(zone_id)
         if not current_zone:
             abort(404)
@@ -233,6 +238,7 @@ class DNSZone(Resource):
         return dict(message='OK'), 200
 
     def delete(self, zone_id):
+        """Delete the indicated zone."""
         current_zone = DBZone.query.get(zone_id)
         if not current_zone:
             abort(404)
@@ -302,6 +308,7 @@ class DNSZone(Resource):
 
 
     def _remove_zone_privileges(self, current_zone):
+        """Remove all the privileges from the indicated zone."""
         current_zone_records = DBRecord.query.filter(
                     DBRecord.zone_id == current_zone.id).all()
         for current_zone_record in current_zone_records:
@@ -319,6 +326,7 @@ class DNSZone(Resource):
 
 
     def _remove_record_privileges(self, current_zone, current_record):
+        """Remove privilege from records which belong to the indicated zone."""
         current_record_privileges_query = DBPrivilege.query.filter(
                     DBPrivilege.resource_id==current_record.id, 
                     DBPrivilege.resource_type==ResourceType.RECORD

@@ -9,6 +9,7 @@ app = create_app('dev')
 
 
 def init_privilege():
+    """init the default privilege data when you first time start the app."""
     privilege_count = db.session.query(DBPrivilege).count()
     if privilege_count < 1:
         print('initing the default privileges...')
@@ -47,6 +48,7 @@ def init_privilege():
                 db.session.add(view_admin_rp)
 
 def init_user_role(app):
+    """init the default user and role data when you first time start the app."""
     auth_user_count = db.session.query(DBLocalAuth).count()
     local_user_count = db.session.query(DBUser).count()
     if auth_user_count < 1 and local_user_count < 1:

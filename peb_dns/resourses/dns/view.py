@@ -43,6 +43,7 @@ class DNSViewList(Resource):
         super(DNSViewList, self).__init__()
 
     def get(self):
+        """Get view list."""
         args = request.args
         zone_id = args.get('zone_id', type=int)
         current_page = request.args.get('currentPage', 1, type=int)
@@ -77,6 +78,7 @@ class DNSViewList(Resource):
         return marshal(results_wrapper, paginated_view_fields)
 
     def post(self):
+        """Create new view."""
         if not g.current_user.can_add_view:
             return dict(message='Failed', 
                 error='无权限！您无权限添加View，请联系管理员。'), 403
@@ -108,6 +110,7 @@ class DNSViewList(Resource):
         return dict(message='OK'), 201
 
     def _add_privilege_for_view(self, new_view):
+        """Add privilege for the new view."""
         access_privilege_name =  'VIEW#' + new_view.name + \
                     '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
         update_privilege_name =  'VIEW#' + new_view.name + \
@@ -157,6 +160,7 @@ class DNSView(Resource):
 
     @marshal_with(view_fields)
     def get(self, view_id):
+        """Get the detail info of the single view."""
         current_view = DBView.query.get(view_id)
         if not current_view:
             abort(404)
@@ -169,6 +173,7 @@ class DNSView(Resource):
         return current_view
 
     def put(self, view_id):
+        """Update the indicated view."""
         current_view = DBView.query.get(view_id)
         if not current_view:
             abort(404)
@@ -189,6 +194,7 @@ class DNSView(Resource):
         return dict(message='OK'), 200
 
     def delete(self, view_id):
+        """Delete the indicated view."""
         current_view = DBView.query.get(view_id)
         if not current_view:
             abort(404)
@@ -245,6 +251,7 @@ class DNSView(Resource):
         view.make_view('delete', view_list)
 
     def _remove_view_privileges(self, current_view):
+        """Remove all the privileges from the indicated view."""
         current_view_privileges_query = DBPrivilege.query.filter(
                     DBPrivilege.resource_id==current_view.id, 
                     DBPrivilege.resource_type==ResourceType.VIEW

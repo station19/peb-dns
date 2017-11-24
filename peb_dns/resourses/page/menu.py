@@ -20,6 +20,7 @@ class MenuSidebar(Resource):
         super(MenuSidebar, self).__init__()
 
     def get(self):
+        """Get the sidebar menu data."""
         menu_group = self._get_zones()
         menu_group['menu'].append({'title':'Zone管理', 'items':None, 'url':'/dns/zones'})
         menu_group['menu'].append({'title':'View管理', 'items':None, 'url':'/dns/views'})

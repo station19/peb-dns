@@ -63,6 +63,7 @@ class RoleList(Resource):
         super(RoleList, self).__init__()
 
     def get(self):
+        """Get role list."""
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -94,6 +95,7 @@ class RoleList(Resource):
         return marshal(results_wrapper, paginated_role_fields)
 
     def post(self):
+        """Create new role."""
         args = dns_role_common_parser.parse_args()
         role_name = args['name']
         privilege_ids = args['privilege_ids']
@@ -118,12 +120,14 @@ class Role(Resource):
 
     @marshal_with(role_fields)
     def get(self, role_id):
+        """Get the detail info of the indicated role."""
         current_role = DBRole.query.get(role_id)
         if not current_role:
             abort(404)
         return current_role
 
     def put(self, role_id):
+        """Update the indicated role."""
         args = dns_role_common_parser.parse_args()
         role_name = args['name']
         privilege_ids = args['privilege_ids']
@@ -155,6 +159,7 @@ class Role(Resource):
         return dict(message='OK'), 200
 
     def delete(self, role_id):
+        """Delete the indicated role."""
         current_role = DBRole.query.get(role_id)
         if not current_role:
             return dict(message='Failed', 

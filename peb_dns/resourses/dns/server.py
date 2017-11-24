@@ -70,6 +70,7 @@ class DNSServerList(Resource):
     method_decorators = [token_required]
 
     def get(self):
+        """Get record list."""
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
@@ -116,6 +117,7 @@ class DNSServerList(Resource):
         return marshal(results_wrapper, paginated_server_fields)
 
     def post(self):
+        """Create new server."""
         if not g.current_user.can_add_server:
             return dict(message='Failed', 
                 error='无权限！您无权限添加Server，请联系管理员。'), 403
@@ -144,6 +146,7 @@ class DNSServerList(Resource):
         pass
 
     def _add_privilege_for_server(self, new_server):
+        """Add privilege for the new server."""
         access_privilege_name = 'SERVER#' + new_server.host + \
                 '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
         update_privilege_name = 'SERVER#' + new_server.host + \
@@ -193,6 +196,7 @@ class DNSServer(Resource):
 
     @marshal_with(server_fields)
     def get(self, server_id):
+        """Get the detail info of the single server."""
         current_server = DBDNSServer.query.get(server_id)
         if not current_server:
             abort(404)
@@ -206,6 +210,7 @@ class DNSServer(Resource):
 
 
     def put(self, server_id):
+        """Update the indicated server."""
         current_server = DBDNSServer.query.get(server_id)
         if not current_server:
             abort(404)
@@ -225,6 +230,7 @@ class DNSServer(Resource):
         return dict(message='OK'), 200
 
     def delete(self, server_id):
+        """Delete the indicated server."""
         current_server = DBDNSServer.query.get(server_id)
         if not current_server:
             abort(404)
@@ -276,6 +282,7 @@ class DNSServer(Resource):
         db.session.delete(server)
 
     def _remove_server_privileges(self, current_server):
+        """Remove all the privileges from the indicated server."""
         current_record_privileges_query = DBPrivilege.query.filter(
                         DBPrivilege.resource_id==current_server.id, 
                         DBPrivilege.resource_type==ResourceType.SERVER

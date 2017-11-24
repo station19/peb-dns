@@ -76,6 +76,7 @@ class DNSRecordList(Resource):
         super(DNSRecordList, self).__init__()
 
     def get(self):
+        """Get record list."""
         args = request.args
         zone_id = args.get('zone_id')
         if zone_id:
@@ -121,6 +122,7 @@ class DNSRecordList(Resource):
         return marshal(results_wrapper, paginated_record_fields)
 
     def post(self):
+        """Create new record."""
         args = dns_record_common_parser.parse_args()
         current_zone = DBZone.query.get(args['zone_id'])
         if not current_zone:
@@ -163,6 +165,7 @@ class DNSRecordList(Resource):
 
 
     def _add_privilege_for_record(self, current_zone, new_record):
+        """Add privilege for the new record."""
         access_privilege_name = new_record.view_name + '#' + current_zone.name + \
                     '#' + new_record.host + '#' + str(Operation.ACCESS)
         update_privilege_name = new_record.view_name + '#' + current_zone.name + \
@@ -213,6 +216,7 @@ class DNSRecord(Resource):
 
     @marshal_with(record_fields)
     def get(self, record_id):
+        """Get the detail info of the single record."""
         # args = dns_record_common_parser.parse_args()
         current_record = DBRecord.query.get(record_id)
         if not current_record:
@@ -222,6 +226,7 @@ class DNSRecord(Resource):
         return current_record
 
     def put(self, record_id):
+        """Update the indicated record."""
         args = dns_record_common_parser.parse_args()
         current_record = DBRecord.query.get(record_id)
         if not current_record:
@@ -250,6 +255,7 @@ class DNSRecord(Resource):
         return dict(message='OK'), 200
 
     def delete(self, record_id):
+        """Delete the indicated record."""
         current_record = DBRecord.query.get(record_id)
         if not current_record:
             abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
@@ -306,6 +312,7 @@ class DNSRecord(Resource):
 
 
     def _remove_record_privileges(self, current_zone, current_record):
+        """Remove all the privileges from the indicated record."""
         current_record_privileges_query = DBPrivilege.query.filter(
                                 DBPrivilege.resource_id==current_record.id, 
                                 DBPrivilege.resource_type==ResourceType.RECORD

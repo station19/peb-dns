@@ -62,14 +62,14 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
         if not token:
-            return {'message' : 'Token is missing!'}, 403
+            return {'code': 40301, 'message' : 'Token is missing!'}, 403
         try: 
             data = jwt.decode(token, current_app.config['SECRET_KEY'])
         except:
-            return {'message' : 'Token is invalid!'}, 403
+            return {'code': 40301, 'message' : 'Token is invalid!'}, 403
         g.current_user = DBUser.query.filter_by(username=data.get('user')).first()
         if g.current_user is None:
-            return {'message' : 'Token is invalid!'}, 403
+            return {'code': 40301, 'message' : 'Token is invalid!'}, 403
         return f(*args, **kwargs)
     return decorated
 

@@ -16,6 +16,7 @@ class AuthLDAP(Resource):
         super(AuthLDAP, self).__init__()
 
     def post(self):
+        """Auth by ldap user"""
         args = self.reqparse.parse_args()
         username, password = args['username'], args['password']
         if self._auth_via_ldap(username, password):
@@ -67,6 +68,7 @@ class AuthLocal(Resource):
         super(AuthLocal, self).__init__()
 
     def post(self):
+        """Auth by the registered users"""
         args = self.reqparse.parse_args()
         username, password = args['username'], args['password']
         auth_user = DBLocalAuth.query.filter_by(
@@ -100,6 +102,7 @@ class RegisterLocal(Resource):
                                     location = 'json', required=True)
 
     def post(self):
+        """Register a new user"""
         args = self.reqparse.parse_args()
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()

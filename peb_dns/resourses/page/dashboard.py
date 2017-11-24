@@ -23,6 +23,7 @@ class ResourceAmount(Resource):
 
 
 class DNSServerResolveRate(Resource):
+    """Get the resolve rate of all the dns servers."""
     method_decorators = [token_required]
 
     def get(self):
@@ -43,6 +44,7 @@ class DNSServerStatus(Resource):
     method_decorators = [token_required]
 
     def get(self):
+        """Get the server status by server id."""
         args = request.args
         current_server = DBDNSServer.query.get(int(args['server_id']))
         if not current_server:

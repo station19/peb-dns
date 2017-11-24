@@ -83,6 +83,7 @@ class UserList(Resource):
         super(UserList, self).__init__()
 
     def get(self):
+        """Get user list."""
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -123,6 +124,7 @@ class User(Resource):
     @owner_or_admin_required
     @marshal_with(single_user_fields)
     def get(self, user_id):
+        """Get the detail info of the indicated user."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
             abort(404)
@@ -130,6 +132,7 @@ class User(Resource):
 
     @owner_or_admin_required
     def put(self, user_id):
+        """Update the indicated user."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return dict(message='Failed', 
@@ -165,6 +168,7 @@ class User(Resource):
 
     @admin_required
     def delete(self, user_id):
+        """Delete the indicated role."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return dict(message='Failed', 

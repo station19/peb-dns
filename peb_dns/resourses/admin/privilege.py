@@ -54,6 +54,7 @@ class PrivilegeList(Resource):
     method_decorators = [admin_required, token_required] 
 
     def get(self):
+        """Get privilege list."""
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -95,7 +96,8 @@ class PrivilegeList(Resource):
         return marshal(results_wrapper, paginated_privilege_fields)
 
 
-    def post(self):        
+    def post(self):
+        """Create new privilege."""        
         args = dns_privilege_common_parser.parse_args()
         privilege_name = args['name']
         operation = args['operation']
@@ -145,12 +147,14 @@ class Privilege(Resource):
 
     @marshal_with(privilege_fields)
     def get(self, privilege_id):
+        """Get the detail info of the indicated privilege."""
         current_p = DBPrivilege.query.get(privilege_id)
         if not current_p:
             abort(404)
         return current_p
 
     def put(self, privilege_id):
+        """Update the indicated privilege."""
         current_privilege = DBPrivilege.query.get(privilege_id)
         if not current_privilege:
             return dict(
@@ -178,6 +182,7 @@ class Privilege(Resource):
 
 
     def delete(self, privilege_id):
+        """Delete the indicated privilege."""
         current_privilege = DBPrivilege.query.get(privilege_id)
         if not current_privilege:
             return dict(
