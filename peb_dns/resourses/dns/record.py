@@ -143,26 +143,38 @@ class DNSRecordList(Resource):
                 error='创建失败 !重复的记录！！同样的Zone，同样的主机，\
                     同样的View 的记录只能存在一个。'), 400
         args['creator'] = g.current_user.username
-        new_record = DBRecord(**args)
-        db.session.add(new_record)
-        db.session.flush()
-        log = DBOperationLog(
-                operation_type='添加', 
-                operator=args['creator'], 
-                target_type='Record', 
-                target_name=new_record.host,
-                target_id=int(new_record.id), 
-                target_detail=new_record.get_content_str())
-        db.session.add(log)
-        try:
-            new_record.create(current_zone, args)
-        except Exception as e:
-            db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
+        if 'default' == args['view_name']:
+            v_name_list = current_zone.view_name_list
+        else:
+            v_name_list = [args['view_name']]
+        for v_name in v_name_list:
+            new_record = DBRecord(
+                host=args['host'], 
+                record_type=args['record_type'],
+                ttl = args['ttl'],
+                value = args['value'],
+                view_name = v_name,
+                comment = args['comment'],
+                zone_id = current_zone.id
+                )
+            db.session.add(new_record)
+            db.session.flush()
+            log = DBOperationLog(
+                    operation_type='添加', 
+                    operator=args['creator'], 
+                    target_type='Record', 
+                    target_name=new_record.host,
+                    target_id=int(new_record.id), 
+                    target_detail=new_record.get_content_str())
+            db.session.add(log)
+            try:
+                new_record.create(current_zone, args)
+            except Exception as e:
+                db.session.rollback()
+                return dict(message='Failed', 
+                    error="{e}".format(e=str(e))), 400
         db.session.commit()
         return dict(message='OK'), 201
-
 
     def _add_privilege_for_record(self, current_zone, new_record):
         """Add privilege for the new record."""
