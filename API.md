@@ -946,17 +946,13 @@ URL       |请求方式
 #### 返回格式：
 
 ```json
-修改成功
+获取成功
 状态码： 200
 {
-    "message":"OK"
-} 
-修改失败
-状态码： 400
-{
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "message": "OK",
+    "bind_conf": "bind_conf\nbind_conf\nbind_conf\nbind_conf\nbind_conf\n"
+}
+
 
 ```
 
@@ -980,9 +976,13 @@ bind_conf    |string     |是       |无     |line1\nline2\nline3      |BIND主�
 状态码： 200
 {
     "message": "OK",
-    "bind_conf": "bind_conf\nbind_conf\nbind_conf\nbind_conf\nbind_conf\n"
 }
-
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+}
 ```
 
 ## 六，操作日志
