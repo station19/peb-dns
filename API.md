@@ -697,6 +697,7 @@ view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个vi
 
 
 ### 3.5，删除指定ID的DNS域名接口
+##### 注：删除zone后，zone下面的record也将一并删除
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
@@ -929,3 +930,709 @@ URL       |请求方式
     "error": "xxxx"
 } 
 ```
+
+
+## 五，BIND主配置文件
+### 5.1，BIND主配置文件内容获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/bind_conf        |get 
+
+
+#### 参数列表：
+无
+
+#### 返回格式：
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+
+```
+
+### 5.2，BIND主配置文件内容编辑接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/bind_conf        |post
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+bind_conf    |string     |是       |无     |line1\nline2\nline3      |BIND主配置文件内容
+
+
+#### 返回格式：
+
+```json
+修改成功
+状态码： 200
+{
+    "message": "OK",
+    "bind_conf": "bind_conf\nbind_conf\nbind_conf\nbind_conf\nbind_conf\n"
+}
+
+```
+
+## 六，操作日志
+### 6.1，操作日志列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/oplogs        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |日志ID
+operation_type    |string     |否       |无     |创建      |操作类型，添加/修改/删除
+operator    |string     |否       |无     |user1      |操作人
+target_type    |string     |否       |无     |2      |资源类型，Server/View/Zone/Record
+target_name    |string     |否       |无     |aa.com      |资源名称
+target_id    |string     |否       |无     |12      |资源ID
+
+
+#### 返回格式：
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 37,
+    "operation_logs": [
+        {
+            "id": 37,
+            "operation_time": "2017-11-29 16:17:46",
+            "operation_type": "修改",
+            "operator": "LIJIAJIA873",
+            "target_type": "Zone",
+            "target_name": "xxx123.com",
+            "target_id": "6",
+            "target_detail": "修改前：\nid: 6\nZone名称: xxx123.com\nZone归属: 内部域名\nZone类型: forward only\n关联View: ['wqerqwer', 'vvvv111111111', 'jtest']\n"
+        },
+        {
+            "id": 36,
+            "operation_time": "2017-11-29 14:02:00",
+            "operation_type": "添加",
+            "operator": "LIJIAJIA873",
+            "target_type": "Server",
+            "target_name": "ooo",
+            "target_id": "6",
+            "target_detail": "id: 6\n主机名: ooo\nIP地址: 0.0.0.5\n环境: anhouse\nDNS类型: salve\n"
+        },
+        {
+            "id": 35,
+            "operation_time": "2017-11-29 09:34:49",
+            "operation_type": "修改",
+            "operator": "LIJIAJIA873",
+            "target_type": "View",
+            "target_name": "jtest",
+            "target_id": "5",
+            "target_detail": "修改前：\nid: 5\nView名称: jtest\nACL: 10.21.21.25\n"
+        }
+    ],
+    "current_page": 1
+}
+
+```
+
+
+# 后台管理系统相关
+## 一，用户
+##### 注：后台管理相关资源只有 admin 权限才能访问
+### 1.1，用户列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/users        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |用户ID
+email    |string     |否       |无     |dachui@qq.com      |邮箱
+username    |string     |否       |无     |user2      |用户名
+chinese_name    |string     |否       |无     |王大锤      |中文名
+cellphone    |string     |否       |无     |18666666666      |手机号码
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 7,
+    "users": [
+        {
+            "id": 7,
+            "email": "xxx@qq.com",
+            "username": "test111",
+            "chinese_name": "",
+            "cellphone": "",
+            "position": "",
+            "location": "",
+            "member_since": "2017-11-29 14:16:27",
+            "last_seen": "2017-11-29 14:16:27",
+            "roles": []
+        },
+        {
+            "id": 6,
+            "email": "xx",
+            "username": "xiejuan205",
+            "chinese_name": "xx",
+            "cellphone": "",
+            "position": "xx",
+            "location": "xx",
+            "member_since": "2017-11-28 11:17:13",
+            "last_seen": "2017-11-28 11:17:13",
+            "roles": [
+                {
+                    "id": 1,
+                    "name": "admin"
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "email": "xx",
+            "username": "zhuwen",
+            "chinese_name": "xx",
+            "cellphone": "xx",
+            "position": "xx",
+            "location": "xx",
+            "member_since": "2017-11-28 11:06:08",
+            "last_seen": "2017-11-28 11:06:08",
+            "roles": [
+                {
+                    "id": 1,
+                    "name": "admin"
+                }
+            ]
+        }
+    ],
+    "current_page": 1
+}
+
+```
+
+
+### 1.2，获取指定ID的用户信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/users/\<int: user_id>        |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "id": 3,
+    "email": "xx",
+    "username": "test123",
+    "chinese_name": "",
+    "cellphone": "xx",
+    "position": "xx",
+    "location": "",
+    "member_since": "2017-11-23 18:24:22",
+    "last_seen": "2017-11-23 18:24:22",
+    "can_add_server": true,
+    "can_add_view": true,
+    "can_add_zone": true,
+    "can_edit_bind_conf": true,
+    "roles": [
+        {
+            "id": 1,
+            "name": "admin"
+        }
+    ]
+}
+
+```
+
+
+### 1.3，修改指定ID的用户信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/users/\<int: user_id>        |get 
+
+
+#### 参数列表：
+role_ids    |list     |否      |无     |[1,2,3]      |当前用户关联user id
+position    |string     |否       |无     |python工程师      |职位
+chinese_name    |string     |否       |无     |王大锤      |中文名
+cellphone    |string     |否       |无     |18666666666      |手机号
+location    |string     |否       |无     |comment      |家庭住址
+
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+
+```
+
+### 1.4，删除指定ID的用户接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/users/\<int: user_id>        |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+
+```
+
+
+## 二，角色
+##### 注：后台管理相关资源只有 admin 权限才能访问
+### 2.1，角色列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/roles        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |角色ID
+name    |string     |否       |无     |user2      |角色名
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 7,
+    "roles": [
+        {
+            "id": 6,
+            "name": "zone_admin",
+            "privileges": [
+                {
+                    "id": 2,
+                    "name": "ZONE_ADD",
+                    "operation": 0,
+                    "resource_type": 0,
+                    "resource_id": 0,
+                    "comment": null
+                },
+                {
+                    "id": 6,
+                    "name": "ZONE#xcvwretwgvrfv3wf.com#UPDATE",
+                    "operation": 1,
+                    "resource_type": 2,
+                    "resource_id": 1,
+                    "comment": null
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "server_admin",
+            "privileges": [
+                {
+                    "id": 1,
+                    "name": "SERVER_ADD",
+                    "operation": 0,
+                    "resource_type": 0,
+                    "resource_id": 0,
+                    "comment": null
+                },
+                {
+                    "id": 17,
+                    "name": "SERVER#s1#ACCESS",
+                    "operation": 0,
+                    "resource_type": 0,
+                    "resource_id": 1,
+                    "comment": null
+                }
+            ]
+        }
+    ],
+    "current_page": 1
+}
+```
+
+### 2.2，创建新角色接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/roles        |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|-----------|-----------|-----------|-----------
+name    |string     |是       |无     |role123      |角色名称
+privilege_ids    |list     |是       |无     |[1,2,3]      |新建角色所拥有的权限
+
+
+#### 返回格式：
+
+```json
+创建成功
+状态码： 200
+{
+    "message":"OK"
+} 
+创建失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+
+```
+
+### 2.3，获取指定ID的角色信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/roles/\<int:role_id>       |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "id": 3,
+    "name": "server_guest",
+    "privileges": [
+        {
+            "id": 17,
+            "name": "SERVER#s1#ACCESS",
+            "operation": 0,
+            "resource_type": 0,
+            "resource_id": 1,
+            "comment": null
+        },
+        {
+            "id": 20,
+            "name": "SERVER#s2#ACCESS",
+            "operation": 0,
+            "resource_type": 0,
+            "resource_id": 2,
+            "comment": null
+        }
+    ]
+}
+```
+
+
+### 2.4，修改指定ID的角色接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/roles/\<int:role_id>        |put 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+name    |string     |是       |无     |role123      |角色名称
+privilege_ids    |list     |是       |无     |[1,2,3]      |新建角色所拥有的权限
+
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+### 2.5，删除指定ID的角色接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/roles/\<int:role_id>        |delete 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+
+
+
+## 三，权限
+##### 注：后台管理相关资源只有 admin 权限才能访问
+### 3.1，权限列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/privileges        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |权限ID
+name    |string     |否       |无     |p1      |权限名
+operation    |string     |否       |无     |4      |操作类型，访问（0），修改（1），删除（2）
+resource_type    |string     |否       |无     |3      |操作资源类型，服务器（0），View(1), Zone(2), Record(3)
+resource_id    |int     |否       |无     |2      |资源ID
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 43,
+    "privileges": [
+        {
+            "id": 55,
+            "name": "SERVER#ooo#DELETE",
+            "operation": 2,
+            "resource_type": 0,
+            "resource_id": 6,
+            "comment": null
+        },
+        {
+            "id": 54,
+            "name": "SERVER#ooo#UPDATE",
+            "operation": 1,
+            "resource_type": 0,
+            "resource_id": 6,
+            "comment": null
+        },
+        {
+            "id": 53,
+            "name": "SERVER#ooo#ACCESS",
+            "operation": 0,
+            "resource_type": 0,
+            "resource_id": 6,
+            "comment": null
+        }
+    ],
+    "current_page": 1
+}
+```
+
+### 3.2，创建新权限接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/privileges        |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|-----------|-----------|-----------|-----------
+name    |string     |是       |无     |p123      |角色名称
+operation    |int     |否       |无     |0      |操作类型，访问（0），修改（1），删除（2）
+resource_type    |int     |否       |无     |6      |操作资源类型，服务器（0），View(1), Zone(2), Record(3)
+resource_id    |int     |否       |无     |5      |资源ID
+comment    |string     |否       |无     |aa.com的删除权限      |备注
+
+
+#### 返回格式：
+
+```json
+创建成功
+状态码： 200
+{
+    "message":"OK"
+} 
+创建失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+
+```
+
+### 3.3，获取指定ID的权限信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/privileges/\<int:privilege_id>       |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "id": 55,
+    "name": "SERVER#ooo#DELETE",
+    "operation": 2,
+    "resource_type": 0,
+    "resource_id": 6,
+    "comment": null
+}
+```
+
+
+### 3.4，修改指定ID的权限接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/privileges/\<int:privilege_id>        |put 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+name    |string     |是       |无     |p123      |角色名称
+operation    |int     |否       |无     |0      |操作类型，访问（0），修改（1），删除（2）
+resource_type    |int     |否       |无     |6      |操作资源类型，服务器（0），View(1), Zone(2), Record(3)
+resource_id    |int     |否       |无     |5      |资源ID
+comment    |string     |否       |无     |aa.com的删除权限      |备注
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+### 3.5，删除指定ID的权限接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/admin/privileges/\<int:privilege_id>        |delete 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
