@@ -1,1 +1,931 @@
-<p> </p><h3 id="DNS平台V2后端接口文档-一，认证：">一， 认证：</h3><p>1，LDAP认证：</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com/auth/login_ldap</a></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 73.9205%;"><colgroup><col style="width: 11.0769%;"/><col style="width: 10.3846%;"/><col style="width: 16.0769%;"/><col style="width: 17.3846%;"/><col style="width: 45.0769%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh"><span>发送参数字段</span></th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">通过LDAP方式认证</td><td colspan="1" class="confluenceTd">{<br/>&quot;username&quot;: &quot;xxxx&quot;,<br/>&quot;password&quot;: &quot;xxxxx&quot;<br/>}</td><td colspan="1" class="confluenceTd"><p>{&quot;<span style="color: rgb(206,145,120);">token</span>&quot;:&quot;xxxxxxx&quot;, &quot;<span style="color: rgb(206,145,120);">user_info</span>&quot;:&quot;<span style="color: rgb(206,145,120);">xxxxxx</span>&quot;} ，200 认证成功</p><p>{&quot;<span style="color: rgb(206,145,120);">message</span>&quot;:&quot;<span style="color: rgb(206,145,120);">认证失败！</span>&quot;} ，401 认证失败</p></td></tr></tbody></table></div><p><br/>2，本地用户认证：</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/auth/login_local</a></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 69.5455%;"><colgroup><col style="width: 11.8561%;"/><col style="width: 11.0384%;"/><col style="width: 17.0891%;"/><col style="width: 18.3974%;"/><col style="width: 41.619%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh"><span>作用</span></th><th colspan="1" class="confluenceTh"><span>发送参数字段</span></th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">本地已注册用户认证</td><td colspan="1" class="confluenceTd">{<br/>&quot;username&quot;: &quot;xxxx&quot;,<br/>&quot;password&quot;: &quot;xxxxx&quot;<br/>}</td><td colspan="1" class="confluenceTd"><p>{&quot;<span style="color: rgb(206,145,120);">token</span>&quot;:&quot;xxxxxxx&quot;, <span>&quot;</span><span style="color: rgb(206,145,120);">user_info</span><span>&quot;:&quot;</span><span style="color: rgb(206,145,120);">xxxxxx</span><span>&quot;</span>} ，200 认证成功</p><p>{&quot;<span style="color: rgb(206,145,120);">message</span>&quot;:&quot;<span style="color: rgb(206,145,120);">认证失败！</span>&quot;} ，401 认证失败</p></td></tr></tbody></table></div><p> </p><p>3，本地新用户注册：</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/auth/register_local</a></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 79.5455%;"><colgroup><col style="width: 10.436%;"/><col style="width: 9.72123%;"/><col style="width: 13.5096%;"/><col style="width: 29.8785%;"/><col style="width: 36.4546%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh"><span>作用</span></th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">本地用户注册接口</td><td colspan="1" class="confluenceTd"><p>{<br/>&quot;username&quot;: &quot;xxxx&quot;,<br/>&quot;password&quot;: &quot;xxxxx&quot;, #至少6位</p><p><span>&quot;<span>password2</span>&quot;: &quot;xxxx&quot;, #跟password值相等才能提交表单</span><br/><span>&quot;email&quot;: &quot;xxx.qq.com&quot;</span><br/>}</p></td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;OK&quot;} ，200 注册成功</p><p><span>{&quot;message&quot;:&quot;Failed&quot;, error=&quot;认证失败！&quot;}</span> ，400 注册失败</p></td></tr></tbody></table></div><p> </p><p> </p><h3 id="DNS平台V2后端接口文档-二，Dashboard页面：">二，Dashboard页面：</h3><p>1，边侧菜单栏</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/page/</a>menu_sidebar</p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 62.0455%;"><colgroup><col style="width: 13.1989%;"/><col style="width: 12.374%;"/><col style="width: 17.9652%;"/><col style="width: 20.7149%;"/><col style="width: 35.747%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <span>是</span></td><td colspan="1" class="confluenceTd">获取左侧菜单栏数据</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <a href="/download/attachments/70281896/menubar.json?version=1&amp;modificationDate=1510049898000&amp;api=v2" data-linked-resource-id="70283300" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="menubar.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">menubar.json</a></td></tr></tbody></table></div><p> </p><p>2，资产总量统计</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/page/</a><span style="color: rgb(206,145,120);">resource_amount</span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 64.4886%;"><colgroup><col style="width: 12.6984%;"/><col style="width: 11.9048%;"/><col style="width: 21.0758%;"/><col style="width: 19.9295%;"/><col style="width: 34.3915%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取各个资产总数数据</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;record_amount&quot;: 43,<br/> &quot;zone_amount&quot;: 14,<br/> &quot;view_amount&quot;: 4,<br/> &quot;server_amount&quot;: 2<br/>}</p></td></tr></tbody></table></div><p> </p><p>3，曲线图数据（服务器解析量）</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/page/</a><span style="color: rgb(206,145,120);">servers_resolve_rate</span></p><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 80.1705%;"><colgroup><col style="width: 10.2837%;"/><col style="width: 9.50355%;"/><col style="width: 17.8014%;"/><col style="width: 34.7518%;"/><col style="width: 27.6596%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"><p>获取各个服务器各个时段的解析量，为曲线图提供数据。</p></td><td colspan="1" class="confluenceTd">{<br/>&quot;start_time&quot;: &quot;<span style="color: rgb(80,80,80);">2016-11-22-14-39</span>&quot;,<br/>&quot;end_time&quot;: &quot;<span style="color: rgb(80,80,80);">2016-11-02-14-39</span>&quot;    #可以没有，没有默认是当前时间。<br/>}</td><td colspan="1" class="confluenceTd"><p><a href="/download/attachments/70281896/resolve_rate.json?version=1&amp;modificationDate=1510050183000&amp;api=v2" data-linked-resource-id="70283304" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="resolve_rate.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">resolve_rate.json</a></p></td></tr></tbody></table></div><p> </p><p>4，服务器状态</p><p>接口地址：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/page/</a><span style="color: rgb(206,145,120);">server_status</span></p><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 81.0795%;"><colgroup><col style="width: 10.0982%;"/><col style="width: 9.46704%;"/><col style="width: 18.7237%;"/><col style="width: 34.3619%;"/><col style="width: 27.3492%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"><p>获取服务器状态数据：</p><p>进程，端口，解析</p><p>三个指标是否正常。</p></td><td colspan="1" class="confluenceTd">{<br/>&quot;server_id&quot;: 123,<br/>}</td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;port&quot;: &quot;1&quot;, #1为正常，0为异常<br/> &quot;process&quot;: &quot;1&quot;,<br/> &quot;resolve&quot;: &quot;1&quot;<br/>}</p></td></tr></tbody></table></div><p> </p><p>5，操作日志（operation_logs）</p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 81.4773%;"><colgroup><col style="width: 10.0488%;"/><col style="width: 9.4208%;"/><col style="width: 19.1207%;"/><col style="width: 34.194%;"/><col style="width: 27.2156%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取操作日志列表。</td><td colspan="1" class="confluenceTd"><p>{<br/>&quot;currentPage&quot;: 3, #不传默认是1</p><p><span>&quot;pageSize&quot;: 10, #不传默认是10</span><br/>}</p></td><td colspan="1" class="confluenceTd"><p><a href="/download/attachments/70281896/oplogs.json?version=1&amp;modificationDate=1510050453000&amp;api=v2" data-linked-resource-id="70283309" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="oplogs.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">oplogs.json</a></p></td></tr></tbody></table></div><p> </p><h3 id="DNS平台V2后端接口文档-三，资源：">三，资源：</h3><p>1，Server</p><div><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">servers </span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取server列表</td><td colspan="1" class="confluenceTd"> <p>{<br/>&quot;currentPage&quot;: 3, #不传默认是1</p><p>&quot;pageSize&quot;: 10, #不传默认是10<br/>}</p></td><td colspan="1" class="confluenceTd"> <a href="/download/attachments/70281896/server_list.json?version=1&amp;modificationDate=1510050904000&amp;api=v2" data-linked-resource-id="70283310" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="server_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">server_list.json</a></td></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">添加新的server</td><td colspan="1" class="confluenceTd">{<br/> &quot;host&quot;: &quot;s1&quot;,<br/> &quot;ip&quot;: &quot;0.0.0.0&quot;,<br/> &quot;env&quot;: &quot;anhouse&quot;,<br/> &quot;dns_server_type&quot;: &quot;master&quot;,<br/> &quot;zb_process_itemid&quot;: &quot;321574&quot;,<br/> &quot;zb_port_itemid&quot;: &quot;321573&quot;,<br/> &quot;zb_resolve_itemid&quot;: &quot;321572&quot;,<br/> &quot;zb_resolve_rate_itemid&quot;: &quot;321562&quot;<br/>}</td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;<span style="color: rgb(206,145,120);">Failed</span>&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">servers</span><span style="color: rgb(206,145,120);">/&lt;int:server_id&gt;</span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 8.30895%;"/><col style="width: 7.6653%;"/><col style="width: 11.0591%;"/><col style="width: 17.7882%;"/><col style="width: 22.4693%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">获取ID为<span style="color: rgb(206,145,120);">server_id</span>的server详情</td><td colspan="1" class="confluenceTd">无</td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;id&quot;: 20,<br/> &quot;host&quot;: &quot;s4&quot;,<br/> &quot;ip&quot;: &quot;0.0.0.4&quot;,<br/> &quot;env&quot;: &quot;dev&quot;,<br/> &quot;dns_server_type&quot;: &quot;master&quot;,<br/> &quot;zb_process_itemid&quot;: &quot;319318&quot;,<br/> &quot;zb_port_itemid&quot;: &quot;189252&quot;,<br/> &quot;zb_resolve_itemid&quot;: &quot;213880&quot;,<br/> &quot;zb_resolve_rate_itemid&quot;: &quot;189243&quot;,<br/> &quot;can_update&quot;: true,<br/> &quot;can_delete&quot;: true<br/> }</p></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"> 修改<span>ID为</span><span style="color: rgb(206,145,120);">server_id</span><span>的server</span></td><td colspan="1" class="confluenceTd"> <div><p>{<br/> &quot;host&quot;: &quot;s1&quot;,<br/> &quot;ip&quot;: &quot;0.0.0.0&quot;,<br/> &quot;env&quot;: &quot;anhouse&quot;,<br/> &quot;dns_server_type&quot;: &quot;master&quot;,<br/> &quot;zb_process_itemid&quot;: &quot;321574&quot;,<br/> &quot;zb_port_itemid&quot;: &quot;321573&quot;,<br/> &quot;zb_resolve_itemid&quot;: &quot;321572&quot;,<br/> &quot;zb_resolve_rate_itemid&quot;: &quot;321562&quot;<br/>}</p></div></td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">  删除<span>ID为</span><span style="color: rgb(206,145,120);">server_id</span><span>的server</span></td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div></div><p>2，View</p><div><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">views</span><span style="color: rgb(206,145,120);"> </span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取<span>view</span>列表</td><td colspan="1" class="confluenceTd"> <p>{<br/>&quot;currentPage&quot;: 3, #不传默认是1</p><p>&quot;pageSize&quot;: 10, #不传默认是10<br/>}</p></td><td colspan="1" class="confluenceTd"> <a href="/download/attachments/70281896/view_list.json?version=1&amp;modificationDate=1510051152000&amp;api=v2" data-linked-resource-id="70283314" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="view_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">view_list.json</a></td></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">添加新的view</td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;name&quot;: &quot;v6&quot;,<br/> &quot;acl&quot;: &quot;line1\nline2\nline3&quot;<br/>}</p></td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;<span style="color: rgb(206,145,120);">Failed</span>&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">views</span><span style="color: rgb(206,145,120);">/&lt;int:<span>view</span>_id&gt;</span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 8.30895%;"/><col style="width: 7.6653%;"/><col style="width: 11.0591%;"/><col style="width: 17.7882%;"/><col style="width: 22.4693%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">获取ID为<span style="color: rgb(206,145,120);">view</span><span style="color: rgb(206,145,120);">_id</span>的<span>view</span>详情</td><td colspan="1" class="confluenceTd">无</td><td colspan="1" class="confluenceTd"><div><div>{</div><div><span style="color: rgb(156,220,254);">&quot;id&quot;</span>: <span style="color: rgb(181,206,168);">1</span>,</div><div><span style="color: rgb(156,220,254);">&quot;name&quot;</span>: <span style="color: rgb(206,145,120);">&quot;v1&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;acl&quot;</span>: <span style="color: rgb(206,145,120);">&quot;line1\nline2\nline3&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;can_update&quot;</span>: <span style="color: rgb(86,156,214);">false</span>,</div><div><span style="color: rgb(156,220,254);">&quot;can_delete&quot;</span>: <span style="color: rgb(86,156,214);">false</span></div><div>}</div></div></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"> 修改<span>ID为</span><span style="color: rgb(206,145,120);">view</span><span style="color: rgb(206,145,120);">_id</span><span>的</span><span>view</span></td><td colspan="1" class="confluenceTd"> <div><p>{<br/> &quot;name&quot;: &quot;v6&quot;,<br/> &quot;acl&quot;: &quot;line1\nline2\nline3&quot;<br/>}</p></div></td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">  删除<span>ID为</span><span style="color: rgb(206,145,120);">view</span><span style="color: rgb(206,145,120);">_id</span><span>的</span><span>view</span></td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div></div><p> </p><p>3，Zone</p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">zones</span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 100.0%;"><colgroup><col style="width: 10.4036%;"/><col style="width: 9.72143%;"/><col style="width: 14.1558%;"/><col style="width: 38.3741%;"/><col style="width: 15.3496%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取zone列表</td><td colspan="1" class="confluenceTd"> <p>{<br/>&quot;currentPage&quot;: 3, #不传默认是1</p><p>&quot;pageSize&quot;: 10, #不传默认是10<br/>}</p></td><td colspan="1" class="confluenceTd"> <a href="/download/attachments/70281896/zone_list.json?version=1&amp;modificationDate=1510051387000&amp;api=v2" data-linked-resource-id="70283316" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="zone_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">zone_list.json</a></td></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">添加新的<span>zone</span></td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">name  #域名</span></div><div><span style="color: rgb(206,145,120);">zone_group  #域名归类 内部（1）/外部（0）/劫持（2）</span></div><div><div><span style="color: rgb(206,145,120);">zone_type # 域名类别   master/<span class="html-attribute-value">forward only</span></span></div></div><div><span style="color: rgb(206,145,120);">forwarders  #转发域名IP地址  </span></div><div><span style="color: rgb(206,145,120);">view_ids   #关联区域   多选框，需要获取view列表，提交表单提交多个 view_id </span></div><div>}</div></td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;<span style="color: rgb(206,145,120);">Failed</span>&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/<span style="color: rgb(206,145,120);">zones</span></a><span style="color: rgb(206,145,120);">/&lt;int:<span>zone</span>_id&gt;</span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 8.30895%;"/><col style="width: 7.6653%;"/><col style="width: 11.0591%;"/><col style="width: 17.7882%;"/><col style="width: 22.4693%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><p><span>获取ID为<span style="color: rgb(206,145,120);">zone</span><span style="color: rgb(206,145,120);">_id</span></span><span>的zone</span><span>详情</span></p></td><td colspan="1" class="confluenceTd">无</td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;id&quot;: 10,<br/> &quot;name&quot;: &quot;<a href="http://z10.com" class="external-link" rel="nofollow">z10.com</a>&quot;,<br/> &quot;zone_group&quot;: 1,<br/> &quot;zone_type&quot;: &quot;master&quot;,<br/> &quot;forwarders&quot;: &quot;line1\nline2\nline3&quot;,<br/> &quot;view_name_list&quot;: &quot;['v1', 'v2', 'v3']&quot;,<br/> &quot;can_update&quot;: true,<br/> &quot;can_delete&quot;: true,<br/> &quot;view_ids&quot;: [1,2,3]<br/> },</p></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"> 修改<span>ID为<span style="color: rgb(206,145,120);">zone</span><span style="color: rgb(206,145,120);">_id</span></span><span>的zone</span></td><td colspan="1" class="confluenceTd"> <div><div>{</div><div><span style="color: rgb(206,145,120);">name  #域名</span></div><div><span style="color: rgb(206,145,120);">zone_group  #域名归类 内部（1）/外部（0）/劫持（2）</span></div><div><div><span style="color: rgb(206,145,120);">zone_type # 域名类别   master/<span class="html-attribute-value">forward only</span></span></div></div><div><span style="color: rgb(206,145,120);">forwarders  #转发域名IP地址  </span></div><div><span style="color: rgb(206,145,120);">view_ids   #关联区域   多选框，需要获取view列表，提交表单提交多个 view_id </span></div><div>}</div></div></td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">  删除<span>ID为<span style="color: rgb(206,145,120);">zone</span><span style="color: rgb(206,145,120);">_id</span></span><span>的zone</span></td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div><p> </p><p> </p><p>4，Record</p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">records</span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"><p><span>获取ID为<span style="color: rgb(80,80,80);">zone_id值的</span>zone下的</span></p><p><span>records列表</span></p></td><td colspan="1" class="confluenceTd"> <p>{</p><p>&quot;<span style="color: rgb(80,80,80);">zone_id</span>&quot;: <span style="color: rgb(80,80,80);">5</span><br/>&quot;currentPage&quot;: 3, #不传默认是1</p><p>&quot;pageSize&quot;: 10, #不传默认是10<br/>}</p></td><td colspan="1" class="confluenceTd"> <a href="/download/attachments/70281896/record_list.json?version=1&amp;modificationDate=1510051613000&amp;api=v2" data-linked-resource-id="70283317" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="record_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">record_list.json</a></td></tr><tr><td class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><p>在<span>ID为</span><span style="color: rgb(80,80,80);">zone_id值的</span><span>zone下</span></p><p><span> </span>添加新的record</p></td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;host&quot;: &quot;z9-h4&quot;,<br/> &quot;record_type&quot;: &quot;A&quot;,<br/> &quot;ttl&quot;: &quot;600&quot;,<br/> &quot;value&quot;: &quot;0.0.0.0&quot;,<br/> &quot;view_name&quot;: &quot;v2&quot;,<br/> &quot;comment&quot;: &quot;哈哈哈哈&quot;,<br/> &quot;zone_id&quot;: 9<br/>}</p></td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;<span style="color: rgb(206,145,120);">Failed</span>&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">records</span><span style="color: rgb(206,145,120);">/&lt;int:<span>record</span>_id&gt;</span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 8.30895%;"/><col style="width: 7.6653%;"/><col style="width: 11.0591%;"/><col style="width: 17.7882%;"/><col style="width: 22.4693%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">获取单个<span>record</span>详情</td><td colspan="1" class="confluenceTd">无</td><td colspan="1" class="confluenceTd"><div><div>{</div><div><span style="color: rgb(156,220,254);">&quot;zone_id&quot;</span>: <span style="color: rgb(181,206,168);">5</span>,</div><div><span style="color: rgb(156,220,254);">&quot;ttl&quot;</span>: <span style="color: rgb(206,145,120);">&quot;86400&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;host&quot;</span>: <span style="color: rgb(206,145,120);">&quot;@&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;id&quot;</span>: <span style="color: rgb(181,206,168);">21</span>,</div><div><span style="color: rgb(156,220,254);">&quot;value&quot;</span>: <span style="color: rgb(206,145,120);">&quot;<a href="http://master.z5.com" class="external-link" rel="nofollow">master.z5.com</a>.&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;record_type&quot;</span>: <span style="color: rgb(206,145,120);">&quot;NS&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;view_name&quot;</span>: <span style="color: rgb(206,145,120);">&quot;v1&quot;</span>,</div><div><span style="color: rgb(156,220,254);">&quot;comment&quot;</span>: <span style="color: rgb(86,156,214);">null</span>,</div><div><span style="color: rgb(156,220,254);">&quot;can_update&quot;</span>: <span style="color: rgb(86,156,214);">true</span>,</div><div><span style="color: rgb(156,220,254);">&quot;can_delete&quot;</span>: <span style="color: rgb(86,156,214);">true</span></div><div>}</div></div></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"> 修改<span>单个</span><span>record</span></td><td colspan="1" class="confluenceTd"> <div><p>{<br/> &quot;host&quot;: &quot;z9-h444&quot;,<br/> &quot;record_type&quot;: &quot;A&quot;,<br/> &quot;ttl&quot;: &quot;600&quot;,<br/> &quot;value&quot;: &quot;0.0.0.0&quot;,<br/> &quot;view_name&quot;: &quot;v2&quot;,<br/> &quot;comment&quot;: &quot;哈哈哈哈&quot;,<br/> &quot;zone_id&quot;: 9<br/>}</p></div></td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">删除<span>单个</span><span>record</span></td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div><p> </p><p>5，操作日志（operation_logs）</p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">oplogs</span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取operation_log 列表</td><td colspan="1" class="confluenceTd"> <p>{</p><p>&quot;currentPage&quot;: 3, #不传默认是1</p><p>&quot;pageSize&quot;: 10, #不传默认是10<br/>}</p></td><td colspan="1" class="confluenceTd"><a href="/download/attachments/70281896/oplogs_list.json?version=1&amp;modificationDate=1510051777000&amp;api=v2" data-linked-resource-id="70283320" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="oplogs_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">oplogs_list.json</a></td></tr></tbody></table></div><p> </p></div><p>5，BIND配置文件维护</p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">bind_conf</span></div><div><span style="color: rgb(206,145,120);"><br/></span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取bind主配置文件内容</td><td colspan="1" class="confluenceTd"><p>无</p><p> </p></td><td colspan="1" class="confluenceTd"><p>成功 {&quot;message&quot;: &quot;OK&quot;, &quot;bind_conf&quot;: &quot;xxxxx&quot;}, 200</p><p>失败 {&quot;message&quot;: &quot;Failed&quot;, &quot;error&quot;: &quot;xxxxx&quot;}, 400</p></td></tr><tr><td colspan="1" class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><span>设置bind主配置文件内容</span></td><td colspan="1" class="confluenceTd"><p>{<span>&quot;bind_conf&quot;: &quot;xxxxx&quot;</span>}</p></td><td colspan="1" class="confluenceTd"><p>成功 {&quot;message&quot;: &quot;OK&quot;}, 200</p><p>失败 {&quot;message&quot;: &quot;Failed&quot;, &quot;error&quot;: &quot;xxxxx&quot;}, 400</p></td></tr></tbody></table></div><p> </p></div><p> </p><h3 id="DNS平台V2后端接口文档-四，后台管理系统">四，后台管理系统</h3><p>注：后端管理资源只有 admin 权限才能访问</p><p> </p><p>1， User </p><p> </p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">users</span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取所有用户列表</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <a href="/download/attachments/70281896/user_list.json?version=1&amp;modificationDate=1510108050000&amp;api=v2" data-linked-resource-id="70283400" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="user_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">user_list.json</a></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">users<span style="color: rgb(206,145,120);">/&lt;int: </span><span style="color: rgb(206,145,120);">user</span><span style="color: rgb(206,145,120);">_id&gt;</span></span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 10.7665%;"/><col style="width: 9.94734%;"/><col style="width: 14.4529%;"/><col style="width: 23.23%;"/><col style="width: 29.3739%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><span>获取 ID为 <span style="color: rgb(206,145,120);">user</span><span style="color: rgb(206,145,120);">_id </span></span><span>的 <span style="color: rgb(206,145,120);">user</span>详细字段</span></td><td colspan="1" class="confluenceTd"><p>无</p></td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;position&quot;: null,<br/> &quot;chinese_name&quot;: null,<br/> &quot;id&quot;: 1,<br/> &quot;roles&quot;: [<br/> {<br/> &quot;name&quot;: &quot;admin&quot;,<br/> &quot;id&quot;: 1<br/> },<br/> {<br/> &quot;name&quot;: &quot;role1&quot;,<br/> &quot;id&quot;: 2<br/> }<br/> ],<br/> &quot;cellphone&quot;: null,<br/> &quot;username&quot;: &quot;LIJIAJIA873&quot;,<br/> &quot;member_since&quot;: &quot;2017-10-31 16:44:09&quot;,<br/> &quot;last_seen&quot;: &quot;2017-10-31 16:44:09&quot;,<br/> &quot;location&quot;: null<br/>}</p></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">修改<span> ID为 <span style="color: rgb(206,145,120);">user</span><span style="color: rgb(206,145,120);">_id </span></span><span>的 </span>用户信息，用户名称不可修改。</td><td colspan="1" class="confluenceTd"><p>后台管理界面修改用户信息时，发送字段如下：</p><p> {</p><div><p>&quot;position&quot;:&quot;aaaa&quot;,<br/> &quot;chinese_name&quot;: &quot;李嘉嘉&quot;,<br/> &quot;role_ids&quot;: [1, 2, 3],<br/> &quot;cellphone&quot;:&quot;18600000000&quot;,<br/> &quot;username&quot;: &quot;LIJIAJIA873&quot;,<br/> &quot;location&quot;:&quot;上海浦东新区&quot;</p><p>}</p><p>当前用户信息展示页 修改用户信息时，不发送<span>role_ids字段，字段如下：</span></p><p> {</p><div><p>&quot;position&quot;:&quot;aaaa&quot;,<br/> &quot;chinese_name&quot;: &quot;李嘉嘉&quot;,<br/> &quot;cellphone&quot;:&quot;18600000000&quot;,<br/> &quot;username&quot;: &quot;LIJIAJIA873&quot;,<br/> &quot;location&quot;:&quot;上海浦东新区&quot;</p><p>}</p></div><p> </p></div></td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">  删除用户，只有admin角色可以删除用户。</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div><p>2，Role  </p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">roles</span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取所有角色列表</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"><a href="/download/attachments/70281896/role_list.json?version=1&amp;modificationDate=1510108169000&amp;api=v2" data-linked-resource-id="70283402" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="role_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">role_list.json</a></td></tr><tr><td colspan="1" class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">创建新的角色</td><td colspan="1" class="confluenceTd"><p>{</p><p>&quot;name&quot;: &quot;role222&quot;,    #角色名称</p><p>&quot;privilege_ids&quot;: [219, 216]    #权限ID列表<br/>}</p></td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/<span style="color: rgb(206,145,120);">roles</span></a><span style="color: rgb(206,145,120);"><span>/&lt;int: <span style="color: rgb(206,145,120);">role</span></span><span>_id&gt;</span></span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 10.7665%;"/><col style="width: 9.94734%;"/><col style="width: 14.4529%;"/><col style="width: 23.23%;"/><col style="width: 29.3739%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">获取 ID为 <span style="color: rgb(206,145,120);">role</span><span style="color: rgb(206,145,120);">_id </span>的 role 详细字段</td><td colspan="1" class="confluenceTd"><p>{</p><p>&quot;user_id&quot;: 123,   </p><p>}</p><p><span> #可以不加此参数，默认获取全部role，加了user_id参数之后，获取对应user的role列表。</span></p></td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;name&quot;: &quot;role1&quot;,<br/> &quot;id&quot;: 2,<br/> &quot;privilege_ids&quot;: [<br/> 219,<br/> 216<br/> ]<br/>}</p></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd"><p>修改，角色名称不可修改，</p><p>修改角色主要目的为角色绑定相应的权限</p></td><td colspan="1" class="confluenceTd"><span>{</span><br/><span> &quot;name&quot;: &quot;role1&quot;,</span><br/><span> &quot;privilege_ids&quot;: [</span><span>219, </span><span>216</span><span>]</span><br/><span>}</span></td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">删除角色</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div><p>3，Privilege</p><p> </p><div>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">privileges</span></div><div><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 92.5%;"><colgroup><col style="width: 8.72772%;"/><col style="width: 8.11309%;"/><col style="width: 11.6779%;"/><col style="width: 13.7062%;"/><col style="width: 23.5403%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">获取所有权限列表</td><td colspan="1" class="confluenceTd"> <p>{</p><p>&quot;role_id&quot;: 123,   </p><p>}</p><p>#可以不加此参数，默认获取全部privilege，加了role_id参数之后，获取对应role的<span>privilege</span>列表。</p></td><td colspan="1" class="confluenceTd"><a href="/download/attachments/70281896/privilege_list.json?version=1&amp;modificationDate=1510108605000&amp;api=v2" data-linked-resource-id="70283406" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="privilege_list.json" data-linked-resource-content-type="application/octet-stream" data-linked-resource-container-id="70281896" data-linked-resource-container-version="75">privilege_list.json</a></td></tr><tr><td colspan="1" class="confluenceTd">POST</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">创建新的权限</td><td colspan="1" class="confluenceTd"><p>{<br/>&quot;name&quot;: &quot;LOG_PAGE_ACCESS&quot;     #权限名称<br/>&quot;operation&quot;: 1    #操作类型<br/>&quot;resource_type&quot;: 2    #资源类型<br/>&quot;resource_id&quot;: 3,     #资源ID<br/>&quot;comment&quot;: &quot;操作记录日志页面访问权限&quot;,<br/>}</p></td><td colspan="1" class="confluenceTd"><p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p><p>接口：<a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">privileges<span style="color: rgb(206,145,120);">/&lt;int:</span><span style="color: rgb(206,145,120);">privilege</span><span style="color: rgb(206,145,120);">_id&gt;</span></span></p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 97.1591%;"><colgroup><col style="width: 10.7665%;"/><col style="width: 9.94734%;"/><col style="width: 14.4529%;"/><col style="width: 23.23%;"/><col style="width: 29.3739%;"/></colgroup><tbody><tr><th class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">是否支持</th><th colspan="1" class="confluenceTh">作用</th><th colspan="1" class="confluenceTh">发送参数字段</th><th colspan="1" class="confluenceTh">返回数据</th></tr><tr><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">获取 ID为 <span style="color: rgb(206,145,120);">privilege</span><span style="color: rgb(206,145,120);">_id </span>的 <span style="color: rgb(206,145,120);">privilege </span>详细字段</td><td colspan="1" class="confluenceTd"><p>无</p></td><td colspan="1" class="confluenceTd"><p>{<br/> &quot;id&quot;: 218,<br/> &quot;resource_type&quot;: 2,<br/> &quot;resource_id&quot;: 22,<br/> &quot;name&quot;: &quot;ZONE#<a href="http://abc.com#DELETE" class="external-link" rel="nofollow">abc.com#DELETE</a>&quot;,<br/> &quot;operation&quot;: 2,<br/> &quot;comment&quot;: null<br/>}</p></td></tr><tr><td class="confluenceTd">PUT</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">修改权限</td><td colspan="1" class="confluenceTd">{<br/>&quot;name&quot;: &quot;LOG_PAGE_ACCESS&quot;   #权限名称<br/>&quot;operation&quot;: 1   #操作类型<br/>&quot;resource_type&quot;: 2   #资源类型<br/>&quot;resource_id&quot;: 3,  #资源ID<br/>&quot;comment&quot;: &quot;操作记录日志页面访问权限&quot;,   #备注<br/>}</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr><tr><td colspan="1" class="confluenceTd">DELETE</td><td colspan="1" class="confluenceTd"> 是</td><td colspan="1" class="confluenceTd">  删除权限</td><td colspan="1" class="confluenceTd"> 无</td><td colspan="1" class="confluenceTd"> <p>{&quot;message&quot;:&quot;ok&quot;} ，200 成功</p><p>{&quot;message&quot;:&quot;Failed&quot;} ，400 失败</p></td></tr></tbody></table></div><p> </p></div><p> </p><p>#########################################################################################################################</p><h3 id="DNS平台V2后端接口文档-搜索字段整理：">搜索字段整理：</h3><div><p> </p><div class="table-wrap"><table class="relative-table confluenceTable" style="width: 68.6364%;"><colgroup><col style="width: 15.0083%;"/><col style="width: 35.3234%;"/><col style="width: 10.5307%;"/><col style="width: 39.1376%;"/></colgroup><tbody><tr><th class="confluenceTh">资源类型</th><th colspan="1" class="confluenceTh">支持搜索字段</th><th colspan="1" class="confluenceTh">请求</th><th colspan="1" class="confluenceTh">接口地址</th></tr><tr><td colspan="1" class="confluenceTd">user</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, #ID</div><div><span style="color: rgb(206,145,120);">'email'</span>: fields.String, #邮箱</div><div><span style="color: rgb(206,145,120);">'username'</span>: fields.String, #用户名</div><div><span style="color: rgb(206,145,120);">'chinese_name'</span>: fields.String, #中文名</div><div><span style="color: rgb(206,145,120);">'cellphone'</span>: fields.String, #手机号</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">users</span></td></tr><tr><td class="confluenceTd">role</td><td colspan="1" class="confluenceTd"> {<div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, #ID</div><div><span style="color: rgb(206,145,120);">'</span><span style="color: rgb(206,145,120);">name</span><span style="color: rgb(206,145,120);">'</span>: fields.String, #角色名</div><div>}</div></div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"><a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">roles</span></td></tr><tr><td colspan="1" class="confluenceTd">privilege</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, #ID</div><div><span style="color: rgb(206,145,120);">'name'</span>: fields.String, #权限名</div><div><span style="color: rgb(206,145,120);">'operation'</span>: fields.Integer, #操作类型</div><div><span style="color: rgb(206,145,120);">'resource_type'</span>: fields.Integer, #资源类型</div><div><span style="color: rgb(206,145,120);">'resource_id'</span>: fields.Integer, #资源ID</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"><a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/admin/</a><span style="color: rgb(206,145,120);">privileges</span></td></tr><tr><td colspan="1" class="confluenceTd">server</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>:fields.Integer, , #ID</div><div><span style="color: rgb(206,145,120);">'host'</span>: fields.String, #用户名</div><div><span style="color: rgb(206,145,120);">'ip'</span>: fields.String, #IP地址</div><div><span style="color: rgb(206,145,120);">'env'</span>: fields.String, #环境</div><div><span style="color: rgb(206,145,120);">'dns_server_type'</span>: fields.String, #服务器类型</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">servers </span></td></tr><tr><td colspan="1" class="confluenceTd">view</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, , #ID</div><div><span style="color: rgb(206,145,120);">'name'</span>: fields.String, , #View名称</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">views</span></td></tr><tr><td colspan="1" class="confluenceTd">zone</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, #ID</div><div><span style="color: rgb(206,145,120);">'name'</span>: fields.String, #Zone名称</div><div><span style="color: rgb(206,145,120);">'zone_group'</span>: fields.Integer, #Zone归属</div><div><span style="color: rgb(206,145,120);">'zone_type'</span>: fields.String, #Zone类型</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">zones</span></td></tr><tr><td colspan="1" class="confluenceTd">record</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, #ID</div><div><span style="color: rgb(206,145,120);">'host'</span>: fields.String, #记录主机</div><div><span style="color: rgb(206,145,120);">'record_type'</span>: fields.String, #记录类型</div><div><span style="color: rgb(206,145,120);">'ttl'</span>: fields.String, #TTL</div><div><span style="color: rgb(206,145,120);">'value'</span>: fields.String, #记录值</div><div><span style="color: rgb(206,145,120);">'view_name'</span>: fields.String, #线路</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">records</span></td></tr><tr><td colspan="1" class="confluenceTd">operation_log</td><td colspan="1" class="confluenceTd"><div>{</div><div><span style="color: rgb(206,145,120);">'id'</span>: fields.Integer, #ID</div><div><span style="color: rgb(206,145,120);">'operation_type'</span>: fields.String, #操作类型</div><div><span style="color: rgb(206,145,120);">'operator'</span>: fields.String, #操作人</div><div><span style="color: rgb(206,145,120);">'target_type'</span>: fields.String, #资源类型</div><div><span style="color: rgb(206,145,120);">'target_name'</span>: fields.String, #资源名称</div><div><span style="color: rgb(206,145,120);">'target_id'</span>: fields.String, #资源ID</div><div>}</div></td><td colspan="1" class="confluenceTd">GET</td><td colspan="1" class="confluenceTd"> <a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">oplogs</span></td></tr></tbody></table></div><p> </p></div><p> </p><p>#########################################################################################################################</p><h3 id="DNS平台V2后端接口文档-Record字段说明："><strong>Record 字段说明：</strong></h3><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable"><colgroup><col style="width: 144.0px;"/><col style="width: 115.0px;"/><col style="width: 226.0px;"/><col style="width: 391.0px;"/><col style="width: 207.0px;"/><col style="width: 199.0px;"/></colgroup><tbody><tr><th class="confluenceTh">表单字段名</th><th colspan="1" class="confluenceTh">必填项</th><th colspan="1" class="confluenceTh">字段类型</th><th colspan="1" class="confluenceTh">选项内容</th><th class="confluenceTh">key/id</th><th class="confluenceTh">value</th></tr><tr><td colspan="1" class="confluenceTd">主机记录</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">填写</td><td colspan="1" class="confluenceTd"> 字符串，不能为空</td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">name</span></td><td colspan="1" class="confluenceTd">xxx</td></tr><tr><td class="confluenceTd">记录类型</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">单选择框</td><td colspan="1" class="confluenceTd">A/CNAME/PTR/NS</td><td class="confluenceTd"><span style="color: rgb(206,145,120);">zone_type</span></td><td class="confluenceTd"><span>A/CNAME/PTR/NS</span></td></tr><tr><td class="confluenceTd">记录值</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">填写</td><td colspan="1" class="confluenceTd"><span>IP地址格式，用正则匹配，如不符合IP地址格式，表单无法提交，需要有相应提示。</span></td><td class="confluenceTd"><span style="color: rgb(206,145,120);">zone_group</span></td><td class="confluenceTd">10.25.21.41</td></tr><tr><td colspan="1" class="confluenceTd">TTL</td><td colspan="1" class="confluenceTd"><span>是</span></td><td colspan="1" class="confluenceTd">单选择框</td><td colspan="1" class="confluenceTd"> 600/1800/3600</td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">forwarders</span></td><td colspan="1" class="confluenceTd">600/1800/3600</td></tr><tr><td class="confluenceTd">线路类型</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">单选择框</td><td colspan="1" class="confluenceTd"><p><a href="http://hfdns-test.ipo.com/auth/login_ldap" class="external-link" rel="nofollow">http://hfdns-test.ipo.com</a><a href="http://peb-dns.ipo.com/dns/login_local" class="external-link" rel="nofollow">/dns/</a><span style="color: rgb(206,145,120);">views?zone_id=123</span></p><p><span style="color: rgb(206,145,120);">必须指定zone_id获取view列表</span></p></td><td class="confluenceTd"><span style="color: rgb(206,145,120);">view_ids</span></td><td class="confluenceTd"><p>[ 1,3,4]</p></td></tr></tbody></table></div><h3 id="DNS平台V2后端接口文档-Zone字段说明："><strong>Zone 字段说明：</strong></h3><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 72.2846%;"><colgroup><col style="width: 11.3243%;"/><col style="width: 9.04372%;"/><col style="width: 17.7729%;"/><col style="width: 17.0651%;"/><col style="width: 16.2001%;"/><col style="width: 15.5709%;"/></colgroup><tbody><tr><th class="confluenceTh">表单字段名</th><th colspan="1" class="confluenceTh">必填项</th><th colspan="1" class="confluenceTh">字段类型</th><th colspan="1" class="confluenceTh">选项内容</th><th class="confluenceTh">key/id</th><th class="confluenceTh">value</th></tr><tr><td colspan="1" class="confluenceTd">域名</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">填写</td><td colspan="1" class="confluenceTd"> </td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">name</span></td><td colspan="1" class="confluenceTd">xx.xx.xx</td></tr><tr><td class="confluenceTd">域名类别</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">单选择框</td><td colspan="1" class="confluenceTd">转发域名(forword)/主域名(master)/从域名(salve)</td><td class="confluenceTd"><span style="color: rgb(206,145,120);">zone_type</span></td><td class="confluenceTd">forword/master/salve</td></tr><tr><td class="confluenceTd">域名归类</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">单选择框</td><td colspan="1" class="confluenceTd">内部(1)/外部(0)/劫持（2）</td><td class="confluenceTd"><span style="color: rgb(206,145,120);">zone_group</span></td><td class="confluenceTd">1/0/2</td></tr><tr><td colspan="1" class="confluenceTd"><span>转发域名IP地址</span></td><td colspan="1" class="confluenceTd">否/仅在域名类别为master时显示</td><td colspan="1" class="confluenceTd"><span>文本编辑框，带行号，最好带高亮</span></td><td colspan="1" class="confluenceTd"> </td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">forwarders</span></td><td colspan="1" class="confluenceTd"> </td></tr><tr><td class="confluenceTd">关联区域</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">多选择框</td><td colspan="1" class="confluenceTd"><p>后端提供</p></td><td class="confluenceTd"><span style="color: rgb(206,145,120);">view_ids</span></td><td class="confluenceTd"><p>[ 1,3,4]</p></td></tr></tbody></table></div><p> </p><h3 id="DNS平台V2后端接口文档-View字段说明："><strong>View 字段说明：</strong></h3><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable"><colgroup><col style="width: 112.0px;"/><col style="width: 86.0px;"/><col style="width: 156.0px;"/><col style="width: 140.0px;"/><col style="width: 169.0px;"/><col style="width: 323.0px;"/></colgroup><tbody><tr><th class="confluenceTh">表单字段名</th><th colspan="1" class="confluenceTh">必填项</th><th class="confluenceTh">key/id</th><th class="confluenceTh">value</th><th class="confluenceTh">字段类型</th><th colspan="1" class="confluenceTh">表单字段要求</th></tr><tr><td colspan="1" class="confluenceTd">区域名称</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">name</span></td><td colspan="1" class="confluenceTd">str</td><td colspan="1" class="confluenceTd">填写</td><td colspan="1" class="confluenceTd"><p>不能为空</p></td></tr><tr><td class="confluenceTd">区域配置</td><td colspan="1" class="confluenceTd">是</td><td class="confluenceTd"><span style="color: rgb(206,145,120);">acl</span></td><td class="confluenceTd">str</td><td class="confluenceTd">文本编辑框，带行号，最好带高亮</td><td colspan="1" class="confluenceTd"><p>1，大文本框</p><p>2，带行号</p><p>3，语法高亮（如无法高亮，文本框背景色调暗）</p><p>4，输入内容为IP地址列表，每行一个，只要有一行不是IP地址格式，表单无法提交，并弹出相应提示。</p></td></tr><tr><td colspan="1" class="confluenceTd">BIND总配置文件(name.conf)</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd">bind_conf_content</td><td colspan="1" class="confluenceTd">str</td><td colspan="1" class="confluenceTd"><p>填写</p><p>（有初始值，可以改动也可不改动）</p><p>初始值后端提供</p><p> </p><p> </p></td><td colspan="1" class="confluenceTd">不能为空</td></tr></tbody></table></div><p> </p><p> </p><h3 id="DNS平台V2后端接口文档-服务器字段说明："><strong>服务器 字段说明：</strong></h3><p> </p><div class="table-wrap"><table class="relative-table wrapped confluenceTable"><colgroup><col style="width: 112.0px;"/><col style="width: 86.0px;"/><col style="width: 156.0px;"/><col style="width: 140.0px;"/><col style="width: 169.0px;"/><col style="width: 323.0px;"/></colgroup><tbody><tr><th class="confluenceTh">表单字段名</th><th colspan="1" class="confluenceTh">必填项</th><th class="confluenceTh">key/id</th><th class="confluenceTh">value</th><th class="confluenceTh">字段类型</th><th colspan="1" class="confluenceTh">表单字段要求</th></tr><tr><td colspan="1" class="confluenceTd">主机名</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">host</span></td><td colspan="1" class="confluenceTd">str</td><td colspan="1" class="confluenceTd">填写</td><td colspan="1" class="confluenceTd"><p>不能为空</p></td></tr><tr><td class="confluenceTd">IP地址</td><td colspan="1" class="confluenceTd">是</td><td class="confluenceTd"><span style="color: rgb(206,145,120);">ip</span></td><td class="confluenceTd">str</td><td class="confluenceTd">填写</td><td colspan="1" class="confluenceTd"><p>IP地址格式，用正则匹配，如不符合IP地址格式，表单无法提交，需要有相应提示。</p></td></tr><tr><td colspan="1" class="confluenceTd">环境</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">env</span></td><td colspan="1" class="confluenceTd">str</td><td colspan="1" class="confluenceTd"><p>选择框</p><p>(dev/anhouse/ga)</p><p>总共三个选项</p><p> </p></td><td colspan="1" class="confluenceTd">不能为空</td></tr><tr><td colspan="1" class="confluenceTd">DNS类型</td><td colspan="1" class="confluenceTd">是</td><td colspan="1" class="confluenceTd"><span style="color: rgb(206,145,120);">dns_server_type</span></td><td colspan="1" class="confluenceTd">str</td><td colspan="1" class="confluenceTd"><p>选择框</p><p>（master/salve）</p></td><td colspan="1" class="confluenceTd">不能为空</td></tr></tbody></table></div><p> </p><p> </p><p> </p><p> </p>
+平安好房DNS管理平台API文档
+===========================
+
+# 认证
+### 1，LDAP认证接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/auth/login_ldap       |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+username    |string     |是       |无     |user123      |用户名
+password    |string     |是       |无     |passwd123      |密码
+
+#### 返回格式：
+#### 返回格式：
+
+
+```json
+认证成功
+状态码： 200
+{
+    "token": "eyJ0eXasdfasdfasdfasdfasdfJ9.eyJ1c2VyIjoiTElKSUFKSUE4NzMiLCJleHAiOjE1MTIwNTA0MTh9.vJ_kj2SSf3T_0TyO5_Y4NN4l7aqXwyr0n01kKRdZW6s",
+    "user_info": {
+        "id": 3,
+        "username": "user123",
+        "email": "xx",
+        "chinese_name": "",
+        "cellphone": "xx",
+        "position": "xx",
+        "location": "",
+        "can_add_server": true,
+        "can_add_view": true,
+        "can_add_zone": true,
+        "member_since": "2017-11-23 18:24:22"
+    }
+}
+
+
+认证失败
+状态码：403
+{
+    "message": "认证失败！"
+}
+```
+
+### 2，本地用户认证接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/auth/login_ldap       |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+username    |string     |是       |无     |user123      |用户名
+password    |string     |是       |无     |passwd123      |密码
+
+#### 返回格式：
+
+
+```json
+认证成功
+状态码： 200
+{
+    "token": "eyJ0eXasdfasdfasdfasdfasdfJ9.eyJ1c2VyIjoiTElKSUFKSUE4NzMiLCJleHAiOjE1MTIwNTA0MTh9.vJ_kj2SSf3T_0TyO5_Y4NN4l7aqXwyr0n01kKRdZW6s",
+    "user_info": {
+        "id": 3,
+        "username": "user123",
+        "email": "xx",
+        "chinese_name": "",
+        "cellphone": "xx",
+        "position": "xx",
+        "location": "",
+        "can_add_server": true,
+        "can_add_view": true,
+        "can_add_zone": true,
+        "member_since": "2017-11-23 18:24:22"
+    }
+}
+
+认证失败
+状态码：403
+{
+    "message": "认证失败！"
+}
+```
+
+### 3，本地新用户注册接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/auth/register_local       |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+username    |string     |是       |无     |user123      |用户名
+password    |string     |是       |无     |passwd123      |密码
+password2    |string     |是       |无     |passwd123      |密码
+email    |string     |是       |无     |xxx@qq.com      |邮箱
+
+#### 返回格式：
+
+
+```json
+认证成功
+状态码： 200
+{
+    "message": "OK"
+}
+
+认证失败
+状态码：400
+{
+    "message": "Failed",
+    "error": "用户已存在！"
+}
+```
+
+# DNS相关资源
+## 一，DNS服务器（Server）
+### 1.1，DNS服务器列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/servers        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |ID
+host    |string     |否       |无     |www      |用户名
+ip    |string     |否       |无     |10.2.2.2      |IP地址
+env    |string     |否       |无     |env      |环境
+dns_server_type    |string     |否       |无     |master      |服务器类型
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 4,
+    "servers": [
+        {
+            "id": 6,
+            "host": "ooo",
+            "ip": "0.0.0.5",
+            "env": "anhouse",
+            "dns_server_type": "salve",
+            "zb_process_itemid": "123",
+            "zb_port_itemid": "123",
+            "zb_resolve_itemid": "123",
+            "zb_resolve_rate_itemid": "123",
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 5,
+            "host": "ss3",
+            "ip": "0.0.0.4.0",
+            "env": "dev",
+            "dns_server_type": "salve",
+            "zb_process_itemid": "123",
+            "zb_port_itemid": "123",
+            "zb_resolve_itemid": "123",
+            "zb_resolve_rate_itemid": "320857",
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 2,
+            "host": "s2",
+            "ip": "0.0.0.1",
+            "env": "anhouse",
+            "dns_server_type": "master",
+            "zb_process_itemid": "222",
+            "zb_port_itemid": "222",
+            "zb_resolve_itemid": "222",
+            "zb_resolve_rate_itemid": "189254",
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 1,
+            "host": "s1",
+            "ip": "0.0.0.0",
+            "env": "dev",
+            "dns_server_type": "master",
+            "zb_process_itemid": "111",
+            "zb_port_itemid": "111",
+            "zb_resolve_itemid": "111",
+            "zb_resolve_rate_itemid": "189243",
+            "can_update": true,
+            "can_delete": true
+        }
+    ],
+    "current_page": 1
+}
+
+```
+
+### 1.2，DNS服务器创建接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/servers        |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+host    |string     |是       |无     |www      |用户名
+ip    |string     |是       |无     |10.2.2.2      |IP地址
+env    |string     |是       |无     |env      |环境
+dns_server_type    |string     |否       |无     |master      |服务器类型
+zb_process_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS解析进程的itemid
+zb_port_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS服务器端口的itemid
+zb_resolve_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS解析的itemid
+zb_resolve_rate_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS解析量的itemid
+
+
+#### 返回格式：
+
+
+```json
+创建成功
+状态码： 200
+{
+    "message":"OK"
+} 
+创建失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+### 1.3，获取指定ID的DNS服务器信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/servers/\<int:server_id>        |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+```json
+获取成功
+状态码： 200
+{
+    "id": 1,
+    "host": "s1",
+    "ip": "0.0.0.0",
+    "env": "dev",
+    "dns_server_type": "master",
+    "zb_process_itemid": "111",
+    "zb_port_itemid": "111",
+    "zb_resolve_itemid": "111",
+    "zb_resolve_rate_itemid": "189243",
+    "can_update": true,
+    "can_delete": true
+}
+```
+
+### 1.4，修改指定ID的DNS服务器接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/servers/\<int:server_id>        |put 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+host    |string     |是       |无     |www      |用户名
+ip    |string     |是       |无     |10.2.2.2      |IP地址
+env    |string     |是       |无     |env      |环境
+dns_server_type    |string     |否       |无     |master      |服务器类型
+zb_process_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS解析进程的itemid
+zb_port_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS服务器端口的itemid
+zb_resolve_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS解析的itemid
+zb_resolve_rate_itemid    |string     |是       |无     |321574      |ZABBIX上监控此服务器DNS解析量的itemid
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+### 1.5，删除指定ID的DNS服务器接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/servers/\<int:server_id>        |delete 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+## 二，DNS区域（View）
+### 2.1，DNS区域列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/views        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |ID
+name    |string     |否       |无     |view1      |View名称
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 3,
+    "views": [
+        {
+            "id": 5,
+            "name": "jtest",
+            "acl": "10.21.21.25\n0.0.0.0",
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 2,
+            "name": "vvvv111111111",
+            "acl": "0.0.0.0",
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 1,
+            "name": "wqerqwer",
+            "acl": "0.0.0.0\n1.1.1.1",
+            "can_update": true,
+            "can_delete": true
+        }
+    ],
+    "current_page": 1
+}
+
+```
+
+
+### 2.2，DNS区域创建接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/views        |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+name    |string     |是       |无     |v6      |view名称
+acl    |string     |是       |无     |0.0.0.0\n1.1.1.1      |acl IP地址列表
+
+
+#### 返回格式：
+
+
+```json
+创建成功
+状态码： 200
+{
+    "message":"OK"
+} 
+创建失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+### 2.3，获取指定ID的DNS区域信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/views/\<int:view_id>        |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+{
+    "id": 1,
+    "name": "wqerqwer",
+    "acl": "0.0.0.0\n1.1.1.1",
+    "can_update": true,
+    "can_delete": true
+}
+```
+
+
+### 2.4，修改指定ID的DNS区域接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/views/\<int:view_id>        |put 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+name    |string     |是       |无     |v6      |view名称
+acl    |string     |是       |无     |0.0.0.0\n1.1.1.1      |acl IP地址列表
+
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+### 2.5，删除指定ID的DNS区域接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/views/\<int:view_id>        |delete 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+
+
+
+## 三，DNS域名（Zone）
+### 3.1，DNS域名列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/zones        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |ID
+name    |string     |否       |无     |z1      |Zone名称
+zone_group    |string     |否       |无     |2      |Zone归属， 内部（1）/外部（0）/劫持（2）
+zone_type    |string     |否       |无     |master      |Zone类型， master/forward only
+	
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+
+{
+    "total": 6,
+    "zones": [
+        {
+            "id": 6,
+            "name": "xxx123.com",
+            "zone_group": 1,
+            "zone_type": "forward only",
+            "forwarders": "0.0.0.0; 1.1.1.1;",
+            "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+            "can_update": true,
+            "can_delete": true,
+            "view_ids": [
+                1,
+                2,
+                5
+            ]
+        },
+        {
+            "id": 5,
+            "name": "xx2.com",
+            "zone_group": 2,
+            "zone_type": "master",
+            "forwarders": "",
+            "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+            "can_update": true,
+            "can_delete": true,
+            "view_ids": [
+                1,
+                2,
+                5
+            ]
+        },
+        {
+            "id": 4,
+            "name": "xx1.com",
+            "zone_group": 1,
+            "zone_type": "master",
+            "forwarders": "",
+            "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+            "can_update": true,
+            "can_delete": true,
+            "view_ids": [
+                1,
+                2,
+                5
+            ]
+        }
+    ],
+    "current_page": 1
+}
+```
+
+
+### 3.2，DNS域名创建接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/zones        |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+name    |string     |是       |无     |v6      |zone名称
+zone_group    |string     |否       |无     |2      |Zone归属， 内部（1）/外部（0）/劫持（2）
+zone_type    |string     |是      |无     |master      |Zone类型， master/forward only
+forwarders    |string     |否       |无     |0.0.0.0\n1.1.1.1      |转发至的地址
+view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个view到当前zone
+
+#### 返回格式：
+
+
+```json
+创建成功
+状态码： 200
+{
+    "message":"OK"
+} 
+创建失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+### 3.3，获取指定ID的DNS域名信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/zones/\<int:zone_id>        |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "id": 2,
+    "name": "fw3efwwv.com",
+    "zone_group": 1,
+    "zone_type": "master",
+    "forwarders": "",
+    "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+    "can_update": true,
+    "can_delete": true,
+    "view_ids": [1, 2, 5]
+}
+```
+
+
+### 3.4，修改指定ID的DNS域名接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/zones/\<int: zone_id>        |put 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+name    |string     |是       |无     |v6      |zone名称
+zone_group    |string     |否       |无     |2      |Zone归属， 内部（1）/外部（0）/劫持（2）
+zone_type    |string     |是      |无     |master      |Zone类型， master/forward only
+forwarders    |string     |否       |无     |0.0.0.0\n1.1.1.1      |转发至的地址
+view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个view到当前zone
+
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+### 3.5，删除指定ID的DNS域名接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/zones/\<int:zone_id>        |delete 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+
+## 四，DNS域名记录（Record）
+### 4.1，DNS域名记录列表获取接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/records        |get 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+zone_id    |int     |是       |无     |20      |所属的Zone的ID
+currentPage    |int     |否       |1     |3      |当前是第几页
+pageSize    |int     |否       |10     |20      |每页显示的记录数
+id    |int     |否       |无     |20      |ID
+host    |string     |否       |无     |www      |用户名
+record_type    |string     |否       |无     |A      |记录类型
+ttl    |string     |否       |无     |600      |TTL
+value    |string     |否       |无     |127.0.0.1      |记录值
+view_name    |string     |否       |无     |v1      |线路
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "total": 9,
+    "records": [
+        {
+            "id": 26,
+            "host": "123123",
+            "record_type": "CNAME",
+            "ttl": "1800",
+            "value": "0.0.0.0",
+            "view_name": "vvvv111111111",
+            "comment": "123",
+            "zone_id": 2,
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 25,
+            "host": "23123123",
+            "record_type": "A",
+            "ttl": "600",
+            "value": "0.0.0.0",
+            "view_name": "jtest",
+            "comment": "123123",
+            "zone_id": 2,
+            "can_update": true,
+            "can_delete": true
+        },
+        {
+            "id": 24,
+            "host": "23123123",
+            "record_type": "A",
+            "ttl": "600",
+            "value": "0.0.0.0",
+            "view_name": "vvvv111111111",
+            "comment": "123123",
+            "zone_id": 2,
+            "can_update": true,
+            "can_delete": true
+        }
+    ],
+    "current_page": 1
+}
+
+```
+
+### 4.2，DNS域名记录创建接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/records        |post 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+host    |string     |是       |无     |r1      |record名称
+record_type    |string     |否       |无     |2      |Zone归属， A/NS/PTR/CNAME
+ttl    |string     |是      |无     |600      |TTL值
+value    |string     |是       |无     |1.1.1.1      |记录值，必须为ip地址
+view_name    |string     |是       |无     |v1      |关联的view名称
+comment    |string     |是       |无     |comment      |备注
+zone_id    |int     |是       |无     |2     |当前record所属zone的ID
+
+#### 返回格式：
+
+
+```json
+创建成功
+状态码： 200
+{
+    "message":"OK"
+} 
+创建失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+### 4.3，获取指定ID的DNS域名记录信息接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/records/\<int:record_id>        |get 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+获取成功
+状态码： 200
+{
+    "id": 6,
+    "host": "xxx111",
+    "record_type": "A",
+    "ttl": "600",
+    "value": "0.0.0.0",
+    "view_name": "vvvv111111111",
+    "comment": "xxx111",
+    "zone_id": 2,
+    "can_update": true,
+    "can_delete": true
+}
+```
+
+
+### 4.4，修改指定ID的DNS域名记录接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/records/\<int:record_id>        |put 
+
+
+#### 参数列表：
+字段       |字段类型    |必须    |默认值    |示例   |备注
+------------|-----------|----------- |-----------|-----------|-----------
+host    |string     |是       |无     |r1      |record名称
+record_type    |string     |否       |无     |2      |Zone归属， A/NS/PTR/CNAME
+ttl    |string     |是      |无     |600      |TTL值
+value    |string     |是       |无     |1.1.1.1      |记录值，必须为ip地址
+view_name    |string     |是       |无     |v1      |关联的view名称
+comment    |string     |是       |无     |comment      |备注
+zone_id    |int     |是       |无     |2     |当前record所属zone的ID
+
+
+#### 返回格式：
+
+
+```json
+修改成功
+状态码： 200
+{
+    "message":"OK"
+} 
+修改失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```
+
+
+### 4.5，删除指定ID的DNS域名记录接口
+#### 请求方式：
+URL       |请求方式       
+------------|-----------
+/dns/records/\<int:record_id>        |delete 
+
+
+#### 参数列表：
+无
+
+
+#### 返回格式：
+
+
+```json
+删除成功
+状态码： 200
+{
+    "message":"OK"
+} 
+删除失败
+状态码： 400
+{
+    "message":"Failed",
+    "error": "xxxx"
+} 
+```

@@ -83,6 +83,7 @@ sudo apt-get install etcd
 
 ```
 
+
 * 安装依赖
 
 首先进入当前目录下
@@ -133,63 +134,6 @@ flask db initdb
 nohup gunicorn -w 4 hf_dns:app -b 0.0.0.0:8080 --log-level=debug &
 ```
 PS: 上面 -w 为 开启workers数，公式：（系统内核数*2 + 1)
-
-
-
-#### 推荐部署方式
-```bash
-# 安装 supervisor
-sudo apt-get install supervisor
-
-```
-创建supervisor配置
-
-`sudo vim /etc/supervisor/conf.d/hfdns.conf`
-```
-[program:hfdns_env]
-command=/root/Env/hfdns_env/bin/gunicorn
-    -w 3
-    -b 0.0.0.0:8080
-    --log-level debug
-    "application.app:create_app()"                             ; 默认启动dev环境，如要启动生产环境，请改为 create_app('prod')
-
-directory=/opt/py-maybi/                                       ; 你的项目代码目录
-autostart=false                                                ; 是否自动启动
-autorestart=false                                              ; 是否自动重启
-stdout_logfile=/opt/logs/gunicorn.log                          ; log 日志
-redirect_stderr=true
-```
-PS: 上面 -w 为 开启workers数，公式：（系统内核数*2 + 1)
-
-创建nginx配置
-
-`sudo vim /etc/nginx/sites-enabled/hfdns.conf`
-
-```nginx
-server {
-    listen 80;
-    server_name hfdns.xxx.com; # 这是HOST机器的外部域名，用地址也行
-
-    location / {
-        proxy_pass http://127.0.0.1:8080; # 这里是指向 gunicorn host 的服务地址
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-
-  }
-```
-
-接着启动 supervisor, nginx
-```bash
-sudo supervisorctl reload
-sudo supervisorctl start hfdns_env
-
-sudo service nginx restart
-```
-
-
-
-
 
 
 
