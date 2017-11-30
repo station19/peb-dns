@@ -5,6 +5,8 @@ from ldap3 import Server as LDAPServer
 import datetime
 import jwt
 from peb_dns.models.account import DBUser, DBLocalAuth
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
 from peb_dns import db
 
 
@@ -26,22 +28,25 @@ class AuthLDAP(Resource):
                     'user' : user.username, 
                     'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
                     }, current_app.config['SECRET_KEY'])
-                return {
+                response_data = {
                     'token' : token.decode('UTF-8'), 
                     'user_info': user.to_json()
-                    }, 200
+                    }
+                return get_response(True, '认证成功！', response_data)
             new_user = DBUser(username=username)
             db.session.add(new_user)
             db.session.commit()
-            token = jwt.encode({
-                'user' : new_user.username,
-                'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
+            token = jwt.encode(
+                {
+                    'user' : new_user.username,
+                    'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
                 }, current_app.config['SECRET_KEY'])
-            return {
-                'token' : token.decode('UTF-8'),
+            response_data = {
+                'token' : token.decode('UTF-8'), 
                 'user_info': new_user.to_json()
-                }, 200
-        return { 'message' : "认证失败！"}, 401
+                }
+            return get_response(True, '认证成功！', response_data)
+        return get_response(False, '认证失败！')
 
     def _auth_via_ldap(self, username, passwd):
         try:
@@ -49,8 +54,7 @@ class AuthLDAP(Resource):
                 current_app.config.get('LDAP_SERVER'), 
                 port=int(current_app.config.get('LDAP_SERVER_PORT')
                 ), use_ssl=True, get_info=ALL)
-            _connection = Connection(
-                server, 
+            _connection = Connection(server, 
                 'cn=' + username + current_app.config.get('LDAP_CONFIG'), 
                 passwd, 
                 auto_bind=True
@@ -74,18 +78,20 @@ class AuthLocal(Resource):
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
         if auth_user is None:
-            return { 'message' : "认证失败！用户不存在！" }, 401
+            return get_response(False, '认证失败！用户不存在！')
         if not auth_user.verify_password(args['password']) :
-            return { 'message' : "认证失败！账号或密码错误！" }, 401
+            return get_response(False, '认证失败！账号或密码错误！')
         local_user = DBUser.query.filter_by(username=args['username']).first()
-        token = jwt.encode({
-            'user' : local_user.username, 
-            'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
+        token = jwt.encode(
+            {
+                'user' : local_user.username, 
+                'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
             }, current_app.config['SECRET_KEY'])
-        return {
-            'token' : token.decode('UTF-8'),
+        response_data = {
+            'token' : token.decode('UTF-8'), 
             'user_info': local_user.to_json()
-            }, 200
+            }
+        return get_response(True, '认证成功！', response_data)
 
 
 class RegisterLocal(Resource):
@@ -109,7 +115,7 @@ class RegisterLocal(Resource):
         local_user = DBUser.query.filter_by(
             username = args['username']).first()
         if auth_user or local_user:
-            return { 'message': "Failed", "error": "用户已存在！" }, 400
+            return get_response(False, '用户已存在！')
         new_auth_user = DBLocalAuth(
             username=args['username'], email=args['email'])
         new_auth_user.password = args['password']
@@ -117,6 +123,6 @@ class RegisterLocal(Resource):
         db.session.add(new_local_user)
         db.session.add(new_auth_user)
         db.session.commit()
-        return { 'message': "OK" }, 200
+        return get_response(True, '注册成功！')
 
 

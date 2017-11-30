@@ -1,8 +1,11 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
 from flask import current_app, g, request
 
-from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
-from peb_dns.common.decorators import token_required
+from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -65,17 +68,19 @@ class DNSOperationLogList(Resource):
             'operation_logs': marshal_records, 
             'current_page': current_page
             }
-        return marshal(results_wrapper, paginated_log_fields)
+        response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_log_fields))
+        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        return marshal(response_wrapper, response_wrapper_fields)
 
 
 class DNSOperationLog(Resource):
     method_decorators = [token_required] 
 
-    @marshal_with(log_fields)
     def get(self, log_id):
         """Get the detail info of the single log."""
-        current_log = DBRecord.query.get(log_id)
+        current_log = DBOperationLog.query.get(log_id)
         if not current_log:
-            abort(404, message="当前记录 {} 不存在！".format(str(log_id)))
-        return current_log
+            return get_response(False, "当前记录 {} 不存在！".format(str(log_id)))
+        results_wrapper = marshal(current_log, log_fields)
+        return get_response(True, '获取成功！', results_wrapper)
 

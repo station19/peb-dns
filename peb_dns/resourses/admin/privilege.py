@@ -3,7 +3,9 @@ from flask import Blueprint, request, jsonify, current_app, g
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.common.decorators import token_required, admin_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
+from peb_dns.common.decorators import token_required, admin_required, resource_exists_required
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -93,8 +95,9 @@ class PrivilegeList(Resource):
             'privileges': marshal_records, 
             'current_page': current_page
             }
-        return marshal(results_wrapper, paginated_privilege_fields)
-
+        response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_privilege_fields))
+        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        return marshal(response_wrapper, response_wrapper_fields)
 
     def post(self):
         """Create new privilege."""        
@@ -106,8 +109,7 @@ class PrivilegeList(Resource):
         comment = args.get('comment', '')
         uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
         if uniq_privilege:
-            return dict(message='Failed', 
-                error="{e} 已存在！".format(e=str(uniq_privilege.name))), 400
+            return get_response(False, "{e} 权限名已存在！".format(e=str(uniq_privilege.name)))
         try:
             new_privilege = DBPrivilege(
                 name=privilege_name, 
@@ -126,9 +128,8 @@ class PrivilegeList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '创建失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '创建成功！')
 
 
 class Privilege(Resource):
@@ -145,24 +146,18 @@ class Privilege(Resource):
             )
         super(Privilege, self).__init__()
 
-    @marshal_with(privilege_fields)
+    @resource_exists_required(ResourceType.PRIVILEGE)
     def get(self, privilege_id):
         """Get the detail info of the indicated privilege."""
         current_p = DBPrivilege.query.get(privilege_id)
-        if not current_p:
-            abort(404)
-        return current_p
+        results_wrapper = marshal(current_p, privilege_fields)
+        return get_response(True, '获取成功！', results_wrapper)
 
+    @resource_exists_required(ResourceType.PRIVILEGE)
     def put(self, privilege_id):
         """Update the indicated privilege."""
         current_privilege = DBPrivilege.query.get(privilege_id)
-        if not current_privilege:
-            return dict(
-                message='Failed', 
-                error="{e} 不存在！".format(e=str(privilege_id))
-                ), 400
         args = dns_privilege_common_parser.parse_args()
-
         privilege_name = args['name']
         operation = args['operation']
         resource_type = args['resource_type']
@@ -177,27 +172,19 @@ class Privilege(Resource):
             db.session.add(current_privilege)
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '修改成功！')
 
-
+    @resource_exists_required(ResourceType.PRIVILEGE)
     def delete(self, privilege_id):
         """Delete the indicated privilege."""
         current_privilege = DBPrivilege.query.get(privilege_id)
-        if not current_privilege:
-            return dict(
-                message='Failed', 
-                error="{e} 不存在！".format(e=str(privilege_id))
-                ), 400
         try:
             db.session.delete(current_privilege)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(
-                message='Failed', 
-                error="{e}".format(e=str(e))
-                ), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '修改成功！')
 
 

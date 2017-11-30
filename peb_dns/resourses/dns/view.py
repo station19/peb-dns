@@ -1,10 +1,11 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
 from flask import current_app, g, request
 
-from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog
+from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS
-from peb_dns.common.decorators import token_required
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns.common.util import DNSPod
 from peb_dns import db
 from sqlalchemy import and_, or_
@@ -37,10 +38,6 @@ paginated_view_fields = {
 
 class DNSViewList(Resource):
     method_decorators = [token_required] 
-
-    def __init__(self):
-        self.get_reqparse = reqparse.RequestParser()
-        super(DNSViewList, self).__init__()
 
     def get(self):
         """Get view list."""
@@ -75,18 +72,17 @@ class DNSViewList(Resource):
                 'views': marshal_records, 
                 'current_page': current_page
                 }
-        return marshal(results_wrapper, paginated_view_fields)
+        response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_view_fields))
+        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        return marshal(response_wrapper, response_wrapper_fields)
 
+    @indicated_privilege_required(DefaultPrivilege.VIEW_ADD)
     def post(self):
         """Create new view."""
-        if not g.current_user.can_add_view:
-            return dict(message='Failed', 
-                error='无权限！您无权限添加View，请联系管理员。'), 403
         args = dns_view_common_parser.parse_args()
         unique_view = DBView.query.filter_by(name=args['name']).first()
         if unique_view:
-            return dict(message='Failed', 
-                error='创建失败！重复的View， 相同的名字的View已存在！！'), 400
+            return get_response(False, '创建失败！重复的View， 相同的名字的View已存在！！')
         new_view = DBView(**args)
         db.session.add(new_view)
         db.session.flush()
@@ -103,11 +99,11 @@ class DNSViewList(Resource):
             self._add_privilege_for_view(new_view)
             view_list = db.session.query(DBView).all()
             new_view.make_view('create', view_list)
+            db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 400
-        db.session.commit()
-        return dict(message='OK'), 201
+            return get_response(False, "{e}".format(e=str(e)))
+        return get_response(True, '创建成功！')
 
     def _add_privilege_for_view(self, new_view):
         """Add privilege for the new view."""
@@ -158,67 +154,62 @@ class DNSViewList(Resource):
 class DNSView(Resource):
     method_decorators = [token_required]
 
-    @marshal_with(view_fields)
+    @resource_exists_required(ResourceType.VIEW)
+    @permission_required(ResourceType.VIEW, Operation.ACCESS)
     def get(self, view_id):
         """Get the detail info of the single view."""
         current_view = DBView.query.get(view_id)
-        if not current_view:
-            abort(404)
-        if not g.current_user.can_do(
-                    Operation.ACCESS, 
-                    ResourceType.VIEW, 
-                    current_view.id):
-            return dict(message='Failed', 
-                error='无权限！您无权删除当前Zone，请联系管理员。'), 403
-        return current_view
+        results_wrapper = marshal(current_view, view_fields)
+        return get_response(True, '获取成功！', results_wrapper)
 
+    @resource_exists_required(ResourceType.VIEW)
+    @permission_required(ResourceType.VIEW, Operation.UPDATE)
     def put(self, view_id):
         """Update the indicated view."""
         current_view = DBView.query.get(view_id)
-        if not current_view:
-            abort(404)
-        if not g.current_user.can_do(
-                    Operation.UPDATE, 
-                    ResourceType.VIEW, 
-                    current_view.id):
-            return dict(message='Failed', 
-                error='无权限！您无权删除当前Zone，请联系管理员。'), 403
+        # if not current_view:
+        #     abort(404)
+        # if not g.current_user.can_do(
+        #             Operation.UPDATE, 
+        #             ResourceType.VIEW, 
+        #             current_view.id):
+        #     return dict(message='Failed', 
+        #         error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         args = dns_view_common_parser.parse_args()
         try:
             self._update_view(current_view, args)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '修改成功！')
 
+    @resource_exists_required(ResourceType.VIEW)
+    @permission_required(ResourceType.VIEW, Operation.DELETE)
     def delete(self, view_id):
         """Delete the indicated view."""
         current_view = DBView.query.get(view_id)
-        if not current_view:
-            abort(404)
-        if not g.current_user.can_do(
-                    Operation.UPDATE, 
-                    ResourceType.VIEW, 
-                    current_view.id):
-            return dict(message='Failed', 
-                    error='无权限！您无权删除当前Zone，请联系管理员。'), 403
+        # if not current_view:
+        #     abort(404)
+        # if not g.current_user.can_do(
+        #             Operation.UPDATE, 
+        #             ResourceType.VIEW, 
+        #             current_view.id):
+        #     return dict(message='Failed', 
+        #             error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         current_view_related_zones = current_view.zone_name_list
         if current_view_related_zones:
-            return dict(message='Failed', 
-                error="{e}".format(
+            return get_response(False, "{e}".format(
                             e='当前View还与Zone有关联，请先解除关联，再进行删除操作！\n' \
-                            + str(current_view_related_zones))), 400
+                            + str(current_view_related_zones)))
         try:
             self._remove_view_privileges(current_view)
             self._delete_view(current_view)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '删除成功！')
 
     def _update_view(self, view, args):
         log = DBOperationLog(

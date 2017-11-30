@@ -1,9 +1,11 @@
 from flask_restful import Resource, marshal_with, fields, marshal, reqparse, abort
 from flask import Blueprint, request, jsonify, current_app, g
 
-from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
+from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.common.decorators import token_required, admin_required
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, owner_or_admin_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -55,13 +57,6 @@ paginated_role_fields = {
 class RoleList(Resource):
     method_decorators = [admin_required, token_required] 
 
-    def __init__(self):
-        self.post_reqparse = reqparse.RequestParser()
-        self.post_reqparse.add_argument('name', 
-                type = str, 
-                location = 'json', required=True)
-        super(RoleList, self).__init__()
-
     def get(self):
         """Get role list."""
         args = request.args
@@ -92,8 +87,10 @@ class RoleList(Resource):
             'roles': marshal_records, 
             'current_page': current_page
             }
-        return marshal(results_wrapper, paginated_role_fields)
-
+        response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_role_fields))
+        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        return marshal(response_wrapper, response_wrapper_fields)
+    
     def post(self):
         """Create new role."""
         args = dns_role_common_parser.parse_args()
@@ -110,21 +107,20 @@ class RoleList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '修改成功！')
 
 
 class Role(Resource):
     method_decorators = [admin_required, token_required]
 
-    @marshal_with(role_fields)
     def get(self, role_id):
         """Get the detail info of the indicated role."""
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            abort(404)
-        return current_role
+            return get_response(False, '角色不存在！')
+        results_wrapper = marshal(current_role, role_fields)
+        return get_response(True, '获取成功！', results_wrapper)
 
     def put(self, role_id):
         """Update the indicated role."""
@@ -133,8 +129,7 @@ class Role(Resource):
         privilege_ids = args['privilege_ids']
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return dict(message='Failed', 
-                error="{e} 不存在！".format(e=str(role_id))), 400
+            return get_response(False, "角色不存在！")
         try:
             current_role.name = role_name
             for del_rp in DBRolePrivilege.query.filter(
@@ -154,29 +149,25 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', \
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '修改成功！')
 
     def delete(self, role_id):
         """Delete the indicated role."""
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return dict(message='Failed', 
-                error="{e} 不存在！".format(e=str(role_id))), 400
+            return get_response(False, "角色不存在！")
         related_users = current_role.users
         if related_users:
-            return dict(message='Failed', 
-                error="这些用户依然关联当前角色 {e} ，请先解除关联！"
-                    .format(e=str([u.username for u in related_users]))
-                ), 400
+            return get_response(False, "这些用户依然关联当前角色 {e} ，请先解除关联！"
+                    .format(e=str([u.username for u in related_users])))
         try:
             DBUserRole.query.filter(DBUserRole.role_id==role_id).delete()
             db.session.delete(current_role)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '删除成功！')
 
 

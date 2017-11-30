@@ -1,10 +1,11 @@
 from flask_restful import Resource, marshal_with, fields, marshal, reqparse, abort
 from flask import Blueprint, request, jsonify, current_app, g
 
-
-from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord
+from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.common.decorators import token_required, admin_required, owner_or_admin_required
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, owner_or_admin_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -78,10 +79,6 @@ paginated_user_fields = {
 class UserList(Resource):
     method_decorators = [admin_required, token_required] 
 
-    def __init__(self):
-        self.get_reqparse = reqparse.RequestParser()
-        super(UserList, self).__init__()
-
     def get(self):
         """Get user list."""
         args = request.args
@@ -115,28 +112,29 @@ class UserList(Resource):
             'users': marshal_records, 
             'current_page': current_page
             }
-        return marshal(results_wrapper, paginated_user_fields)
+        response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_user_fields))
+        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        return marshal(response_wrapper, response_wrapper_fields)
 
 
 class User(Resource):
     method_decorators = [token_required]
 
     @owner_or_admin_required
-    @marshal_with(single_user_fields)
     def get(self, user_id):
         """Get the detail info of the indicated user."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            abort(404)
-        return current_u
+            return get_response(False, '用户不存在！')
+        results_wrapper = marshal(current_u, single_user_fields)
+        return get_response(True, '获取成功！', results_wrapper)
 
     @owner_or_admin_required
     def put(self, user_id):
         """Update the indicated user."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return dict(message='Failed', 
-                error="{e} 不存在！".format(e=str(user_id))), 400
+            return get_response(False, "用户不存在！")
         args = dns_user_common_parser.parse_args()
         role_ids = args.get('role_ids')
         try:
@@ -162,17 +160,15 @@ class User(Resource):
                 db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '修改成功！')
 
     @admin_required
     def delete(self, user_id):
         """Delete the indicated role."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return dict(message='Failed', 
-                error="{e} 不存在！".format(e=str(user_id))), 400
+            return get_response(False, "用户不存在！")
         try:
             DBUserRole.query.filter(
                     DBUserRole.user_id==user_id).delete()
@@ -180,8 +176,7 @@ class User(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 200
-        return dict(message='OK'), 200
+            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(True, '删除成功！')
 
 

@@ -3,7 +3,7 @@ from peb_dns.extensions import db
 from sqlalchemy import and_, or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from .mappings import ResourceType, DefaultPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 from .dns import DBZone, DBView, DBRecord, DBDNSServer
 
 RESOURCE_TYPE_MAPPING = {
@@ -203,3 +203,9 @@ class DBPrivilege(db.Model):
     resource_id = db.Column(db.Integer, index=True)
     comment = db.Column(db.String(128))
 
+
+account_models = {
+    ResourceType.USER: DBUser,
+    ResourceType.ROLE: DBRole,
+    ResourceType.PRIVILEGE: DBPrivilege,
+}

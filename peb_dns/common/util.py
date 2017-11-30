@@ -11,6 +11,7 @@ import json
 import copy
 from datetime import datetime
 from collections import OrderedDict
+from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
 
 
 ZONE_GROUP_MAPPING = {
@@ -103,6 +104,23 @@ def doCMDWithOutput(cmd, time_out = None):
             output.append(output_line)
     return (cmd_return_code, output)
 
+
+def get_response(status, msg, data=None, code=0):
+    return {
+        'status': status,
+        'code': code,
+        'data': data,
+        'msg': msg
+    }
+
+
+def get_response_wrapper_fields(f):
+    return {
+        'status': fields.Boolean,
+        'code': fields.Integer,
+        'data': f,
+        'msg': fields.String
+    }
 
 
 # def initServer(cmd, app_object, server_id):

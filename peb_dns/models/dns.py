@@ -513,3 +513,9 @@ class DBOperationLog(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
+dns_models = {
+    ResourceType.SERVER: DBDNSServer,
+    ResourceType.VIEW: DBView,
+    ResourceType.ZONE: DBZone,
+    ResourceType.RECORD: DBRecord
+}

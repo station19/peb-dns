@@ -3,9 +3,9 @@ from flask import current_app, g, request
 
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.common.decorators import token_required, admin_required
-from peb_dns.common.util import getETCDclient
-from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
@@ -66,6 +66,8 @@ paginated_server_fields = {
     'current_page': fields.Integer
 }
 
+
+
 class DNSServerList(Resource):
     method_decorators = [token_required]
 
@@ -114,19 +116,18 @@ class DNSServerList(Resource):
             'servers': marshal_records, 
             'current_page': current_page
             }
-        return marshal(results_wrapper, paginated_server_fields)
+        response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_server_fields))
+        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        return marshal(response_wrapper, response_wrapper_fields)
 
+    @indicated_privilege_required(DefaultPrivilege.SERVER_ADD)
     def post(self):
         """Create new server."""
-        if not g.current_user.can_add_server:
-            return dict(message='Failed', 
-                error='无权限！您无权限添加Server，请联系管理员。'), 403
         args = dns_server_common_parser.parse_args()
         unique_server = db.session.query(DBDNSServer).filter(
                 or_(DBDNSServer.host==args['host'], DBDNSServer.ip==args['ip'])).all()
         if unique_server:
-            return dict(message='Failed', 
-                error='创建失败! 重复的Server，相同Host或IP地址已存在！'), 400
+            return get_response(False, '创建失败! 重复的Server，相同Host或IP地址已存在！')
         new_server = DBDNSServer(**args)
         db.session.add(new_server)
         db.session.flush()
@@ -140,7 +141,7 @@ class DNSServerList(Resource):
                 target_detail=new_server.get_content_str())
         db.session.add(log)
         db.session.commit()
-        return dict(message='OK'), 201
+        return get_response(True, '创建成功！')
 
     def init_server(self):
         pass
@@ -194,60 +195,63 @@ class DNSServerList(Resource):
 class DNSServer(Resource):
     method_decorators = [token_required]
 
-    @marshal_with(server_fields)
+    @resource_exists_required(ResourceType.SERVER)
+    @permission_required(ResourceType.SERVER, Operation.ACCESS)
     def get(self, server_id):
         """Get the detail info of the single server."""
         current_server = DBDNSServer.query.get(server_id)
-        if not current_server:
-            abort(404)
-        if not g.current_user.can_do(
-                        Operation.ACCESS, 
-                        ResourceType.SERVER, 
-                        current_server.id):
-            return dict(message='Failed', 
-                error='无权限！您无权访问当前Server，请联系管理员。'), 403
-        return current_server
+        # if not current_server:
+        #     return get_response(False, 'ID为 {} 的Server不存在！'.format(str(server_id)))
+        # if not g.current_user.can_do(
+        #                 Operation.ACCESS, 
+        #                 ResourceType.SERVER, 
+        #                 current_server.id):
+        #     return get_response(False, '无权限！您无权访问当前Server，请联系管理员。')
+        results_wrapper = marshal(current_server, server_fields)
+        # response_wrapper_fields = get_response_wrapper_fields(fields.Nested(server_fields))
+        return get_response(True, '获取成功！', results_wrapper)
 
-
+    @resource_exists_required(ResourceType.SERVER)
+    @permission_required(ResourceType.SERVER, Operation.UPDATE)
     def put(self, server_id):
         """Update the indicated server."""
         current_server = DBDNSServer.query.get(server_id)
-        if not current_server:
-            abort(404)
-        if not g.current_user.can_do(
-                        Operation.UPDATE, 
-                        ResourceType.SERVER, 
-                        current_server.id):
-            return dict(message='Failed', 
-                error='无权限！您无权修改当前Server，请联系管理员。'), 403
+        # if not current_server:
+        #     return get_response(False, 'ID为 {} 的Server不存在！'.format(str(server_id)))
+        # if not g.current_user.can_do(
+        #                 Operation.UPDATE, 
+        #                 ResourceType.SERVER, 
+        #                 current_server.id):
+        #     return get_response(False, '无权限！您无权访问当前Server，请联系管理员。')
         args = dns_server_common_parser.parse_args()
         try:
             self._update_server(current_server, args)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(False, '修改失败！')
+        return get_response(True, '修改成功！')
 
+    @resource_exists_required(ResourceType.SERVER)
+    @permission_required(ResourceType.SERVER, Operation.DELETE)
     def delete(self, server_id):
         """Delete the indicated server."""
         current_server = DBDNSServer.query.get(server_id)
-        if not current_server:
-            abort(404)
-        if not g.current_user.can_do(
-                        Operation.DELETE, 
-                        ResourceType.SERVER, 
-                        current_server.id):
-            return dict(message='Failed', 
-                error='无权限！您无权删除当前Server，请联系管理员。'), 403
+        # if not current_server:
+        #     return get_response(False, 'ID为 {} 的Server不存在！'.format(str(server_id)))
+        # if not g.current_user.can_do(
+        #                 Operation.DELETE, 
+        #                 ResourceType.SERVER, 
+        #                 current_server.id):
+        #     return dict(message='Failed', 
+        #         error='无权限！您无权删除当前Server，请联系管理员。'), 403
         try:
             self._delete_server(current_server)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return dict(message='Failed', 
-                error="{e}".format(e=str(e))), 400
-        return dict(message='OK'), 200
+            return get_response(True, '删除失败！')
+        return get_response(True, '删除成功！')
 
 
     def _update_server(self, server, args):
@@ -312,10 +316,10 @@ class DNSBindConf(Resource):
             etcd_client = getETCDclient()
             bind_conf_content = etcd_client.read(
                 current_app.config.get('BIND_CONF')).value
-            return dict(message='OK', bind_conf=bind_conf_content), 200
+            return get_response(True, '修改成功！', dict(bind_conf=bind_conf_content))
         except Exception as e:
-            return dict(message='Failed', 
-                        error='获取数据失败 !!!' + str(e)), 400
+            return get_response(False, '获取数据失败！')
+        
 
     def post(self):
         try:
@@ -327,8 +331,7 @@ class DNSBindConf(Resource):
                 bind_conf_content, 
                 prevExist=True
                 )
-            return dict(message='OK'), 200
+            return get_response(True, '修改成功')
         except Exception as e:
-            return dict(message='Failed', 
-                        error='提交数据失败 !!!' + str(e)), 400
+            return get_response(False, '提交数据失败 ！')
 

@@ -2,48 +2,63 @@ from functools import wraps
 from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g, request
 import jwt
-from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
-from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, DBLocalAuth
-from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
+from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer, dns_models
+from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege, DBLocalAuth, account_models
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, DefaultPrivilege
 from sqlalchemy import and_, or_
 from peb_dns import db
+from .util import get_response
+
+dns_models.update(account_models)
+all_resources_models = dns_models
 
 
-def permission_required(operation_type, resource_type):
+def permission_required(resource_type, operation_type):
     def decorator(f):
         @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if resource_type == ResourceType.ZONE:
-                r = DBZone
-            elif resource_type == ResourceType.VIEW:
-                r = DBView
-            elif resource_type == ResourceType.RECORD:
-                r = DBRecord
-            elif resource_type == ResourceType.SERVER:
-                r = DBDNSServer
-            current_user_resources = db.session.query(r) \
-                .join(DBPrivilege, and_(
-                    r.id == args[0], 
-                    r.id == DBPrivilege.resource_id, 
-                    DBPrivilege.resource_type == resource_type, 
-                    DBPrivilege.operation == Operation.DELETE)) \
-                .join(DBRolePrivilege, and_(DBPrivilege.id == DBRolePrivilege.privilege_id)) \
-                .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
-                .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
-                .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
-                .filter(DBUser.id == g.current_user.id).all()
-            if not current_user_resources:
-                abort(403)
+        def wrapper(*args, **kwargs):
+            resource_id = list(kwargs.values())[0]            
+            resource = all_resources_models[resource_type].query.get(resource_id)
+            if all_resources_models[resource_type] == DBRecord:
+                if not g.current_user.can_do(operation_type, ResourceType.ZONE, resource.zone.id):
+                    return get_response(False, '无权限！您无权访问当前资源，请联系管理员。')
+                return f(*args, **kwargs)
+            if not g.current_user.can_do(
+                        operation_type, 
+                        resource_type, 
+                        resource_id):
+                return get_response(False, '无权限！您无权访问当前资源，请联系管理员。')
             return f(*args, **kwargs)
-        return decorated_function
+        return wrapper
     return decorator
 
+def resource_exists_required(resource_type):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            resource_id = list(kwargs.values())[0]            
+            resource = all_resources_models[resource_type].query.get(resource_id)
+            if not resource:
+                return get_response(False, '你请求的资源不存在！')
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+def indicated_privilege_required(privilege_name):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if not g.current_user.can(privilege_name):
+                return get_response(False, '无权限！您无权访问当前资源，请联系管理员。')
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
 
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not g.current_user.is_admin():
-            abort(403)
+            return get_response(False, '无权限！您无权访问当前资源，请联系管理员。')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -52,7 +67,7 @@ def access_permission_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not g.current_user.can_access_zone(*args, **kwargs):
-            abort(403)
+            return get_response(False, '无权限！您无权访问当前资源，请联系管理员。')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -62,14 +77,14 @@ def token_required(f):
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
         if not token:
-            return {'code': 40301, 'message' : 'Token is missing!'}, 403
+            return get_response(False, '认证失败！')
         try: 
             data = jwt.decode(token, current_app.config['SECRET_KEY'])
         except:
-            return {'code': 40301, 'message' : 'Token is invalid!'}, 403
+            return get_response(False, '认证失败！')
         g.current_user = DBUser.query.filter_by(username=data.get('user')).first()
         if g.current_user is None:
-            return {'code': 40301, 'message' : 'Token is invalid!'}, 403
+            return get_response(False, '认证失败！')
         return f(*args, **kwargs)
     return decorated
 
@@ -78,6 +93,6 @@ def owner_or_admin_required(f):
     def wrapper(*args, **kwargs):
         print(kwargs)
         if not (g.current_user.is_admin() or g.current_user.id == kwargs.get('user_id')):
-            abort(403)
+            return get_response(False, '无权限！您无权访问当前资源，请联系管理员。')
         return f(*args, **kwargs)
     return wrapper
