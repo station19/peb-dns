@@ -11,6 +11,7 @@ import requests
 import etcd
 import time
 from peb_dns.common.util import getETCDclient, ZBapi
+from peb_dns.common.request_code import RequestCode
 from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
 
 

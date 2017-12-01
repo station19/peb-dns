@@ -8,6 +8,7 @@ from peb_dns.models.account import DBUser, DBLocalAuth
 from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
 from peb_dns import db
+from peb_dns.common.request_code import RequestCode
 
 
 class AuthLDAP(Resource):
@@ -32,7 +33,7 @@ class AuthLDAP(Resource):
                     'token' : token.decode('UTF-8'), 
                     'user_info': user.to_json()
                     }
-                return get_response(True, '认证成功！', response_data)
+                return get_response(RequestCode.SUCCESS, '认证成功！', response_data)
             new_user = DBUser(username=username)
             db.session.add(new_user)
             db.session.commit()
@@ -45,8 +46,8 @@ class AuthLDAP(Resource):
                 'token' : token.decode('UTF-8'), 
                 'user_info': new_user.to_json()
                 }
-            return get_response(True, '认证成功！', response_data)
-        return get_response(False, '认证失败！')
+            return get_response(RequestCode.SUCCESS, '认证成功！', response_data)
+        return get_response(RequestCode.OTHER_FAILED,  '认证失败！')
 
     def _auth_via_ldap(self, username, passwd):
         try:
@@ -78,9 +79,9 @@ class AuthLocal(Resource):
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
         if auth_user is None:
-            return get_response(False, '认证失败！用户不存在！')
+            return get_response(RequestCode.OTHER_FAILED,  '认证失败！用户不存在！')
         if not auth_user.verify_password(args['password']) :
-            return get_response(False, '认证失败！账号或密码错误！')
+            return get_response(RequestCode.OTHER_FAILED,  '认证失败！账号或密码错误！')
         local_user = DBUser.query.filter_by(username=args['username']).first()
         token = jwt.encode(
             {
@@ -91,7 +92,7 @@ class AuthLocal(Resource):
             'token' : token.decode('UTF-8'), 
             'user_info': local_user.to_json()
             }
-        return get_response(True, '认证成功！', response_data)
+        return get_response(RequestCode.SUCCESS, '认证成功！', response_data)
 
 
 class RegisterLocal(Resource):
@@ -115,7 +116,7 @@ class RegisterLocal(Resource):
         local_user = DBUser.query.filter_by(
             username = args['username']).first()
         if auth_user or local_user:
-            return get_response(False, '用户已存在！')
+            return get_response(RequestCode.OTHER_FAILED,  '用户已存在！')
         new_auth_user = DBLocalAuth(
             username=args['username'], email=args['email'])
         new_auth_user.password = args['password']
@@ -123,6 +124,6 @@ class RegisterLocal(Resource):
         db.session.add(new_local_user)
         db.session.add(new_auth_user)
         db.session.commit()
-        return get_response(True, '注册成功！')
+        return get_response(RequestCode.SUCCESS, '注册成功！')
 
 

@@ -9,6 +9,7 @@ from peb_dns.common.decorators import token_required, admin_required, resource_e
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 dns_privilege_common_parser = reqparse.RequestParser()
@@ -96,7 +97,7 @@ class PrivilegeList(Resource):
             'current_page': current_page
             }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_privilege_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
 
     def post(self):
@@ -109,7 +110,7 @@ class PrivilegeList(Resource):
         comment = args.get('comment', '')
         uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
         if uniq_privilege:
-            return get_response(False, "{e} 权限名已存在！".format(e=str(uniq_privilege.name)))
+            return get_response(RequestCode.OTHER_FAILED,  "{e} 权限名已存在！".format(e=str(uniq_privilege.name)))
         try:
             new_privilege = DBPrivilege(
                 name=privilege_name, 
@@ -128,8 +129,8 @@ class PrivilegeList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '创建失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '创建成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '创建失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '创建成功！')
 
 
 class Privilege(Resource):
@@ -151,7 +152,7 @@ class Privilege(Resource):
         """Get the detail info of the indicated privilege."""
         current_p = DBPrivilege.query.get(privilege_id)
         results_wrapper = marshal(current_p, privilege_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     @resource_exists_required(ResourceType.PRIVILEGE)
     def put(self, privilege_id):
@@ -172,8 +173,8 @@ class Privilege(Resource):
             db.session.add(current_privilege)
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @resource_exists_required(ResourceType.PRIVILEGE)
     def delete(self, privilege_id):
@@ -184,7 +185,7 @@ class Privilege(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
 

@@ -1,13 +1,16 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g, request
-
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.common.decorators import token_required
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
+
 from peb_dns import db
 from peb_dns.common.util import ZBapi
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 class ResourceAmount(Resource):
@@ -34,10 +37,13 @@ class DNSServerResolveRate(Resource):
             end_time = datetime.strptime(args['end_time'], "%Y-%m-%d-%H-%M")
         dns_servers = DBDNSServer.query.all()
         resolve_rates = {}
-        for dns_server in dns_servers:
-            resolve_rate = dns_server.get_resolve_rate(start_time, end_time)
-            resolve_rates[dns_server.host] = resolve_rate
-        return resolve_rates
+        try:
+            for dns_server in dns_servers:
+                resolve_rate = dns_server.get_resolve_rate(start_time, end_time)
+                resolve_rates[dns_server.host] = resolve_rate
+        except Exception as e:
+            return get_response(RequestCode.OTHER_FAILED,  '获取数据失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '获取成功！', resolve_rates)
 
 
 class DNSServerStatus(Resource):
@@ -48,10 +54,8 @@ class DNSServerStatus(Resource):
         args = request.args
         current_server = DBDNSServer.query.get(int(args['server_id']))
         if not current_server:
-            return dict(
-                message='Failed', 
-                error="ID为 {e} 的server不存在！".format(e=args['server_id'])
-                ), 400
-        return current_server.get_server_status()
+            return get_response(RequestCode.OTHER_FAILED,  '你请求的资源不存在！')
+        results = current_server.get_server_status()
+        return get_response(RequestCode.SUCCESS, '获取成功！', results)
 
 

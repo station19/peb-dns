@@ -9,6 +9,7 @@ from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPI
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 dns_record_common_parser = reqparse.RequestParser()
@@ -117,7 +118,7 @@ class DNSRecordList(Resource):
             'current_page': current_page
             }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_record_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
 
     def post(self):
@@ -125,18 +126,18 @@ class DNSRecordList(Resource):
         args = dns_record_common_parser.parse_args()
         current_zone = DBZone.query.get(args['zone_id'])
         if not current_zone:
-            return get_response(False, '创建失败！当前Zone不存在，请检查zone_id是否正确！')
+            return get_response(RequestCode.OTHER_FAILED,  '创建失败！当前Zone不存在，请检查zone_id是否正确！')
         if not g.current_user.can_do(
                             Operation.ACCESS, 
                             ResourceType.ZONE, 
                             current_zone.id):
-            return get_response(False, '无权限！您无权限在当前Zone下添加Record！')
+            return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权限在当前Zone下添加Record！')
         unique_record = DBRecord.query.filter_by(
                                         zone_id=args['zone_id'], 
                                         host=args['host'], 
                                         view_name=args['view_name']).first()
         if unique_record:
-            return get_response(False, '创建失败 !重复的记录！！同样的Zone，同样的主机，\
+            return get_response(RequestCode.OTHER_FAILED,  '创建失败 !重复的记录！！同样的Zone，同样的主机，\
                     同样的View 的记录只能存在一个。')
         args['creator'] = g.current_user.username
         if 'default' == args['view_name']:
@@ -168,8 +169,8 @@ class DNSRecordList(Resource):
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                return get_response(False, "{e}".format(e=str(e)))
-            return get_response(True, '创建成功！')
+                return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+            return get_response(RequestCode.SUCCESS, '创建成功！')
 
     def _add_privilege_for_record(self, current_zone, new_record):
         """Add privilege for the new record."""
@@ -225,14 +226,9 @@ class DNSRecord(Resource):
     @permission_required(ResourceType.RECORD, Operation.ACCESS)
     def get(self, record_id):
         """Get the detail info of the single record."""
-        # args = dns_record_common_parser.parse_args()
         current_record = DBRecord.query.get(record_id)
-        # if not current_record:
-        #     return get_response(False, "当前记录 {} 不存在！".format(str(record_id)))
-        # if not current_record.zone.can_access:
-        #     return get_response(False, "无权限！您无权访问ID为 {} 的记录！".format(str(record_id)))
         results_wrapper = marshal(current_record, record_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     @resource_exists_required(ResourceType.RECORD)
     @permission_required(ResourceType.RECORD, Operation.UPDATE)
@@ -240,22 +236,13 @@ class DNSRecord(Resource):
         """Update the indicated record."""
         args = dns_record_common_parser.parse_args()
         current_record = DBRecord.query.get(record_id)
-        # if not current_record:
-        #     abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
-        # current_zone = DBZone.query.get(current_record.zone_id)
-        # if not g.current_user.can_do(
-        #                 Operation.ACCESS, 
-        #                 ResourceType.ZONE, 
-        #                 current_zone.id):
-        #     return dict(message='Failed', 
-        #         error='无权限！您无权限修改当前Zone下的Record！'), 403
         unique_record = DBRecord.query.filter(
                                 DBRecord.id!=record_id,
                                 DBRecord.zone_id==args['zone_id'], 
                                 DBRecord.host==args['host'], 
                                 DBRecord.view_name==args['view_name']).first()
         if unique_record:
-            return get_response(False, '修改失败 !重复的记录！！同样的Zone，同样的主机，\
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败 !重复的记录！！同样的Zone，同样的主机，\
                     同样的View 的记录只能存在一个。')
                     
         try:
@@ -263,30 +250,21 @@ class DNSRecord(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, "{e}".format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @resource_exists_required(ResourceType.RECORD)
     @permission_required(ResourceType.RECORD, Operation.DELETE)
     def delete(self, record_id):
         """Delete the indicated record."""
         current_record = DBRecord.query.get(record_id)
-        # if not current_record:
-        #     abort(404, message="当前记录 {} 不存在！".format(str(record_id)))
-        # current_zone = DBZone.query.get(current_record.zone_id)
-        # if not g.current_user.can_do(
-        #                 Operation.ACCESS, 
-        #                 ResourceType.ZONE, 
-        #                 current_zone.id):
-        #     return dict(message='Failed', 
-        #         error='无权限！您无权限删除当前Zone下的Record！'), 403
         try:
             self._delete_record(current_record.zone, current_record)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, "{e}".format(e=str(e)))
-        return get_response(True, '删除成功！')
+            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '删除成功！')
 
     def _update_record(self, current_zone, current_record, args):
         current_record.host = args['host']

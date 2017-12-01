@@ -9,6 +9,7 @@ from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPI
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 dns_role_common_parser = reqparse.RequestParser()
@@ -88,7 +89,7 @@ class RoleList(Resource):
             'current_page': current_page
             }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_role_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
     
     def post(self):
@@ -107,8 +108,8 @@ class RoleList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
 
 class Role(Resource):
@@ -118,9 +119,9 @@ class Role(Resource):
         """Get the detail info of the indicated role."""
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return get_response(False, '角色不存在！')
+            return get_response(RequestCode.OTHER_FAILED,  '角色不存在！')
         results_wrapper = marshal(current_role, role_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     def put(self, role_id):
         """Update the indicated role."""
@@ -129,7 +130,7 @@ class Role(Resource):
         privilege_ids = args['privilege_ids']
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return get_response(False, "角色不存在！")
+            return get_response(RequestCode.OTHER_FAILED,  "角色不存在！")
         try:
             current_role.name = role_name
             for del_rp in DBRolePrivilege.query.filter(
@@ -149,17 +150,17 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
     def delete(self, role_id):
         """Delete the indicated role."""
         current_role = DBRole.query.get(role_id)
         if not current_role:
-            return get_response(False, "角色不存在！")
+            return get_response(RequestCode.OTHER_FAILED,  "角色不存在！")
         related_users = current_role.users
         if related_users:
-            return get_response(False, "这些用户依然关联当前角色 {e} ，请先解除关联！"
+            return get_response(RequestCode.OTHER_FAILED,  "这些用户依然关联当前角色 {e} ，请先解除关联！"
                     .format(e=str([u.username for u in related_users])))
         try:
             DBUserRole.query.filter(DBUserRole.role_id==role_id).delete()
@@ -167,7 +168,7 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '删除成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '删除成功！')
 
 

@@ -9,6 +9,7 @@ from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPI
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 
@@ -95,7 +96,7 @@ class DNSZoneList(Resource):
                     'current_page': current_page
                     }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_zone_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
 
     @indicated_privilege_required(DefaultPrivilege.ZONE_ADD)
@@ -109,7 +110,7 @@ class DNSZoneList(Resource):
                         and_(DBZone.name==args['name'].strip(), 
                         DBZone.zone_group.in_((1,2)))).first()
             if unique_zone:
-                return get_response(False, '创建失败！重复的Zone！！相同名字的Zone，\
+                return get_response(RequestCode.OTHER_FAILED,  '创建失败！重复的Zone！！相同名字的Zone，\
                             每种类型域名下只能存在一个！')
             if args['zone_type'] == 'forward only':
                 args['forwarders'] = '; '.join(
@@ -143,8 +144,8 @@ class DNSZoneList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, "{e}".format(e=str(e)))
-        return get_response(True, '创建成功！')
+            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '创建成功！')
 
 
     def _add_privilege_for_zone(self, new_zone):
@@ -202,51 +203,35 @@ class DNSZone(Resource):
         """Get the detail info of the indicated zone."""
         current_zone = DBZone.query.get(zone_id)
         results_wrapper = marshal(current_zone, zone_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         
     @resource_exists_required(ResourceType.ZONE)
     @permission_required(ResourceType.ZONE, Operation.UPDATE)
     def put(self, zone_id):
         """Update the indicated zone ."""
         current_zone = DBZone.query.get(zone_id)
-        # if not current_zone:
-        #     abort(404)
-        # if not g.current_user.can_do(
-        #                 Operation.UPDATE, 
-        #                 ResourceType.ZONE, 
-        #                 current_zone.id):
-        #     return dict(message='Failed', 
-        #             error='无权限！您无权限修改当前Zone，请联系管理员。'), 403
         args = dns_zone_common_parser.parse_args()
         try:
             self._update_zone(current_zone, args)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @resource_exists_required(ResourceType.ZONE)
     @permission_required(ResourceType.ZONE, Operation.DELETE)
     def delete(self, zone_id):
         """Delete the indicated zone."""
         current_zone = DBZone.query.get(zone_id)
-        # if not current_zone:
-        #     abort(404)
-        # if not g.current_user.can_do(
-        #                 Operation.UPDATE, 
-        #                 ResourceType.ZONE, 
-        #                 current_zone.id):
-        #     return dict(message='Failed', 
-        #             error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         try:
             self._remove_zone_privileges(current_zone)
             self._delete_zone(current_zone)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '删除成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '删除成功！')
 
     def _update_zone(self, current_zone, args):
         pre_views = current_zone.view_name_list
@@ -266,7 +251,6 @@ class DNSZone(Resource):
         current_zone.name = args['name']
         current_zone.zone_group = args['zone_group']
         current_zone.zone_type = args['zone_type']
-        # current_zone.forwarders = args['forwarders']
         db.session.add(current_zone)
 
         current_view_zones = DBViewZone.query.filter(

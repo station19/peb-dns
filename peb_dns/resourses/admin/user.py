@@ -9,6 +9,7 @@ from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPI
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 dns_user_common_parser = reqparse.RequestParser()
@@ -113,7 +114,7 @@ class UserList(Resource):
             'current_page': current_page
             }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_user_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
 
 
@@ -125,16 +126,16 @@ class User(Resource):
         """Get the detail info of the indicated user."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return get_response(False, '用户不存在！')
+            return get_response(RequestCode.OTHER_FAILED,  '用户不存在！')
         results_wrapper = marshal(current_u, single_user_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     @owner_or_admin_required
     def put(self, user_id):
         """Update the indicated user."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return get_response(False, "用户不存在！")
+            return get_response(RequestCode.OTHER_FAILED,  "用户不存在！")
         args = dns_user_common_parser.parse_args()
         role_ids = args.get('role_ids')
         try:
@@ -160,15 +161,15 @@ class User(Resource):
                 db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @admin_required
     def delete(self, user_id):
         """Delete the indicated role."""
         current_u = DBUser.query.get(user_id)
         if not current_u:
-            return get_response(False, "用户不存在！")
+            return get_response(RequestCode.OTHER_FAILED,  "用户不存在！")
         try:
             DBUserRole.query.filter(
                     DBUserRole.user_id==user_id).delete()
@@ -176,7 +177,7 @@ class User(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '删除成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '删除成功！')
 
 

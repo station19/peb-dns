@@ -9,6 +9,7 @@ from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPI
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 log_fields = {
@@ -69,7 +70,7 @@ class DNSOperationLogList(Resource):
             'current_page': current_page
             }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_log_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
 
 
@@ -80,7 +81,7 @@ class DNSOperationLog(Resource):
         """Get the detail info of the single log."""
         current_log = DBOperationLog.query.get(log_id)
         if not current_log:
-            return get_response(False, "当前记录 {} 不存在！".format(str(log_id)))
+            return get_response(RequestCode.OTHER_FAILED,  "当前记录 {} 不存在！".format(str(log_id)))
         results_wrapper = marshal(current_log, log_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 

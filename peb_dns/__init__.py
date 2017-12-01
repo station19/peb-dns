@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, request
+from flask import Flask, Blueprint, request, jsonify
 from configs.config import config, config_pyfiles
 from flask_migrate import Migrate, MigrateCommand
 from .extensions import mail, db
@@ -9,10 +9,7 @@ from .resourses.dns import dns_bp
 from .resourses.page import page_bp
 import os
 import click
-from .models.mappings import ROLE_MAPPINGS, DefaultPrivilege
-from .models.account import DBUser, DBUserRole, DBRole, DBLocalAuth, \
-                            DBPrivilege, DBRolePrivilege
-
+from .common.util import get_response
 
 APP_NAME = 'PEB-DNS'
 
@@ -26,7 +23,25 @@ def configure_blueprints(app, blueprints):
         app.register_blueprint(blueprint)
 
 def configure_error_handlers(app):
-    pass
+    @app.errorhandler(400)
+    def valid_request_args(error):
+        return jsonify(message='服务器无法理解此请求！'), 400
+
+    @app.errorhandler(401)
+    def login_required(error):
+        return jsonify(message="请先进行认证！"), 401
+
+    @app.errorhandler(403)
+    def forbidden(error):
+        return jsonify(message="无权限！"), 403
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return jsonify(message="您访问的资源/页面不存在！"), 404
+
+    @app.errorhandler(500)
+    def server_error_page(error):
+        return jsonify(message="非常抱歉，服务器内部出错！"), 500
 
 def configure_hooks(app):
     pass

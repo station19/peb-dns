@@ -12,6 +12,7 @@ import copy
 from datetime import datetime
 from collections import OrderedDict
 from flask_restful import Api, Resource, url_for, reqparse, abort, marshal_with, fields, marshal
+from .request_code import RequestCode
 
 
 ZONE_GROUP_MAPPING = {
@@ -31,7 +32,6 @@ def getETCDclient():
         client.read(current_app.config.get('BIND_CONF'))
     except etcd.EtcdKeyNotFound:
         client.write(current_app.config.get('BIND_CONF'), '', prevExist=False)
-
     try:
         client.read(current_app.config.get('VIEW_DEFINE_CONF'))
     except etcd.EtcdKeyNotFound:
@@ -105,18 +105,16 @@ def doCMDWithOutput(cmd, time_out = None):
     return (cmd_return_code, output)
 
 
-def get_response(status, msg, data=None, code=0):
+def get_response(code, msg, data=None):
     return {
-        'status': status,
         'code': code,
-        'data': data,
-        'msg': msg
+        'msg': msg,
+        'data': data
     }
 
 
 def get_response_wrapper_fields(f):
     return {
-        'status': fields.Boolean,
         'code': fields.Integer,
         'data': f,
         'msg': fields.String

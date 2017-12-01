@@ -1,13 +1,15 @@
 from flask_restful import Api, Resource, url_for, reqparse, abort
 from flask import current_app, g
-
 from peb_dns.models.dns import DBView, DBViewZone, DBZone, DBOperationLog, DBRecord, DBDNSServer
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBRolePrivilege, DBPrivilege
-from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
-from peb_dns.common.decorators import token_required
+from peb_dns.common.decorators import token_required, admin_required, permission_required, indicated_privilege_required, resource_exists_required
+from peb_dns.common.util import getETCDclient, get_response, get_response_wrapper_fields
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
+
 from peb_dns import db
 from sqlalchemy import and_, or_
 from datetime import datetime
+from peb_dns.common.request_code import RequestCode
 
 
 
@@ -33,7 +35,7 @@ class MenuSidebar(Resource):
             ]
             menu_group['menu'].append({'title':'后台管理系统', 'items': admin_items})
         menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
-        return dict(menu_group)
+        return get_response(RequestCode.SUCCESS, '获取成功！', menu_group)
 
     def _get_zones(self):
         zone_query = db.session.query(DBZone) \

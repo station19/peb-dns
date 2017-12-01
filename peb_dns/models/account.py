@@ -3,7 +3,7 @@ from peb_dns.extensions import db
 from sqlalchemy import and_, or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, DefaultPrivilege
 from .dns import DBZone, DBView, DBRecord, DBDNSServer
 
 RESOURCE_TYPE_MAPPING = {

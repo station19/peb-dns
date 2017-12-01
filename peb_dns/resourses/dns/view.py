@@ -9,6 +9,7 @@ from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPI
 from peb_dns.common.util import DNSPod
 from peb_dns import db
 from sqlalchemy import and_, or_
+from peb_dns.common.request_code import RequestCode
 
 dns_view_common_parser = reqparse.RequestParser()
 dns_view_common_parser.add_argument('name', 
@@ -73,7 +74,7 @@ class DNSViewList(Resource):
                 'current_page': current_page
                 }
         response_wrapper_fields = get_response_wrapper_fields(fields.Nested(paginated_view_fields))
-        response_wrapper = get_response(True, '获取成功！', results_wrapper)
+        response_wrapper = get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
         return marshal(response_wrapper, response_wrapper_fields)
 
     @indicated_privilege_required(DefaultPrivilege.VIEW_ADD)
@@ -82,7 +83,7 @@ class DNSViewList(Resource):
         args = dns_view_common_parser.parse_args()
         unique_view = DBView.query.filter_by(name=args['name']).first()
         if unique_view:
-            return get_response(False, '创建失败！重复的View， 相同的名字的View已存在！！')
+            return get_response(RequestCode.OTHER_FAILED,  '创建失败！重复的View， 相同的名字的View已存在！！')
         new_view = DBView(**args)
         db.session.add(new_view)
         db.session.flush()
@@ -102,8 +103,8 @@ class DNSViewList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, "{e}".format(e=str(e)))
-        return get_response(True, '创建成功！')
+            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '创建成功！')
 
     def _add_privilege_for_view(self, new_view):
         """Add privilege for the new view."""
@@ -160,46 +161,30 @@ class DNSView(Resource):
         """Get the detail info of the single view."""
         current_view = DBView.query.get(view_id)
         results_wrapper = marshal(current_view, view_fields)
-        return get_response(True, '获取成功！', results_wrapper)
+        return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     @resource_exists_required(ResourceType.VIEW)
     @permission_required(ResourceType.VIEW, Operation.UPDATE)
     def put(self, view_id):
         """Update the indicated view."""
         current_view = DBView.query.get(view_id)
-        # if not current_view:
-        #     abort(404)
-        # if not g.current_user.can_do(
-        #             Operation.UPDATE, 
-        #             ResourceType.VIEW, 
-        #             current_view.id):
-        #     return dict(message='Failed', 
-        #         error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         args = dns_view_common_parser.parse_args()
         try:
             self._update_view(current_view, args)
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '修改失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '修改成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @resource_exists_required(ResourceType.VIEW)
     @permission_required(ResourceType.VIEW, Operation.DELETE)
     def delete(self, view_id):
         """Delete the indicated view."""
         current_view = DBView.query.get(view_id)
-        # if not current_view:
-        #     abort(404)
-        # if not g.current_user.can_do(
-        #             Operation.UPDATE, 
-        #             ResourceType.VIEW, 
-        #             current_view.id):
-        #     return dict(message='Failed', 
-        #             error='无权限！您无权删除当前Zone，请联系管理员。'), 403
         current_view_related_zones = current_view.zone_name_list
         if current_view_related_zones:
-            return get_response(False, "{e}".format(
+            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(
                             e='当前View还与Zone有关联，请先解除关联，再进行删除操作！\n' \
                             + str(current_view_related_zones)))
         try:
@@ -208,8 +193,8 @@ class DNSView(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(False, '删除失败！\n{e}'.format(e=str(e)))
-        return get_response(True, '删除成功！')
+            return get_response(RequestCode.OTHER_FAILED,  '删除失败！\n{e}'.format(e=str(e)))
+        return get_response(RequestCode.SUCCESS, '删除成功！')
 
     def _update_view(self, view, args):
         log = DBOperationLog(
