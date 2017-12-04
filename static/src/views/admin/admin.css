@@ -1,0 +1,90 @@
+.admin-block{
+    background-color: #fff;
+    padding: 10px 10px 50px 10px;
+}
+
+.admin-block h1{
+    font-size: 18px;
+    line-height: 60px;
+    height: 60px;
+    border-radius: 100%;
+    margin: 10px 0 20px 10px;
+    width: 60px;
+    text-align: center;
+    background-color: SeaGreen;
+    color: #fff;
+}
+
+
+.admin-block .modal-dialog{
+    width: 880px;
+    overflow:auto;
+}
+.admin-block .modal-dialog .user-info{
+    width: 60%;
+    float: left;
+    border-right: 1px #ccc solid;
+}
+.admin-block .modal-dialog .user-role{
+    float: left;
+    width: 40%;
+    padding-left: 4px;
+    min-height: 328px;
+}
+.admin-block .user-role .vp-pager{
+    position: absolute;
+    bottom: 0px;
+    height: 30px;
+}
+
+.admin-block .modal-dialog .search-bar input{
+    height: 28px;
+    margin: 5px;
+}
+
+.admin-block .modal-dialog .user-info .form-group{
+    width: 50%;
+    margin: 0 0 10px 0;
+    float: left;
+    padding-right: 10px;
+}
+
+.admin-block thead .lg-checkbox{display:none;}
+
+.admin-block textarea{
+    height:100px;
+}
+
+.admin-block select{
+    padding: 3px 5px;
+    height: 30px;
+}
+
+
+.admin-block .search{
+    margin: 10px 0;
+}
+
+.admin-block .search .search-item{
+    width: 200px;
+    margin-right: 5px;
+    float: left;
+}
+
+.admin-block .role, .admin-block .user,.admin-block .privilege{
+    background-color: #fff;
+    padding: 10px;
+    padding-bottom: 50px;
+}
+
+.slide-from-top-enter-active {
+    transition: all .30s ease;
+}
+.slide-from-top-leave-active {
+    transition: all .18s ease;
+}
+.slide-from-top-enter, .slide-from-top-leave-to{
+    transform: translateY(-500px);
+}
+
+
