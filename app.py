@@ -1,4 +1,3 @@
-
 from peb_dns import create_app
 from peb_dns.extensions import mail, db
 from peb_dns.models.mappings import ROLE_MAPPINGS, DefaultPrivilege

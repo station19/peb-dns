@@ -34,8 +34,8 @@ config = {
 }
 
 config_pyfiles = {
-    'dev': 'configs/dev.cfg',
-    'prod': 'configs/prod.cfg',
-    'default': 'configs/prod.cfg'
+    'dev': 'config/dev.cfg',
+    'prod': 'config/prod.cfg',
+    'default': 'config/prod.cfg'
 }
 

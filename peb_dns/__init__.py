@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint, request, jsonify
-from configs.config import config, config_pyfiles
+from config.config import config, config_pyfiles
 from flask_migrate import Migrate, MigrateCommand
 from .extensions import mail, db
 from flask_cors import CORS
@@ -54,7 +54,7 @@ def create_app(config_name='default'):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     app.config.from_pyfile(config_pyfiles[config_name])
-    app.config.from_pyfile('configs/dns_templates.cfg')
+    app.config.from_pyfile('config/dns_templates.cfg')
     configure_extensions(app)
     configure_blueprints(app, [auth_bp, dns_bp, admin, page_bp])
     configure_error_handlers(app)
