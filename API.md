@@ -6,7 +6,7 @@
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/auth/login_ldap       |post 
+/auth/login_ldap       |POST 
 
 
 #### 参数列表：
@@ -15,7 +15,6 @@ URL       |请求方式
 username    |string     |是       |无     |user123      |用户名
 password    |string     |是       |无     |passwd123      |密码
 
-#### 返回格式：
 #### 返回格式：
 
 
@@ -51,7 +50,7 @@ password    |string     |是       |无     |passwd123      |密码
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/auth/login_ldap       |post 
+/auth/login_ldap       |POST 
 
 
 #### 参数列表：
@@ -94,7 +93,7 @@ password    |string     |是       |无     |passwd123      |密码
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/auth/register_local       |post 
+/auth/register_local       |POST 
 
 
 #### 参数列表：
@@ -102,7 +101,7 @@ URL       |请求方式
 ------------|-----------|----------- |-----------|-----------|-----------
 username    |string     |是       |无     |user123      |用户名
 password    |string     |是       |无     |passwd123      |密码
-password2    |string     |是       |无     |passwd123      |密码
+password2    |string     |是       |无     |passwd123      |两次密码输入要一致
 email    |string     |是       |无     |xxx@qq.com      |邮箱
 
 #### 返回格式：
@@ -129,7 +128,7 @@ email    |string     |是       |无     |xxx@qq.com      |邮箱
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/servers        |get 
+/dns/servers        |GET 
 
 
 #### 参数列表：
@@ -215,7 +214,7 @@ dns_server_type    |string     |否       |无     |master      |服务器类型
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/servers        |post 
+/dns/servers        |POST 
 
 
 #### 参数列表：
@@ -252,7 +251,7 @@ zb_resolve_rate_itemid    |string     |是       |无     |321574      |ZABBIX�
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/servers/\<int:server_id>        |get 
+/dns/servers/\<int:server_id>        |GET 
 
 
 #### 参数列表：
@@ -283,7 +282,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/servers/\<int:server_id>        |put 
+/dns/servers/\<int:server_id>        |PUT 
 
 
 #### 参数列表：
@@ -319,7 +318,7 @@ zb_resolve_rate_itemid    |string     |是       |无     |321574      |ZABBIX�
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/servers/\<int:server_id>        |delete 
+/dns/servers/\<int:server_id>        |DELETE 
 
 
 #### 参数列表：
@@ -349,7 +348,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/views        |get 
+/dns/views        |GET 
 
 
 #### 参数列表：
@@ -401,7 +400,7 @@ name    |string     |否       |无     |view1      |View名称
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/views        |post 
+/dns/views        |POST 
 
 
 #### 参数列表：
@@ -432,7 +431,7 @@ acl    |string     |是       |无     |0.0.0.0\n1.1.1.1      |acl IP地址列�
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/views/\<int:view_id>        |get 
+/dns/views/\<int:view_id>        |GET 
 
 
 #### 参数列表：
@@ -457,7 +456,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/views/\<int:view_id>        |put 
+/dns/views/\<int:view_id>        |PUT 
 
 
 #### 参数列表：
@@ -489,7 +488,7 @@ acl    |string     |是       |无     |0.0.0.0\n1.1.1.1      |acl IP地址列�
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/views/\<int:view_id>        |delete 
+/dns/views/\<int:view_id>        |DELETE 
 
 
 #### 参数列表：
@@ -522,7 +521,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/zones        |get 
+/dns/zones        |GET 
 
 
 #### 参数列表：
@@ -601,7 +600,7 @@ zone_type    |string     |否       |无     |master      |Zone类型， master/
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/zones        |post 
+/dns/zones        |POST 
 
 
 #### 参数列表：
@@ -634,7 +633,7 @@ view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个vi
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/zones/\<int:zone_id>        |get 
+/dns/zones/\<int:zone_id>        |GET 
 
 
 #### 参数列表：
@@ -665,7 +664,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/zones/\<int: zone_id>        |put 
+/dns/zones/\<int: zone_id>        |PUT 
 
 
 #### 参数列表：
@@ -701,7 +700,7 @@ view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个vi
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/zones/\<int:zone_id>        |delete 
+/dns/zones/\<int:zone_id>        |DELETE 
 
 
 #### 参数列表：
@@ -732,7 +731,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/records        |get 
+/dns/records        |GET 
 
 
 #### 参数列表：
@@ -803,7 +802,7 @@ view_name    |string     |否       |无     |v1      |线路
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/records        |post 
+/dns/records        |POST 
 
 
 #### 参数列表：
@@ -838,7 +837,7 @@ zone_id    |int     |是       |无     |2     |当前record所属zone的ID
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/records/\<int:record_id>        |get 
+/dns/records/\<int:record_id>        |GET 
 
 
 #### 参数列表：
@@ -870,7 +869,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/records/\<int:record_id>        |put 
+/dns/records/\<int:record_id>        |PUT 
 
 
 #### 参数列表：
@@ -907,7 +906,7 @@ zone_id    |int     |是       |无     |2     |当前record所属zone的ID
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/records/\<int:record_id>        |delete 
+/dns/records/\<int:record_id>        |DELETE 
 
 
 #### 参数列表：
@@ -937,7 +936,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/bind_conf        |get 
+/dns/bind_conf        |GET 
 
 
 #### 参数列表：
@@ -960,7 +959,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/bind_conf        |post
+/dns/bind_conf        |POST
 
 
 #### 参数列表：
@@ -990,7 +989,7 @@ bind_conf    |string     |是       |无     |line1\nline2\nline3      |BIND主�
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/dns/oplogs        |get 
+/dns/oplogs        |GET 
 
 
 #### 参数列表：
@@ -1058,7 +1057,7 @@ target_id    |string     |否       |无     |12      |资源ID
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/users        |get 
+/admin/users        |GET 
 
 
 #### 参数列表：
@@ -1139,7 +1138,7 @@ cellphone    |string     |否       |无     |18666666666      |手机号码
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/users/\<int: user_id>        |get 
+/admin/users/\<int: user_id>        |GET 
 
 
 #### 参数列表：
@@ -1181,7 +1180,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/users/\<int: user_id>        |get 
+/admin/users/\<int: user_id>        |GET 
 
 
 #### 参数列表：
@@ -1216,7 +1215,7 @@ location    |string     |否       |无     |comment      |家庭住址
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/users/\<int: user_id>        |get 
+/admin/users/\<int: user_id>        |GET 
 
 
 #### 参数列表：
@@ -1248,7 +1247,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/roles        |get 
+/admin/roles        |GET 
 
 
 #### 参数列表：
@@ -1322,7 +1321,7 @@ name    |string     |否       |无     |user2      |角色名
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/roles        |post 
+/admin/roles        |POST 
 
 
 #### 参数列表：
@@ -1353,7 +1352,7 @@ privilege_ids    |list     |是       |无     |[1,2,3]      |新建角色所拥
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/roles/\<int:role_id>       |get 
+/admin/roles/\<int:role_id>       |GET 
 
 
 #### 参数列表：
@@ -1395,7 +1394,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/roles/\<int:role_id>        |put 
+/admin/roles/\<int:role_id>        |PUT 
 
 
 #### 参数列表：
@@ -1427,7 +1426,7 @@ privilege_ids    |list     |是       |无     |[1,2,3]      |新建角色所拥
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/roles/\<int:role_id>        |delete 
+/admin/roles/\<int:role_id>        |DELETE 
 
 
 #### 参数列表：
@@ -1461,7 +1460,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/privileges        |get 
+/admin/privileges        |GET 
 
 
 #### 参数列表：
@@ -1518,7 +1517,7 @@ resource_id    |int     |否       |无     |2      |资源ID
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/privileges        |post 
+/admin/privileges        |POST 
 
 
 #### 参数列表：
@@ -1552,7 +1551,7 @@ comment    |string     |否       |无     |aa.com的删除权限      |备注
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/privileges/\<int:privilege_id>       |get 
+/admin/privileges/\<int:privilege_id>       |GET 
 
 
 #### 参数列表：
@@ -1580,7 +1579,7 @@ URL       |请求方式
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/privileges/\<int:privilege_id>        |put 
+/admin/privileges/\<int:privilege_id>        |PUT 
 
 
 #### 参数列表：
@@ -1614,7 +1613,7 @@ comment    |string     |否       |无     |aa.com的删除权限      |备注
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/admin/privileges/\<int:privilege_id>        |delete 
+/admin/privileges/\<int:privilege_id>        |DELETE 
 
 
 #### 参数列表：
