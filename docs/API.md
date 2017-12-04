@@ -20,29 +20,33 @@ password    |string     |是       |无     |passwd123      |密码
 
 ```json
 认证成功
-状态码： 200
 {
-    "token": "eyJ0eXasdfasdfasdfasdfasdfJ9.eyJ1c2VyIjoiTElKSUFKSUE4NzMiLCJleHAiOjE1MTIwNTA0MTh9.vJ_kj2SSf3T_0TyO5_Y4NN4l7aqXwyr0n01kKRdZW6s",
-    "user_info": {
-        "id": 3,
-        "username": "user123",
-        "email": "xx",
-        "chinese_name": "",
-        "cellphone": "xx",
-        "position": "xx",
-        "location": "",
-        "can_add_server": true,
-        "can_add_view": true,
-        "can_add_zone": true,
-        "member_since": "2017-11-23 18:24:22"
+    "code": 100000,
+    "msg": "认证成功！",
+    "data": {
+        "token": "eyJ0eXAiOiJKxxxxxxxxxx.eyJ1c2VyIjoiTElKSUFKSUE4NzMiLCJleHAiOjE1MTI0OTUxMzd9.pjTKXo1EPqersjJ4HiN7Jj9mwx50pqCvEMrIL4rGCYM",
+        "user_info": {
+            "id": 3,
+            "username": "LIJIAJIA873",
+            "email": "xx",
+            "chinese_name": "",
+            "cellphone": "xx",
+            "position": "xx",
+            "location": "",
+            "can_add_server": true,
+            "can_add_view": true,
+            "can_add_zone": true,
+            "member_since": "2017-11-23 18:24:22"
+        }
     }
 }
 
 
 认证失败
-状态码：403
 {
-    "message": "认证失败！"
+    "code": 105000,
+    "msg": "认证失败！",
+    "data": null
 }
 ```
 
@@ -64,28 +68,32 @@ password    |string     |是       |无     |passwd123      |密码
 
 ```json
 认证成功
-状态码： 200
 {
-    "token": "eyJ0eXasdfasdfasdfasdfasdfJ9.eyJ1c2VyIjoiTElKSUFKSUE4NzMiLCJleHAiOjE1MTIwNTA0MTh9.vJ_kj2SSf3T_0TyO5_Y4NN4l7aqXwyr0n01kKRdZW6s",
-    "user_info": {
-        "id": 3,
-        "username": "user123",
-        "email": "xx",
-        "chinese_name": "",
-        "cellphone": "xx",
-        "position": "xx",
-        "location": "",
-        "can_add_server": true,
-        "can_add_view": true,
-        "can_add_zone": true,
-        "member_since": "2017-11-23 18:24:22"
+    "code": 100000,
+    "msg": "认证成功！",
+    "data": {
+        "token": "eyJ0eXAiOiJKxxxxxxxxxx.eyJ1c2VyIjoiTElKSUFKSUE4NzMiLCJleHAiOjE1MTI0OTUxMzd9.pjTKXo1EPqersjJ4HiN7Jj9mwx50pqCvEMrIL4rGCYM",
+        "user_info": {
+            "id": 3,
+            "username": "LIJIAJIA873",
+            "email": "xx",
+            "chinese_name": "",
+            "cellphone": "xx",
+            "position": "xx",
+            "location": "",
+            "can_add_server": true,
+            "can_add_view": true,
+            "can_add_zone": true,
+            "member_since": "2017-11-23 18:24:22"
+        }
     }
 }
 
 认证失败
-状态码：403
 {
-    "message": "认证失败！"
+    "code": 105000,
+    "msg": "认证失败！",
+    "data": null
 }
 ```
 
@@ -109,16 +117,17 @@ email    |string     |是       |无     |xxx@qq.com      |邮箱
 
 ```json
 认证成功
-状态码： 200
 {
-    "message": "OK"
+    "code": 100000,
+    "msg": "注册成功！",
+    "data": null
 }
 
 认证失败
-状态码：400
 {
-    "message": "Failed",
-    "error": "用户已存在！"
+    "code": 105000,
+    "msg": "用户已存在！",
+    "data": null
 }
 ```
 
@@ -148,64 +157,41 @@ dns_server_type    |string     |否       |无     |master      |服务器类型
 
 ```json
 获取成功
-状态码： 200
 {
-    "total": 4,
-    "servers": [
-        {
-            "id": 6,
-            "host": "ooo",
-            "ip": "0.0.0.5",
-            "env": "anhouse",
-            "dns_server_type": "salve",
-            "zb_process_itemid": "123",
-            "zb_port_itemid": "123",
-            "zb_resolve_itemid": "123",
-            "zb_resolve_rate_itemid": "123",
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 5,
-            "host": "ss3",
-            "ip": "0.0.0.4.0",
-            "env": "dev",
-            "dns_server_type": "salve",
-            "zb_process_itemid": "123",
-            "zb_port_itemid": "123",
-            "zb_resolve_itemid": "123",
-            "zb_resolve_rate_itemid": "320857",
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 2,
-            "host": "s2",
-            "ip": "0.0.0.1",
-            "env": "anhouse",
-            "dns_server_type": "master",
-            "zb_process_itemid": "222",
-            "zb_port_itemid": "222",
-            "zb_resolve_itemid": "222",
-            "zb_resolve_rate_itemid": "189254",
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 1,
-            "host": "s1",
-            "ip": "0.0.0.0",
-            "env": "dev",
-            "dns_server_type": "master",
-            "zb_process_itemid": "111",
-            "zb_port_itemid": "111",
-            "zb_resolve_itemid": "111",
-            "zb_resolve_rate_itemid": "189243",
-            "can_update": true,
-            "can_delete": true
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 4,
+        "servers": [
+            {
+                "id": 2,
+                "host": "s2",
+                "ip": "0.0.0.1",
+                "env": "anhouse",
+                "dns_server_type": "master",
+                "zb_process_itemid": "222",
+                "zb_port_itemid": "222",
+                "zb_resolve_itemid": "222",
+                "zb_resolve_rate_itemid": "189254",
+                "can_update": true,
+                "can_delete": true
+            },
+            {
+                "id": 1,
+                "host": "s1",
+                "ip": "0.0.0.0",
+                "env": "dev",
+                "dns_server_type": "master",
+                "zb_process_itemid": "111",
+                "zb_port_itemid": "111",
+                "zb_resolve_itemid": "111",
+                "zb_resolve_rate_itemid": "189243",
+                "can_update": true,
+                "can_delete": true
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
 
 ```
@@ -235,16 +221,17 @@ zb_resolve_rate_itemid    |string     |是       |无     |321574      |ZABBIX�
 
 ```json
 创建成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "创建成功！",
+    "data": null
+}
 创建失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "创建失败! 重复的Server，相同Host或IP地址已存在！",
+    "data": null
+}
 ```
 
 ### 1.3，获取指定ID的DNS服务器信息接口
@@ -262,19 +249,22 @@ URL       |请求方式
 
 ```json
 获取成功
-状态码： 200
 {
-    "id": 1,
-    "host": "s1",
-    "ip": "0.0.0.0",
-    "env": "dev",
-    "dns_server_type": "master",
-    "zb_process_itemid": "111",
-    "zb_port_itemid": "111",
-    "zb_resolve_itemid": "111",
-    "zb_resolve_rate_itemid": "189243",
-    "can_update": true,
-    "can_delete": true
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 2,
+        "host": "s2",
+        "ip": "0.0.0.1",
+        "env": "anhouse",
+        "dns_server_type": "master",
+        "zb_process_itemid": "222",
+        "zb_port_itemid": "222",
+        "zb_resolve_itemid": "222",
+        "zb_resolve_rate_itemid": "189254",
+        "can_update": true,
+        "can_delete": true
+    }
 }
 ```
 
@@ -302,16 +292,17 @@ zb_resolve_rate_itemid    |string     |是       |无     |321574      |ZABBIX�
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 ```
 
 ### 1.5，删除指定ID的DNS服务器接口
@@ -330,16 +321,17 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 ```
 
 
@@ -364,33 +356,29 @@ name    |string     |否       |无     |view1      |View名称
 
 ```json
 获取成功
-状态码： 200
 {
-    "total": 3,
-    "views": [
-        {
-            "id": 5,
-            "name": "jtest",
-            "acl": "10.21.21.25\n0.0.0.0",
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 2,
-            "name": "vvvv111111111",
-            "acl": "0.0.0.0",
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 1,
-            "name": "wqerqwer",
-            "acl": "0.0.0.0\n1.1.1.1",
-            "can_update": true,
-            "can_delete": true
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 4,
+        "views": [
+            {
+                "id": 2,
+                "name": "vvvv111111111",
+                "acl": "0.0.0.0",
+                "can_update": true,
+                "can_delete": true
+            },
+            {
+                "id": 1,
+                "name": "wqerqwer",
+                "acl": "0.0.0.0\n1.1.1.1",
+                "can_update": true,
+                "can_delete": true
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
 
 ```
@@ -415,16 +403,17 @@ acl    |string     |是       |无     |0.0.0.0\n1.1.1.1      |acl IP地址列�
 
 ```json
 创建成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "创建成功！",
+    "data": null
+}
 创建失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "创建失败! 相同名字的view已存在！",
+    "data": null
+}
 ```
 
 ### 2.3，获取指定ID的DNS区域信息接口
@@ -443,11 +432,15 @@ URL       |请求方式
 
 ```json
 {
-    "id": 1,
-    "name": "wqerqwer",
-    "acl": "0.0.0.0\n1.1.1.1",
-    "can_update": true,
-    "can_delete": true
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 1,
+        "name": "wqerqwer",
+        "acl": "0.0.0.0\n1.1.1.1",
+        "can_update": true,
+        "can_delete": true
+    }
 }
 ```
 
@@ -471,16 +464,17 @@ acl    |string     |是       |无     |0.0.0.0\n1.1.1.1      |acl IP地址列�
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 ```
 
 
@@ -500,16 +494,17 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 ```
 
 
@@ -540,58 +535,44 @@ zone_type    |string     |否       |无     |master      |Zone类型， master/
 
 ```json
 获取成功
-状态码： 200
-
 {
-    "total": 6,
-    "zones": [
-        {
-            "id": 6,
-            "name": "xxx123.com",
-            "zone_group": 1,
-            "zone_type": "forward only",
-            "forwarders": "0.0.0.0; 1.1.1.1;",
-            "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
-            "can_update": true,
-            "can_delete": true,
-            "view_ids": [
-                1,
-                2,
-                5
-            ]
-        },
-        {
-            "id": 5,
-            "name": "xx2.com",
-            "zone_group": 2,
-            "zone_type": "master",
-            "forwarders": "",
-            "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
-            "can_update": true,
-            "can_delete": true,
-            "view_ids": [
-                1,
-                2,
-                5
-            ]
-        },
-        {
-            "id": 4,
-            "name": "xx1.com",
-            "zone_group": 1,
-            "zone_type": "master",
-            "forwarders": "",
-            "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
-            "can_update": true,
-            "can_delete": true,
-            "view_ids": [
-                1,
-                2,
-                5
-            ]
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 5,
+        "zones": [
+            {
+                "id": 4,
+                "name": "xx1.com",
+                "zone_group": 1,
+                "zone_type": "master",
+                "forwarders": "",
+                "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+                "can_update": true,
+                "can_delete": true,
+                "view_ids": [
+                    1,
+                    2,
+                    5
+                ]
+            },
+            {
+                "id": 3,
+                "name": "xxx.com",
+                "zone_group": 1,
+                "zone_type": "forward only",
+                "forwarders": "0.0.0.0; 0.0.0.4;",
+                "view_name_list": "['vvvv111111111', 'wqerqwer']",
+                "can_update": true,
+                "can_delete": true,
+                "view_ids": [
+                    2,
+                    1
+                ]
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
 ```
 
@@ -617,16 +598,17 @@ view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个vi
 
 ```json
 创建成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "创建成功！",
+    "data": null
+}
 创建失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "创建失败! 相同名字的Zone已存在！",
+    "data": null
+}
 ```
 
 ### 3.3，获取指定ID的DNS域名信息接口
@@ -645,17 +627,24 @@ URL       |请求方式
 
 ```json
 获取成功
-状态码： 200
 {
-    "id": 2,
-    "name": "fw3efwwv.com",
-    "zone_group": 1,
-    "zone_type": "master",
-    "forwarders": "",
-    "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
-    "can_update": true,
-    "can_delete": true,
-    "view_ids": [1, 2, 5]
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 5,
+        "name": "xx2.com",
+        "zone_group": 2,
+        "zone_type": "master",
+        "forwarders": "",
+        "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+        "can_update": true,
+        "can_delete": true,
+        "view_ids": [
+            1,
+            2,
+            5
+        ]
+    }
 }
 ```
 
@@ -682,16 +671,17 @@ view_ids    |list     |是       |无     |[1,2,3]      |关联一个或多个vi
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 ```
 
 
@@ -712,16 +702,17 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 ```
 
 
@@ -752,50 +743,40 @@ view_name    |string     |否       |无     |v1      |线路
 
 ```json
 获取成功
-状态码： 200
 {
-    "total": 9,
-    "records": [
-        {
-            "id": 26,
-            "host": "123123",
-            "record_type": "CNAME",
-            "ttl": "1800",
-            "value": "0.0.0.0",
-            "view_name": "vvvv111111111",
-            "comment": "123",
-            "zone_id": 2,
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 25,
-            "host": "23123123",
-            "record_type": "A",
-            "ttl": "600",
-            "value": "0.0.0.0",
-            "view_name": "jtest",
-            "comment": "123123",
-            "zone_id": 2,
-            "can_update": true,
-            "can_delete": true
-        },
-        {
-            "id": 24,
-            "host": "23123123",
-            "record_type": "A",
-            "ttl": "600",
-            "value": "0.0.0.0",
-            "view_name": "vvvv111111111",
-            "comment": "123123",
-            "zone_id": 2,
-            "can_update": true,
-            "can_delete": true
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 9,
+        "records": [
+            {
+                "id": 16,
+                "host": "xxx333",
+                "record_type": "A",
+                "ttl": "600",
+                "value": "0.0.0.0",
+                "view_name": "jtest",
+                "comment": "xxx111",
+                "zone_id": 4,
+                "can_update": true,
+                "can_delete": true
+            },
+            {
+                "id": 15,
+                "host": "xxx333",
+                "record_type": "A",
+                "ttl": "600",
+                "value": "0.0.0.0",
+                "view_name": "vvvv111111111",
+                "comment": "xxx111",
+                "zone_id": 4,
+                "can_update": true,
+                "can_delete": true
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
-
 ```
 
 ### 4.2，DNS域名记录创建接口
@@ -821,16 +802,17 @@ zone_id    |int     |是       |无     |2     |当前record所属zone的ID
 
 ```json
 创建成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "创建成功！",
+    "data": null
+}
 创建失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "创建失败 !重复的记录！！同样的Zone，同样的主机，同样的View 的记录只能存在一个。",
+    "data": null
+}
 ```
 
 ### 4.3，获取指定ID的DNS域名记录信息接口
@@ -851,16 +833,20 @@ URL       |请求方式
 获取成功
 状态码： 200
 {
-    "id": 6,
-    "host": "xxx111",
-    "record_type": "A",
-    "ttl": "600",
-    "value": "0.0.0.0",
-    "view_name": "vvvv111111111",
-    "comment": "xxx111",
-    "zone_id": 2,
-    "can_update": true,
-    "can_delete": true
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 31,
+        "host": "xxx333",
+        "record_type": "A",
+        "ttl": "600",
+        "value": "0.0.0.0",
+        "view_name": "wqerqwer",
+        "comment": "xxx111",
+        "zone_id": 4,
+        "can_update": true,
+        "can_delete": true
+    }
 }
 ```
 
@@ -889,16 +875,17 @@ zone_id    |int     |是       |无     |2     |当前record所属zone的ID
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 ```
 
 
@@ -918,16 +905,17 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 ```
 
 
@@ -948,8 +936,11 @@ URL       |请求方式
 获取成功
 状态码： 200
 {
-    "message": "OK",
-    "bind_conf": "bind_conf\nbind_conf\nbind_conf\nbind_conf\nbind_conf\n"
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": {
+        "bind_conf": "bind_conf\nbind_conf\nbind_conf\nbind_conf\nbind_conf\ndf\nasdf\nasd\nfasd\nfads\n\n\n"
+    }
 }
 
 
@@ -972,15 +963,16 @@ bind_conf    |string     |是       |无     |line1\nline2\nline3      |BIND主�
 
 ```json
 修改成功
-状态码： 200
 {
-    "message": "OK",
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
 }
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
 }
 ```
 
@@ -1009,42 +1001,35 @@ target_id    |string     |否       |无     |12      |资源ID
 
 ```json
 获取成功
-状态码： 200
 {
-    "total": 37,
-    "operation_logs": [
-        {
-            "id": 37,
-            "operation_time": "2017-11-29 16:17:46",
-            "operation_type": "修改",
-            "operator": "LIJIAJIA873",
-            "target_type": "Zone",
-            "target_name": "xxx123.com",
-            "target_id": "6",
-            "target_detail": "修改前：\nid: 6\nZone名称: xxx123.com\nZone归属: 内部域名\nZone类型: forward only\n关联View: ['wqerqwer', 'vvvv111111111', 'jtest']\n"
-        },
-        {
-            "id": 36,
-            "operation_time": "2017-11-29 14:02:00",
-            "operation_type": "添加",
-            "operator": "LIJIAJIA873",
-            "target_type": "Server",
-            "target_name": "ooo",
-            "target_id": "6",
-            "target_detail": "id: 6\n主机名: ooo\nIP地址: 0.0.0.5\n环境: anhouse\nDNS类型: salve\n"
-        },
-        {
-            "id": 35,
-            "operation_time": "2017-11-29 09:34:49",
-            "operation_type": "修改",
-            "operator": "LIJIAJIA873",
-            "target_type": "View",
-            "target_name": "jtest",
-            "target_id": "5",
-            "target_detail": "修改前：\nid: 5\nView名称: jtest\nACL: 10.21.21.25\n"
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 66,
+        "operation_logs": [
+            {
+                "id": 67,
+                "operation_time": "2017-12-04 18:22:19",
+                "operation_type": "添加",
+                "operator": "LIJIAJIA873",
+                "target_type": "Record",
+                "target_name": "xxx333",
+                "target_id": "32",
+                "target_detail": "id: 32\n记录主机: xxx333\n记录类型: A\n记录值: 0.0.0.0\nTTL: 600\n线路类型: wqerqwer\n备注: xxx111\n创建人: None\n创建时间: 2017-12-04 18:22:18.805320"
+            },
+            {
+                "id": 66,
+                "operation_time": "2017-12-04 18:17:40",
+                "operation_type": "添加",
+                "operator": "LIJIAJIA873",
+                "target_type": "Record",
+                "target_name": "xxx333",
+                "target_id": "31",
+                "target_detail": "id: 31\n记录主机: xxx333\n记录类型: A\n记录值: 0.0.0.0\nTTL: 600\n线路类型: wqerqwer\n备注: xxx111\n创建人: None\n创建时间: 2017-12-04 18:17:40.105156"
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
 
 ```
@@ -1079,56 +1064,38 @@ cellphone    |string     |否       |无     |18666666666      |手机号码
 获取成功
 状态码： 200
 {
-    "total": 7,
-    "users": [
-        {
-            "id": 7,
-            "email": "xxx@qq.com",
-            "username": "test111",
-            "chinese_name": "",
-            "cellphone": "",
-            "position": "",
-            "location": "",
-            "member_since": "2017-11-29 14:16:27",
-            "last_seen": "2017-11-29 14:16:27",
-            "roles": []
-        },
-        {
-            "id": 6,
-            "email": "xx",
-            "username": "xiejuan205",
-            "chinese_name": "xx",
-            "cellphone": "",
-            "position": "xx",
-            "location": "xx",
-            "member_since": "2017-11-28 11:17:13",
-            "last_seen": "2017-11-28 11:17:13",
-            "roles": [
-                {
-                    "id": 1,
-                    "name": "admin"
-                }
-            ]
-        },
-        {
-            "id": 5,
-            "email": "xx",
-            "username": "zhuwen",
-            "chinese_name": "xx",
-            "cellphone": "xx",
-            "position": "xx",
-            "location": "xx",
-            "member_since": "2017-11-28 11:06:08",
-            "last_seen": "2017-11-28 11:06:08",
-            "roles": [
-                {
-                    "id": 1,
-                    "name": "admin"
-                }
-            ]
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 8,
+        "users": [
+            {
+                "id": 8,
+                "email": "xxx@qq.com",
+                "username": "test222",
+                "chinese_name": "",
+                "cellphone": "",
+                "position": "",
+                "location": "",
+                "member_since": "2017-12-04 17:34:25",
+                "last_seen": "2017-12-04 17:34:25",
+                "roles": []
+            },
+            {
+                "id": 7,
+                "email": "xxx@qq.com",
+                "username": "test111",
+                "chinese_name": "",
+                "cellphone": "1371111",
+                "position": "",
+                "location": "",
+                "member_since": "2017-11-29 14:16:27",
+                "last_seen": "2017-11-29 14:16:27",
+                "roles": []
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
 
 ```
@@ -1152,25 +1119,24 @@ URL       |请求方式
 获取成功
 状态码： 200
 {
-    "id": 3,
-    "email": "xx",
-    "username": "test123",
-    "chinese_name": "",
-    "cellphone": "xx",
-    "position": "xx",
-    "location": "",
-    "member_since": "2017-11-23 18:24:22",
-    "last_seen": "2017-11-23 18:24:22",
-    "can_add_server": true,
-    "can_add_view": true,
-    "can_add_zone": true,
-    "can_edit_bind_conf": true,
-    "roles": [
-        {
-            "id": 1,
-            "name": "admin"
-        }
-    ]
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 7,
+        "email": "xxx@qq.com",
+        "username": "test111",
+        "chinese_name": "",
+        "cellphone": "1371111",
+        "position": "",
+        "location": "",
+        "member_since": "2017-11-29 14:16:27",
+        "last_seen": "2017-11-29 14:16:27",
+        "can_add_server": false,
+        "can_add_view": false,
+        "can_add_zone": false,
+        "can_edit_bind_conf": false,
+        "roles": []
+    }
 }
 
 ```
@@ -1198,16 +1164,17 @@ location    |string     |否       |无     |comment      |家庭住址
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 
 ```
 
@@ -1227,16 +1194,17 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 
 ```
 
@@ -1266,55 +1234,58 @@ name    |string     |否       |无     |user2      |角色名
 获取成功
 状态码： 200
 {
-    "total": 7,
-    "roles": [
-        {
-            "id": 6,
-            "name": "zone_admin",
-            "privileges": [
-                {
-                    "id": 2,
-                    "name": "ZONE_ADD",
-                    "operation": 0,
-                    "resource_type": 0,
-                    "resource_id": 0,
-                    "comment": null
-                },
-                {
-                    "id": 6,
-                    "name": "ZONE#xcvwretwgvrfv3wf.com#UPDATE",
-                    "operation": 1,
-                    "resource_type": 2,
-                    "resource_id": 1,
-                    "comment": null
-                }
-            ]
-        },
-        {
-            "id": 2,
-            "name": "server_admin",
-            "privileges": [
-                {
-                    "id": 1,
-                    "name": "SERVER_ADD",
-                    "operation": 0,
-                    "resource_type": 0,
-                    "resource_id": 0,
-                    "comment": null
-                },
-                {
-                    "id": 17,
-                    "name": "SERVER#s1#ACCESS",
-                    "operation": 0,
-                    "resource_type": 0,
-                    "resource_id": 1,
-                    "comment": null
-                }
-            ]
-        }
-    ],
-    "current_page": 1
-}
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "total": 7,
+        "roles": [
+            {
+                "id": 6,
+                "name": "zone_admin",
+                "privileges": [
+                    {
+                        "id": 2,
+                        "name": "ZONE_ADD",
+                        "operation": 0,
+                        "resource_type": 0,
+                        "resource_id": 0,
+                        "comment": null
+                    },
+                    {
+                        "id": 6,
+                        "name": "ZONE#xcvwretwgvrfv3wf.com#UPDATE",
+                        "operation": 1,
+                        "resource_type": 2,
+                        "resource_id": 1,
+                        "comment": null
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "name": "server_admin",
+                "privileges": [
+                    {
+                        "id": 1,
+                        "name": "SERVER_ADD",
+                        "operation": 0,
+                        "resource_type": 0,
+                        "resource_id": 0,
+                        "comment": null
+                    },
+                    {
+                        "id": 17,
+                        "name": "SERVER#s1#ACCESS",
+                        "operation": 0,
+                        "resource_type": 0,
+                        "resource_id": 1,
+                        "comment": null
+                    }
+                ]
+            }
+        ],
+        "current_page": 1
+    }
 ```
 
 ### 2.2，创建新角色接口
@@ -1335,16 +1306,17 @@ privilege_ids    |list     |是       |无     |[1,2,3]      |新建角色所拥
 
 ```json
 创建成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "创建成功！",
+    "data": null
+}
 创建失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "创建失败! 相同名字的角色已存在！",
+    "data": null
+}
 
 ```
 
@@ -1366,26 +1338,30 @@ URL       |请求方式
 获取成功
 状态码： 200
 {
-    "id": 3,
-    "name": "server_guest",
-    "privileges": [
-        {
-            "id": 17,
-            "name": "SERVER#s1#ACCESS",
-            "operation": 0,
-            "resource_type": 0,
-            "resource_id": 1,
-            "comment": null
-        },
-        {
-            "id": 20,
-            "name": "SERVER#s2#ACCESS",
-            "operation": 0,
-            "resource_type": 0,
-            "resource_id": 2,
-            "comment": null
-        }
-    ]
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 3,
+        "name": "server_guest",
+        "privileges": [
+            {
+                "id": 17,
+                "name": "SERVER#s1#ACCESS",
+                "operation": 0,
+                "resource_type": 0,
+                "resource_id": 1,
+                "comment": null
+            },
+            {
+                "id": 20,
+                "name": "SERVER#s2#ACCESS",
+                "operation": 0,
+                "resource_type": 0,
+                "resource_id": 2,
+                "comment": null
+            }
+        ]
+    }
 }
 ```
 
@@ -1409,16 +1385,17 @@ privilege_ids    |list     |是       |无     |[1,2,3]      |新建角色所拥
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 ```
 
 
@@ -1438,16 +1415,17 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 ```
 
 
@@ -1482,34 +1460,30 @@ resource_id    |int     |否       |无     |2      |资源ID
 获取成功
 状态码： 200
 {
-    "total": 43,
-    "privileges": [
-        {
-            "id": 55,
-            "name": "SERVER#ooo#DELETE",
-            "operation": 2,
-            "resource_type": 0,
-            "resource_id": 6,
-            "comment": null
-        },
-        {
-            "id": 54,
-            "name": "SERVER#ooo#UPDATE",
-            "operation": 1,
-            "resource_type": 0,
-            "resource_id": 6,
-            "comment": null
-        },
-        {
-            "id": 53,
-            "name": "SERVER#ooo#ACCESS",
-            "operation": 0,
-            "resource_type": 0,
-            "resource_id": 6,
-            "comment": null
-        }
-    ],
-    "current_page": 1
+    "code": 100000,
+    "data": {
+        "total": 37,
+        "privileges": [
+            {
+                "id": 58,
+                "name": "VIEW#v555#DELETE",
+                "operation": 2,
+                "resource_type": 1,
+                "resource_id": 6,
+                "comment": null
+            },
+            {
+                "id": 57,
+                "name": "VIEW#v555#UPDATE",
+                "operation": 1,
+                "resource_type": 1,
+                "resource_id": 6,
+                "comment": null
+            }
+        ],
+        "current_page": 1
+    },
+    "msg": "获取成功！"
 }
 ```
 
@@ -1534,16 +1508,17 @@ comment    |string     |否       |无     |aa.com的删除权限      |备注
 
 ```json
 创建成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "创建成功！",
+    "data": null
+}
 创建失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "创建失败! 相同名字的权限已存在！",
+    "data": null
+}
 
 ```
 
@@ -1565,12 +1540,16 @@ URL       |请求方式
 获取成功
 状态码： 200
 {
-    "id": 55,
-    "name": "SERVER#ooo#DELETE",
-    "operation": 2,
-    "resource_type": 0,
-    "resource_id": 6,
-    "comment": null
+    "code": 100000,
+    "msg": "获取成功！",
+    "data": {
+        "id": 37,
+        "name": "ZONE#xx1.com#DELETE",
+        "operation": 2,
+        "resource_type": 2,
+        "resource_id": 4,
+        "comment": null
+    }
 }
 ```
 
@@ -1596,16 +1575,17 @@ comment    |string     |否       |无     |aa.com的删除权限      |备注
 
 ```json
 修改成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "修改成功！",
+    "data": null
+}
 修改失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "修改失败！",
+    "data": null
+}
 ```
 
 
@@ -1625,15 +1605,16 @@ URL       |请求方式
 
 ```json
 删除成功
-状态码： 200
 {
-    "message":"OK"
-} 
+    "code": 100000,
+    "msg": "删除成功！",
+    "data": null
+}
 删除失败
-状态码： 400
 {
-    "message":"Failed",
-    "error": "xxxx"
-} 
+    "code": 105000,
+    "msg": "删除失败！",
+    "data": null
+}
 ```
 

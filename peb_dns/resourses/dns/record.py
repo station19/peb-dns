@@ -132,19 +132,20 @@ class DNSRecordList(Resource):
                             ResourceType.ZONE, 
                             current_zone.id):
             return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权限在当前Zone下添加Record！')
-        unique_record = DBRecord.query.filter_by(
-                                        zone_id=args['zone_id'], 
-                                        host=args['host'], 
-                                        view_name=args['view_name']).first()
-        if unique_record:
-            return get_response(RequestCode.OTHER_FAILED,  '创建失败 !重复的记录！！同样的Zone，同样的主机，\
-                    同样的View 的记录只能存在一个。')
         args['creator'] = g.current_user.username
         if 'default' == args['view_name']:
             v_name_list = current_zone.view_name_list
         else:
             v_name_list = [args['view_name']]
+        unique_record = DBRecord.query.filter(
+                                        DBRecord.zone_id==args['zone_id'], 
+                                        DBRecord.host==args['host'], 
+                                        DBRecord.view_name.in_(v_name_list)).first()
+        if unique_record:
+            return get_response(RequestCode.OTHER_FAILED,  '创建失败 !重复的记录！！同样的Zone，同样的主机，\
+                    同样的View 的记录只能存在一个。')
         for v_name in v_name_list:
+
             new_record = DBRecord(
                 host=args['host'], 
                 record_type=args['record_type'],
