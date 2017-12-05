@@ -7,7 +7,3 @@ from flask_migrate import Migrate
 
 from flask_mail import Mail
 mail = Mail()
-
-from redis import Redis
-redis = Redis()
-session_redis = Redis()
