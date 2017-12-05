@@ -35,7 +35,7 @@ config = {
 
 config_pyfiles = {
     'dev': 'config/dev.cfg',
-    'prod': 'config/prod.cfg',
-    'default': 'config/prod.cfg'
+    'prod': 'config/peb_dns.cfg',
+    'default': 'config/peb_dns.cfg'
 }
 
