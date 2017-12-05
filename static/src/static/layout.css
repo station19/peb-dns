@@ -1,0 +1,242 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, 
+h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, 
+big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, 
+small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, 
+fieldset, form, label, legend, table, caption, tbody, tfoot, 
+thead, tr, th, td { 
+    margin: 0; 
+    padding: 0; 
+    border: 0; 
+    outline: 0; 
+    font-weight: inherit; 
+    font-style: inherit; 
+    font-size: 100%; 
+    font-family: inherit; 
+    vertical-align: baseline; 
+} 
+:focus { 
+    outline: 0; 
+} 
+table { 
+    border-collapse: separate; 
+    border-spacing: 0; 
+} 
+caption, th, td { 
+    text-align: left; 
+    font-weight: normal; 
+} 
+a img, iframe { 
+    border: none; 
+} 
+ol, ul { 
+    list-style: none; 
+} 
+input, textarea, select, button { 
+    font-size: 100%; 
+    font-family: inherit; 
+} 
+select { 
+    margin: inherit; 
+} 
+/* Fixes incorrect placement of numbers in ol’s in IE6/7 */ 
+ol { margin-left:2em; } 
+/* == clearfix == */ 
+.clearfix:after { 
+    content: “.”; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden; 
+} 
+.clearfix {display: inline-block;} 
+* html .clearfix {height: 1%;} 
+.clearfix {display: block;}
+
+
+html,body{
+    height: 100%;
+}
+
+body * {
+    box-sizing: border-box;
+}
+
+
+.dns-app{
+    display: flex;
+    min-height: 100%;
+}
+
+body caption,body  th,body  td{
+    text-align: center;
+}
+
+body label, body span{
+    color: #fff;
+}
+
+body ul, body ol{
+    margin-bottom: 0;
+}
+
+body .lg-pager{
+    height: auto;
+}
+
+.lg-table-main label, .lg-table-main span, .form-group label{
+    color: #333;
+}
+
+.opt-column .opt-column-del{
+    background-color: red;
+    padding: 6px 10px;
+    color: #fff;
+}
+
+body .lg-pager-shortcut input{
+    height: 26px;
+}
+
+body .lg-pager-item a{
+    height: 27px;
+    line-height: 27px;
+}
+
+body .lg-pager-shortcut-confirm{
+    height: 27px;
+    line-height: 27px;
+}
+
+body .box-header .box-title{
+    font-size: 15px;
+}
+
+body .box-header h3{
+    font-size: 12px;
+}
+
+body .box-header{
+    padding-left: 10px;
+}
+
+body .form-group .select-input{
+    height: 33px;
+    line-height: 33px;
+}
+
+body .form-group .select-input .mul-text{
+    color: #333;
+}
+body .domain-setting-area{
+    background: #000;
+    color: #fff;
+    line-height: 1.5;
+    padding:10px;
+}
+
+html .skin-blue  .main-header .logo{
+    background-color: #384655;
+}
+
+html .skin-blue  .main-header .logo:hover{
+    background-color: #384658;
+}
+
+html .skin-blue .aside{
+    background-color: #4F5F6F;
+}
+
+html .skin-blue .sidebar-menu > li.active > a{
+    border-left-color: #72BFF0;
+}
+
+html .skin-blue .main-header .navbar {
+    background-color: #fff;
+}
+
+html .box.box-primary{
+    border-top-color: #72BFF0;
+}
+
+html .lg-table thead tr{
+    background-color: #8096AB;
+}
+
+body .vp-btn{
+    background-color: #72bff0;
+    border-color: #72bff0;
+}
+
+body .vp-btn:hover{
+    background-color: #8096AB;
+    border-color: #8096AB;
+}
+
+body .vp-btn-danger{
+    background-color: #F56464;;
+    border-color: #F56464;
+}
+
+body .lg-pager-shortcut-confirm{
+    background-color: #8b9faf;
+    color: #fff;
+}
+
+body .lg-pager-current{
+    background-color: #8b9faf;
+}
+
+body .user-panel{
+    padding-left: 16px;
+}
+
+body .lg-table thead th{
+    text-align: left;
+    padding-left: 16px;
+}
+
+body .lg-table td{
+    text-align: left;
+    padding: 6px 0 6px 16px;
+    vertical-align: middle;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.lg-table tr th:last-child{
+    text-align: center;
+}
+
+.lg-table tr td:last-child{
+    text-align: center;
+}
+
+.vp-pager{
+    height: 30px;
+}
+
+.nowrap{
+    word-break: break-all; 
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.grid-search-form{
+    margin-bottom: 10px;
+}
+
+.grid-search-form .search-item{
+    float: left;
+    margin-right: 10px;
+}
+
+body .lg-table{
+    line-height: 1.8;
+}
+
+.lg-table thead tr{
+    height: 30px;
+    line-height: 30px;
+}

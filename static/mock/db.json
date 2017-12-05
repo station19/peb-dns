@@ -1,0 +1,38 @@
+{
+  "login": {
+    "token" : "abdefdafdsafsd"
+  },
+  "user": [
+    {
+      "name": "stone1"
+    },
+    {
+      "name": "stone2"
+    },
+    {
+      "name": "stone3"
+    },
+    {
+      "name": "stone333"
+    },
+    {
+      "name": "stone555"
+    },
+    {
+      "name": "stone120"
+    },
+    {
+      "name": "stone361"
+    }
+  ],
+  "api": {
+    "login": {
+        "token": "ddd"
+    },
+    "auth": {
+      "login": {
+        "token": "ddd"
+      }
+    }
+  }
+}
