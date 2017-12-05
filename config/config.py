@@ -10,10 +10,6 @@ class Config:
         pass
 
 
-class DevelopmentConfig(Config):
-    DEBUG = True
-
-
 class ProductionConfig(Config):
     DEBUG = False
 
@@ -26,15 +22,12 @@ class ProductionConfig(Config):
         syslog_handler.setLevel(logging.WARNING)
         app.logger.addHandler(syslog_handler)
 
-
 config = {
-    'dev': DevelopmentConfig,
     'prod': ProductionConfig,
     'default': ProductionConfig
 }
 
 config_pyfiles = {
-    'dev': 'config/dev.cfg',
     'prod': 'config/peb_dns.cfg',
     'default': 'config/peb_dns.cfg'
 }
