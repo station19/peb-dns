@@ -5,7 +5,7 @@ from peb_dns.models.mappings import ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBLocalAuth, \
                             DBPrivilege, DBRolePrivilege
 
-app = create_app('dev')
+app = create_app()
 
 
 def init_privilege():
