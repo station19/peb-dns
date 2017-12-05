@@ -1,27 +1,37 @@
-平安好房DNS管理平台
+PEB-DNS 管理平台
 ===========================
-该项目用于 `平安好房` 系统运维组管控公司DNS 
+该项目用于公司内部多 IDC 的 dns 管理。
 ****
 ### Author: 平安好房运维团队出品
-### E-mail: xxx.pingan.com.cn
+### E-mail: ml_12383@pingan.com.cn
+### QQ群: 378248675
+### 有任何问题，可以通过邮件形式交流。
+
 ****
+# 平台截图
+
+![dns](/docs/images/peb-dashbard.png "DNS 平台 Dashboard")
+
+![dns](/docs/images/manage_view.png "DNS 平台 View 管理界面")
+
+![dns](/docs/images/manage_zone.png "DNS 平台 Zone 管理界面")
 
 # 平台架构图如下：
 
-![dns](/docs/dns.jpg "DNS平台架构图")
+![dns](/docs/images/dns.jpg "DNS平台架构图")
 
 功能介绍
 ------
 
-#### 1， DNS管理方式：
+#### 1， DNS 管理方式：
 
-公司使用 BIND 搭建DNS服务器。
+公司使用 BIND 搭建 DNS 服务器。
 
-平台使用ETCD来管理DNS服务器的BIND配置文件，包括VIEW，ZONE，RECORD的各个配置文件。
+平台使用 ETCD 来管理 DNS 服务器的 BIND 配置文件，包括 VIEW，ZONE，RECORD 的各个配置文件。
 
-所有的DNS服务器的配置文件和数据都是统一从ETCD获取，因此所有DNS服务器的配置文件及数据都是相同的，且所有DNS服务器类型均为master，不存在slave。
+所有的 DNS 服务器的配置文件和数据都是统一从 ETCD 上获取，因此所有 DNS 服务器的配置文件及数据都是相同的，且所有 DNS 服务器类型均为 master，不存在 slave。
 
-当再平台上对DNS进行操作时，只要配置文件有变化，所有服务器均能从ETCD上获取最新的配置文件。
+当再平台上对 DNS 进行操作时，只要配置文件有变化，所有服务器均能从 ETCD 上获取最新的配置文件。
 
 #### 2，使用技术栈：
 
