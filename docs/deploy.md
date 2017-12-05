@@ -57,21 +57,21 @@ prod.cfg （生产环境配置文件）
 里面所有字段都有详细说明，请严格按照按照说明一一配好。
 
 
-3，初始化数据库
-```bash
-source env.sh
-flask db init
-flask db migrate
-flask db upgrade
-flask db initdb
-```
-
-4，配置应用环境变量
+3，配置应用环境变量
 ```bash
 #设置 FLASK_APP 环境变量，值为本项目根目录下 app.py 的绝对路径
 #首先进入当前项目根目录下，即 app.py 同级目录，然后执行以下语句
 export FLASK_APP=${PWD}/app.py
 ```
+
+4，初始化数据库
+```bash
+flask db init
+flask db migrate
+flask db upgrade
+flask initdb
+```
+
 
 
 #### 简单快速部署方式
