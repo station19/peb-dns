@@ -52,8 +52,9 @@ Query OK, 1 row affected (0.01 sec)
 mysql> ^DBye
 ```
 
-2，当前目录下修改配置文件 
-prod.cfg （生产环境配置文件）
+2，修改配置文件 
+首先进入当前项目根目录， 然后进入 config 子目录，配置文件路径如下：
+peb-dns/config/prod.cfg
 里面所有字段都有详细说明，请严格按照按照说明一一配好。
 
 
@@ -81,6 +82,7 @@ flask initdb
 nohup gunicorn -w 4 app:app -b 0.0.0.0:8080 --log-level=debug &
 ```
 PS: 上面 -w 为 开启workers数，公式：（系统内核数*2 + 1)
+    8080 为端口号
 
 
 
