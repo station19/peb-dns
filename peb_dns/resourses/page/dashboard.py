@@ -17,12 +17,13 @@ class ResourceAmount(Resource):
     method_decorators = [token_required]
 
     def get(self):
-        return dict(
+        resources_amount = dict(
             server_amount=DBDNSServer.query.count(), 
             view_amount=DBView.query.count(), 
             zone_amount=DBZone.query.count(), 
             record_amount=DBRecord.query.count()
             )
+        return get_response(RequestCode.SUCCESS, '获取成功！', resources_amount)
 
 
 class DNSServerResolveRate(Resource):
