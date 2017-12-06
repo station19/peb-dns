@@ -164,9 +164,20 @@ _.before = function(times, fn) {
     }
 };
 _.decorate = function() {
-    var args = [].slice.call(arguments);
-    var add = function(fn) {
-        args.push(fn)
+    var order;
+    var idx;
+    if (_.isBoolean(arguments[arguments.length - 1])) {
+        order = arguments[arguments.length - 1];
+        idx = arguments.length - 1;
+    } else {
+        order = true;
+        idx = arguments.length;
+    }
+    var arrFn = order ? 'push' : 'unshift'
+    var args = [].slice.call(arguments, 0, idx);
+
+    var add = function (fn) {
+        args[arrFn](fn);
     };
     var go = function(context, obj) {
         [].forEach.call(args, function(item, index, arr) {
@@ -174,7 +185,7 @@ _.decorate = function() {
         })
     };
     go.add = add;
-    return go
+    return go;
 };
 _.state = function() {
     var data = [].map.call(arguments, function(item, index, arr) {
@@ -191,8 +202,9 @@ _.state = function() {
         if (one === link.head.next) direction = true;
         if (one === link.tail.previous) direction = false
     };
-    var oneByOne = function(backflow) {
-        one.el();
+    var oneByOne = function(backflow, context) {
+        context = _.isBoolean(backflow) ? context : backflow;
+        one.el.call(context);
         backflow ? void
         function() {
             directionFn()

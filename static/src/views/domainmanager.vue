@@ -23,8 +23,8 @@
             <template v-else>
                 <grid :head="gridColumn" :data="gridData" @callback:deleteRecord="deleteRecord" :colspan="8">
                     <div :slot="'cell:option_'+i" v-for="(item,i) in gridData" class="opt-column">
-                        <btn size="small" @click="editRecord(item.id, i)" v-show="item.can_update">编辑</btn>
-                        <btn @click="deleteRecord(item, i)" type="danger" size="small" v-show="item.can_delete">删除</btn>
+                        <btn size="small" @click="editRecord(i)" v-show="item.can_update">编辑</btn>
+                        <btn @click="deleteRecord(item)" type="danger" size="small" v-show="item.can_delete">删除</btn>
                     </div>
                 </grid>
                 <vp-pager :total="pager.total" :current="pager.current" @to="pageTo" :position="'right'" :volumn="pager.volumn"></vp-pager>
@@ -79,13 +79,13 @@ import _ from '../components/fn/tool';
 import dnsData from './dnsData';
 
 let domainmanager = dnsData('domainmanager');
+let domainmanagerUrl = dnsData('url');
 let dnsAjax = new Ajax();
 
 export default{
     data (){
         return {
             addOrEdit : '',
-            nowEdit : '',
             isForward: '',
             // 弹窗标题
             titleName : '',
@@ -128,15 +128,14 @@ export default{
             sAdd(this);
         },
         // 编辑记录
-        editRecord(id, index){
+        editRecord(index){
             sEdit(this, {
-                isEditActive : [id],
                 isEditLogic : [index]
             });
         },
         // 删除记录
-        deleteRecord(record, index){
-            delNoice(this, record.id, index);
+        deleteRecord(record){
+            delNoice(this, record.id);
         },
         // 分页
         pageTo(index){
@@ -150,6 +149,7 @@ export default{
             if (!validInner(this)) return;
             isAddOrEdit(this.addOrEdit) ? editSave(this) : addSave(this);
         },
+        // ip验证
         ip () {
             return /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/.test(this.record.value);
         },
@@ -175,15 +175,13 @@ export default{
 this.addOrEdit----编辑操作还是添加操作
 0----添加
 1----编辑
-this.nowEdit----当期编辑的那条数据
 this.isForward----展示表格还是展示forward
 */
 var sAdd = _.decorate(function isAddActive () {
     this.addOrEdit = 0;
 });
-var sEdit = _.decorate(function isEditActive (id) {
+var sEdit = _.decorate(function isEditActive () {
     this.addOrEdit = 1;
-    this.nowEdit = id;
 });
 var sShowForward = _.decorate(function isForwardActive () {
     this.isForward = true;
@@ -220,7 +218,7 @@ var sInit = function (that) {
     sShowTable.add(function isTableLogic (data) {
         var that = this;
         dnsAjax.get({
-            url: 'http://hfdns-test.ipo.com/dns/records',
+            url: domainmanagerUrl.record,
             data: data,
             success(response){
                 that.gridData = response.data.records;
@@ -253,7 +251,7 @@ var getTableList = function (that, data) {
     };
     data ? Object.assign(obj, data) : obj;
     dnsAjax.get({
-        url: 'http://hfdns-test.ipo.com/dns/zones/'+ data.zone_id,
+        url: domainmanagerUrl.zone + '/' + data.zone_id,
         success(response){
             isForward(response.data.zone_type) ? sShowForward(that, {
                 isForwardLogic : [response]
@@ -266,7 +264,7 @@ var getTableList = function (that, data) {
 // 获取线路类型
 var getLineType = function (that, zoneId) {
     dnsAjax.get({
-        url:'http://hfdns-test.ipo.com/dns/views',
+        url: domainmanagerUrl.view,
         data : {
             zone_id : zoneId
         },
@@ -289,7 +287,7 @@ var getLineType = function (that, zoneId) {
 var editSave = function (that) {
     _.trim(that.record);
     dnsAjax.put({
-        url: 'http://hfdns-test.ipo.com/dns/records/' + that.nowEdit,
+        url: domainmanagerUrl.record + '/' + that.record.id,
         data: {
             ...that.record,
         },
@@ -306,7 +304,7 @@ var editSave = function (that) {
 var addSave = function (that) {
     _.trim(that.record);
     dnsAjax.post({
-        url: 'http://hfdns-test.ipo.com/dns/records',
+        url: domainmanagerUrl.record,
         data: {
             ...that.record,
             zone_id : that.$route.params.zoneId
@@ -330,13 +328,15 @@ var req = function (that) {
     return r;
 };
 // 通知
-var delNoice = function (that, id, index) {
+var delNoice = function (that, id) {
     Alert.confirm('确定要删除id是' + id + '的域名吗？', function () {
         dnsAjax.delete({
-            url: 'http://hfdns-test.ipo.com/dns/records/'+ id,
+            url: domainmanagerUrl.record + '/' + id,
             success(){
                 Alert('删除成功！');
-                that.gridData.splice(index, 1);
+                getTableList(that, {
+                    zone_id : that.$route.params.zoneId
+                });
             }
         });
     });

@@ -12,11 +12,11 @@
                 <option v-for="(item, i) in value.display" :value="item.label? item.value : item">{{item.label?item.label:item}}</option>
             </select>
             <btn @click="searchData">搜索</btn>
-            <btn @click="">重置</btn>
+            <btn @click="resetData">重置</btn>
         </div>
         <box title="ZONE管理">
             <div style="margin-bottom: 10px;">
-                <btn @click="showWindow" v-if="can_add_zone">添加</btn>
+                <btn @click="addZone" v-if="can_add_zone">添加</btn>
                 <span style="color: red;margin-left: 20px;" v-if="can_add_zone">警示！！添加新zone，或者已有zone关联新的view时，请记得添加master的A记录，否则会reload失败！！！
                 </span>
             </div>
@@ -24,7 +24,7 @@
                 <span :slot="'cell:zone_group_'+i" v-for="(item,i) in gridData" v-html="zoneGroup[item.zone_group]" ></span>
                 <div :slot="'cell:option_'+i" v-for="(item,i) in gridData" class="opt-column">
                     <btn size="small" @click="editRecord(item)" v-show="item.can_update">编辑</btn>
-                    <btn @click="deleteRecord(item)" type="danger" size="small" v-show="item.can_delete">删除</btn>
+                    <btn @click="deleteRecord(item, i)" type="danger" size="small" v-show="item.can_delete">删除</btn>
                 </div>
             </grid>
             <vp-pager :total="pager.total" :current="pager.current" @to="pageTo" :position="'right'" :volumn="pager.volumn"></vp-pager>
@@ -65,87 +65,40 @@
 </template>
 <script>
 import { Datagrid, Pager, Button, Select, Valid, Alert} from 'vpui';
-import Ajax from 'ajax';
-import { zoneGroup } from 'dict';
 import lineTextArea from './_complex/lineTextArea.vue';
 import dialog from './_complex/dialog.vue';
-import _ from '../components/fn/tool';
 import box from './index/cmp/box.vue';
-    
-let _ajax = new Ajax();
+import { zoneGroup } from 'dict';
+import Ajax from 'ajax';
+import _ from '../components/fn/tool';
+import dnsData from './dnsData';
 
-let modalEmpty = {
-    name : '', 
-    view_ids : [],
-    forwarders : '',
-    zone_type : 'master',
-    zone_group : '0'
-};
-let searchZoneDataEmpty = {
-    id : {
-        name : 'id',
-        value : '',
-        type : 'text',
-    },
-    name : {
-        name : '名称',
-        value : '',
-        type : 'text',
-    },
-    zone_group : {
-        name : '归类',
-        value : '',
-        display : [{label: '全部', value: ''},'外部', '内部', '劫持'],
-        type : 'select',
-    },
-    zone_type : {
-        name : '类型',
-        value : '',
-        display : [{label: '全部', value: ''},'forword', 'master', 'salve'],
-        type : 'select',
-    }
-};
+let dnsAjax = new Ajax();
+let zoneData = dnsData('zone');
+let zoneDataUrl = dnsData('url');
 
 export default{
     data (){
         return {
+            addOrEdit : '',
+            // 弹窗标题
             titleName : '',
+            // 权限控制
             can_add_zone : '',
-            bb: {
-                testA: [],
-            },
-            domainName: '',
-            gridColumn: {
-                id: {
-                    label: 'ID',
-                    width: '80px'
-                },
-                name: 'ZONE',
-                zone_group: {
-                    label: '域名归类'
-                },
-                zone_type: '域名类别',
-                view_name_list_string: '关联区域',
-                forwarders :'转发域名IP地址',
-                option: {
-                    type: 'action',
-                    label: '操作',
-                    width: '130px'
-                }
-            },
+            // 表头
+            gridColumn: zoneData.gridColumn,
+            // 表体
             gridData: [],
-            pager: {
-                current: 1,
-                total: 0,
-                volumn: 10
-            },
-            modal:JSON.parse(JSON.stringify(modalEmpty)),
+            // 分页
+            pager: zoneData.pager,
+            // 编辑的zone
+            modal:sReset(zoneData.modalEmpty),
+            // 区域列表
             viewList: [],
+            // 域名类型
             zoneGroup: zoneGroup,
-            searchZoneDataEmpty,
-            searchZoneData : JSON.parse(JSON.stringify(searchZoneDataEmpty)),
-            // 区域关联实时更新
-            timer : ''
+            // 搜索框
+            searchZoneData : sReset(zoneData.searchZoneDataEmpty),
         }
     },
     components: {
@@ -162,133 +115,41 @@ export default{
         "valid":Valid,
     },
     mounted(){
-        let self = this;
-        let zoneId = self.$route.params.zoneId;
-        self.fetchRecords(zoneId);
-        this.areaList();
         // 获取添加按钮的显示状态
         this.can_add_zone = JSON.parse(localStorage.user_info).can_add_zone;
+        sInit(this);
     },
     methods: {
-        areaList () {
-            var self = this;
-            // 区域关联
-            _ajax.get({
-                url: 'http://hfdns-test.ipo.com/dns/views',
-                data: {
-                    currentPage: 1
-                },
-                success(response){
-                    response.data.views.forEach((view) => {
-                        self.viewList.push({value: view.id, text: view.name})
-                    });
-                }
-            });
+        // 添加zone
+        addZone(){
+            sAdd(this);
         },
-        validZone () {
-            let errLen = this.$vform['zoneManger'].checkAll().length;
-            this.$vform['zoneManger'].checkAll();
-            // !errLen && Alert('验证通过，发送请求', true);
-            return !errLen;
-        },
-        showWindow(){
-            this.areaList();
-            this.titleName = '创建ZONE';
-            this.$vform['zoneManger'].resetStyle();
-            this.modal = JSON.parse(JSON.stringify(modalEmpty));
-            this.$refs.addDialog.show();
-        },
-        deleteRecord(record){
-            let id = record.id;
-            let self = this;
-            Alert.confirm('确定要删除id是' + id + '的ZONE吗？', function () {
-                _ajax.delete({
-                    url: 'http://hfdns-test.ipo.com/dns/zones/'+ id,
-                    success(){
-                        Toast.success('删除成功！');
-                        let target = null;
-                        self.gridData.forEach((item,index) => {
-                            if(item.id == id){
-                                target = index;
-                            }
-                        });
-                        self.gridData.splice(target, 1);
-                    }
-                });
-            });
-        },
-        pageTo(index){
-            this.pager.current = index;
-            this.fetchRecords();
-        },
-        saveRecord(){
-            if (!this.validZone()) return;
-            let self = this;
-            let url = 'http://hfdns-test.ipo.com/dns/zones';
-            _.trim(self.modal);
-            // 编辑
-            if(self.modal.id){
-                url += '/'+self.modal.id;
-                _ajax.put({
-                    url,
-                    data: {
-                        ...self.modal
-                    },
-                    success(){
-                        Alert('修改成功');
-                        self.$refs.addDialog.hide();
-                        self.fetchRecords();
-                    }
-                });
-                return;
-            }
-            // 添加
-            _ajax.post({
-                url,
-                data: {
-                    ...self.modal
-                },
-                success(response){
-                    if(response.status == 201){
-                        Alert('创建成功');
-                        self.$refs.addDialog.hide();
-                        self.fetchRecords();
-                        // 刷新侧边栏
-                        self.$parent.$parent.resetSidebar();
-                    }
-                }
-            });
-        },
-        fetchRecords(){
-            let self = this;
-            _ajax.get({
-                url: 'http://hfdns-test.ipo.com/dns/zones',
-                data: {
-                    pageSize: 10,
-                    currentPage: this.pager.current
-                },
-                success(response){
-                    response.data.zones.forEach((item, index, arr) => {
-                        item.view_name_list_string = JSON.parse(item.view_name_list.replace(/'/g, '"')).join(',');
-                        // 处理域名分号变换行
-                        item.forwarders = item.forwarders.replace(/\s/g, '').replace(/;/g, '\n');
-                    });
-                    console.log(response.data.zones);
-                    self.gridData = response.data.zones;
-                    let pageTotal = Math.ceil(response.data.total / self.pager.volumn);
-                    self.pager.total = pageTotal;
-                }
-            });
-        },
+        // 编辑zone
         editRecord(record){
-            this.titleName = '修改ZONE';
-            this.$vform['zoneManger'].resetStyle();
-            this.modal = _.clone(record);
-            this.$refs.addDialog.show();
+            sEdit(this, {
+                isEditLogic : [record],
+            });
         },
+        // 删除zone
+        deleteRecord(record, index){
+            delNoice(this, record.id, index);
+        },
+        // 分页
+        pageTo(index){
+            getTableList(that, {
+                currentPage : index
+            });
+        },
+        // 保存zone
+        saveRecord(){
+            if (!validZone(this)) return;
+            isAddOrEdit(this.addOrEdit) ? editSave(this) : addSave(this);
+        },
+        // textare实时动作
         changeText(text){
             this.$refs.lineTextArea.setLine(this.modal.forwarders.match(/\n/g));
         },
+        // ip验证
         ip () {
             var ex = this.modal.forwarders.match(/[^\n]+/g);
             var result = false;
@@ -299,35 +160,172 @@ export default{
             }
             return result;
         },
+        // 搜索
         searchData () {
-            var reqData = {};
-            for (var key in this.searchZoneData) {
-                reqData[key] = this.searchZoneData[key].value;
-            }
-            var self = this;
-            reqData = _.compact(reqData);
-            reqData = _.para(reqData, {
-                zone_group : _.invert(self.searchZoneData.zone_group.display)
-            });
-            self.viewList = [];
-            _.trim(reqData);
-            _ajax.get({
-                url: 'http://hfdns-test.ipo.com/dns/zones',
-                data: reqData,
-                success(response){
-                    self.gridData = response.data.zones;
-                    let pageTotal = Math.ceil(response.data.total / self.pager.volumn);
-                    self.pager.total = pageTotal;
-                }
-            });
-
+            getTableList(this, req(this));
         },
         // 域名验证
         reDomainName () {
             return /^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/.test(this.modal.name);
+        },
+        // 重置
+        resetData () {
+            this.searchZoneData = sReset(zoneData.searchZoneDataEmpty);
         }
     }
 }
+
+
+/*
+    状态
+*/
+// 当前状态
+/*
+this.addOrEdit----编辑操作还是添加操作
+0----添加
+1----编辑
+*/
+var sAdd = _.decorate(function isAddActive () {
+    this.addOrEdit = 0;
+});
+var sEdit = _.decorate(function isEditActive () {
+    this.addOrEdit = 1;
+});
+
+// 初始状态
+var sInit = function (that) {
+    getTableList(that);
+    getAreaList(that);
+    // 添加ZONE
+    sAdd.add(function isAddLogic () {
+        getAreaList(this);
+        this.titleName = '创建ZONE';
+        this.$vform['zoneManger'].resetStyle();
+        this.modal = sReset(zoneData.modalEmpty);
+        this.$refs.addDialog.show();
+    });
+    // 编辑ZONE
+    sEdit.add(function isEditLogic (record) {
+        this.titleName = '修改ZONE';
+        this.$vform['zoneManger'].resetStyle();
+        this.modal = _.clone(record);
+        this.$refs.addDialog.show();
+    });
+};
+
+// 重置状态
+var sReset = function (data) {
+    return JSON.parse(JSON.stringify(data));
+};
+
+// 分支
+var isAddOrEdit = _.val;
+
+// ajax
+// 获取表格数据
+var getTableList = function (that, data) {
+    var obj = {
+        pageSize : 10,
+        currentPage : 1,
+    };
+    data ? Object.assign(obj, data) : obj;
+    dnsAjax.get({
+        url: zoneDataUrl.zone,
+        data,
+        success(response){
+            response.data.zones.forEach((item, index, arr) => {
+                item.view_name_list_string = JSON.parse(item.view_name_list.replace(/'/g, '"')).join(',');
+                // 处理域名分号变换行
+                item.forwarders = item.forwarders.replace(/\s/g, '').replace(/;/g, '\n');
+            });
+            that.gridData = response.data.zones;
+            that.pager.total = Math.ceil(response.data.total / that.pager.volumn);
+        }
+    });
+};
+// 区域关联
+var getAreaList = function (that, data) {
+    // 重置区域
+    that.viewList = [];
+    dnsAjax.get({
+        url: zoneDataUrl.view,
+        data: {
+            currentPage: 1
+        },
+        success(response){
+            response.data.views.forEach((view) => {
+                that.viewList.push({value: view.id, text: view.name})
+            });
+        }
+    });
+};
+// 编辑保存
+var editSave = function (that, data) {
+    _.trim(that.modal);
+    dnsAjax.put({
+        url : zoneDataUrl.zone + '/' + that.modal.id,
+        data: {
+            ...that.modal
+        },
+        success(){
+            Alert('修改成功');
+            that.$refs.addDialog.hide();
+            getTableList(that);
+        }
+    });
+};
+// 添加保存
+var addSave = function (that, data) {
+    _.trim(that.modal);
+    dnsAjax.post({
+        url : zoneDataUrl.zone,
+        data: {
+            ...that.modal
+        },
+        success(response){
+            if(response.status == 201){
+                Alert('创建成功');
+                that.$refs.addDialog.hide();
+                getTableList(that);
+                // 刷新侧边栏
+                that.$parent.$parent.resetSidebar();
+            }
+        }
+    });
+};
+// 通知
+var delNoice = function (that, id) {
+    Alert.confirm('确定要删除id是' + id + '的ZONE吗？', function () {
+        dnsAjax.delete({
+            url: zoneDataUrl.zone + '/' + id,
+            success(){
+                Alert('删除成功！');
+                getTableList(that);
+            }
+        });
+    });
+};
+// 提交
+var req = function (that) {
+    // 提交数据处理
+    var r = {};
+    for (let key in that.searchZoneData) r[key] = that.searchZoneData[key].value;
+    r = _.compact(r);
+    r = _.para(r, {
+        zone_group : _.invert((that.searchZoneData.zone_group.display.slice(1)))
+    });
+    r = _.trim(r);
+    return r;
+};
+// 验证
+var validZone = function (that) {
+    let errLen = that.$vform['zoneManger'].checkAll().length;
+    that.$vform['zoneManger'].checkAll();
+    return !errLen;
+};
+
+
+
 </script>
 <style scoped lang="less">
 .box-primary .box-header+.search{

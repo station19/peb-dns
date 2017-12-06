@@ -9,6 +9,7 @@ if(NODE_ENV == 'production'){
 }
 //const baseURL = '//hfdns-test.ipo.com/';
 
+
 let instance = axios.create({
     baseURL,
     timeout: 10000,
@@ -31,9 +32,21 @@ instance.interceptors.request.use(
 // http response 拦截器
 instance.interceptors.response.use(
     response => {
-        return response;
+        switch (response.data.code) {
+            case 100000 :
+                return response.data;
+            break;
+            case 100001 :
+                Alert(response.data.msg);
+            break;
+            case 105000 :
+                Alert(response.data.msg);
+            break;
+            default:
+            break;
+        }
     },
-    error => {
+    error => {console.log(error.response)
         if (error.response) {
             let msg = '';
             switch (error.response.status) {

@@ -52,6 +52,7 @@ import dnsData from './dnsData';
 
 let dnsAjax = new Ajax();
 let viewData = dnsData('view');
+let viewDataUrl = dnsData('url');
 
 export default{
     data (){
@@ -122,6 +123,7 @@ export default{
         changeText(text){
             this.$refs.lineTextArea.setLine(this.view.acl.match(/\n/g));
         },
+        // ip验证
         ip () {
             var ex = this.view.acl.match(/[^\n]+/g);
             var result = false;
@@ -156,23 +158,22 @@ this.addOrEdit----编辑操作还是添加操作
 var sAdd = _.decorate(function isAddActive () {
     this.addOrEdit = 0;
 });
-var sEdit = _.decorate(function isEditActive (id) {
+var sEdit = _.decorate(function isEditActive () {
     this.addOrEdit = 1;
 });
 
 // 初始状态
 var sInit = function (that) {
     getTableList(that);
-    // 添加记录
+    // 添加view
     sAdd.add(function isAddLogic () {
         this.titleName = '创建view';
         this.$vform['viewManger'].resetStyle();
         this.view = sReset(viewData.emptyView);
         this.$refs.addDialog.show();
     });
-    // 编辑记录
+    // 编辑view
     sEdit.add(function isEditLogic (index) {
-        console.log(index)
         this.titleName = '修改view';
         this.$vform['viewManger'].resetStyle();
         this.view = _.clone(this.gridData[index]);
@@ -185,6 +186,9 @@ var sReset = function (data) {
     return JSON.parse(JSON.stringify(data));
 };
 
+// 分支
+var isAddOrEdit = _.val;
+
 // ajax
 // 获取表格数据
 var getTableList = function (that, data) {
@@ -194,7 +198,7 @@ var getTableList = function (that, data) {
     };
     data ? Object.assign(obj, data) : obj;
     dnsAjax.get({
-        url: 'http://hfdns-test.ipo.com/dns/views',
+        url: viewDataUrl.view,
         data,
         success(response){
             that.gridData = response.data.views;
@@ -206,7 +210,7 @@ var getTableList = function (that, data) {
 var addSave = function (that, data) {
     _.trim(that.view);
     dnsAjax.post({
-        url: 'http://hfdns-test.ipo.com/dns/views',
+        url: viewDataUrl.view,
         data: {
             ...that.view
         },
@@ -221,7 +225,7 @@ var addSave = function (that, data) {
 var editSave = function (that, data) {
     _.trim(that.view);
     dnsAjax.put({
-        url: 'http://hfdns-test.ipo.com/dns/views/'+ that.view.id,
+        url: viewDataUrl.view + '/'+ that.view.id,
         data: {
             ...that.view
         },
@@ -233,13 +237,13 @@ var editSave = function (that, data) {
     });
 };
 // 通知
-var delNoice = (that, id, index) => {
+var delNoice = function (that, id) {
     Alert.confirm('确定要删除id是' + id + '的view吗？', function () {
         dnsAjax.delete({
-            url: 'http://hfdns-test.ipo.com/dns/views/'+ id,
+            url: viewDataUrl.view + '/'+ id,
             success(){
                 Alert('删除成功！');
-                that.gridData.splice(index, 1);
+                getTableList(that);
             }
         });
     });

@@ -20,8 +20,8 @@
             <grid :head="gridColumn" :data="gridData" @callback:deleteRecord="deleteRecord" @callback:editRecord="editRecord" style="margin-bottom: 10px;" :colspan="6">
                 <textarea :slot="'cell:acl_'+i" v-for="(item,i) in gridData" v-html="item.acl" disabled="disabled"></textarea>
                 <div :slot="'cell:option_'+i" v-for="(item,i) in gridData" class="opt-column">
-                   <btn size="small" @click="editRecord(item)" v-show="item.can_updata">编辑</btn>
-                   <btn @click="deleteRecord(item, i)" type="danger" size="small" v-show="item.can_delete">删除</btn>
+                   <btn size="small" @click="editRecord(item)" v-show="item.can_update">编辑</btn>
+                   <btn @click="deleteRecord(item)" type="danger" size="small" v-show="item.can_delete">删除</btn>
                 </div>
             </grid>
             <vp-pager :total="pager.total" :current="pager.current" @to="pageTo" :position="'right'" :volumn="pager.volumn"></vp-pager>
@@ -90,6 +90,7 @@ import dnsData from './dnsData';
 
 let dnsAjax = new Ajax();
 let dnsServerData = dnsData('dnsServer');
+let dnsServerDataUrl = dnsData('url');
 
 export default{
     data (){
@@ -150,8 +151,8 @@ export default{
             sBIND(this);
         },
         // 删除服务器
-        deleteRecord(record, index){
-            delNoice(this, record.id, index);
+        deleteRecord(record){
+            delNoice(this, record.id);
         },
         // 分页
         pageTo(index){
@@ -200,14 +201,14 @@ var sBIND = _.decorate(function isBINDActive () {
 // 初始状态
 var sInit = function (that) {
     getTableList(that);
-    // 添加记录
+    // 添加dns
     sAdd.add(function isAddLogic () {
         this.titleName = '创建服务器';
         this.$vform['dnsServer'].resetStyle();
         this.newServer = sReset(dnsServerData.newServerEmpty);
         this.$refs.addDialog.show();
     });
-    // 编辑记录
+    // 编辑dns
     sEdit.add(function isEditLogic (record) {
         this.titleName = '修改服务器';
         this.$vform['dnsServer'].resetStyle();
@@ -234,7 +235,7 @@ var getTableList = function (that, data) {
     };
     data ? Object.assign(obj, data) : obj;
     dnsAjax.get({
-        url: 'http://hfdns-test.ipo.com/dns/servers',
+        url: dnsServerDataUrl.server,
         data,
         success(response){
             that.gridData = response.data.servers;
@@ -245,7 +246,7 @@ var getTableList = function (that, data) {
 // 获取bind
 var editBind = function (that, data) {
     dnsAjax.get({
-        url : 'http://hfdns-test.ipo.com/dns/bind_conf',
+        url : dnsServerDataUrl.bind,
         success (response) {
             that.bindFileData = response.data.bind_conf;
             that.$refs.bindDialog.show();
@@ -256,7 +257,7 @@ var editBind = function (that, data) {
 var editSave = function (that) {
     _.trim(that.newServer);
     dnsAjax.put({
-        url : 'http://hfdns-test.ipo.com/dns/servers/' + that.newServer.id,
+        url : dnsServerDataUrl.server + '/' + that.newServer.id,
         data: {
             ...that.newServer
         },
@@ -271,7 +272,7 @@ var editSave = function (that) {
 var addSave = function (that) {
     _.trim(that.newServer);
     dnsAjax.post({
-        url : 'http://hfdns-test.ipo.com/dns/servers',
+        url : dnsServerDataUrl.server,
         data: {
             ...that.newServer
         },
@@ -289,7 +290,7 @@ var bindSave = function (that) {console.log(2);
     _.trim(that.bindFileData);
     // bind保存
     dnsAjax.post({
-        url : 'http://hfdns-test.ipo.com/dns/bind_conf',
+        url : dnsServerDataUrl.bind,
         data : {
             bind_conf : that.bindFileData
         },
@@ -309,13 +310,13 @@ var req = function (that) {
     return r;
 };
 // 通知
-var delNoice = (that, id, index) => {
+var delNoice = function (that, id) {
     Alert.confirm('确定要删除id是' + id + '的服务器吗？', function () {
         dnsAjax.delete({
-            url: 'http://hfdns-test.ipo.com/dns/servers/'+ id,
+            url: dnsServerDataUrl.server + '/' + id,
             success(){
                 Alert('删除成功！');
-                that.gridData.splice(index, 1);
+                getTableList(that);
             }
         });
     });
