@@ -9,7 +9,7 @@
                 v-model="searchUserData[key].value" 
                 v-for="(value, key, index) in searchUserData">
             </input>
-            <btn  @click="searchData('searchUserData')">搜索</btn>
+            <btn  @click="searchUser">搜索</btn>
             <btn @click="resetForm">重置</btn>
         </div>
         <vp-grid :head="tableUser.col" :data="tableUserData" :colspan="tableUser.colspan">
@@ -73,11 +73,11 @@
                             :style="'width:'+ ((value.name == 'id') ? '62px; margin-left:0px;' : '115px;')"
                         >
                         </input>
-                        <btn @click="searchData('searchRoleData')" style="margin-right:5px;">搜索</btn><btn @click="resetRoleForm">重置</btn>
+                        <btn @click="searchRole" style="margin-right:5px;">搜索</btn><btn @click="resetRoleForm">重置</btn>
                     </div>
-                    <vp-grid :head="alertTableRole.col" :data="tableRoleData" :colspan="3" style="margin-bottom: 22px;">
+                    <vp-grid :head="tableRole.col" :data="tableRoleData" :colspan="3" style="margin-bottom: 22px;">
                         <div :slot="'cell:option_'+i" v-for="(item,i) in tableRoleData">
-                            <btn :type="item.isDanger" size="small" @click="relation(0, item.id, item)">
+                            <btn :type="item.isDanger" size="small" @click="relation(item.id, item)">
                                 <template v-if="item.isDanger">取消关联</template>
                                 <template v-else>关联用户</template>
                             </btn>
@@ -90,295 +90,269 @@
     </div>
 </template>
 <script>
-    import dialog from '../_complex/dialog.vue';
-    import { searchData,relation,pageNub } from './methods.js';
-    import {Datagrid, Pager, Select, Button, Toast, Valid, Radio, Checkbox, Alert, MiniPager} from 'vpui';
-    import Ajax from 'ajax';
-    import _ from '../../components/fn/tool';
-    var adminAjax = new Ajax();
-    var searchUserDataEmpty = {
-        id : { name : 'id',value : '' },
-        username : { name : '用户名',value : ''},
-        chinese_name : { name : '中文名称',value : ''},
-        cellphone : { name : '手机号码',value : '' }
-    };
-    var searchRoleDataEmpty = {
-        id : {
-            name : 'id',
-            value : '',
-        },
-        name : {
-            name : '角色名称',
-            value : '',
+import dialog from '../_complex/dialog.vue';
+import { pageNub } from './methods';
+import {Datagrid, Pager, Select, Button, Toast, Valid, Radio, Checkbox, Alert, MiniPager} from 'vpui';
+import Ajax from 'ajax';
+import _ from '../../components/fn/tool';
+import dnsData from '../dnsData';
+
+var dnsAjax = new Ajax();
+var userManageData = dnsData('userManage');
+var userManageDataUrl = dnsData('url');
+
+export default {
+    data () {
+        return {
+            nowEditId : '',
+            // 用户表头
+            tableUser: userManageData.tableUser,
+            // 用户表体
+            tableUserData: [],
+            // 用户搜索框
+            searchUserData: sReset(userManageData.searchUserDataEmpty),
+            // 编辑的单个用户
+            editUserVal: sReset(userManageData.editUserVal),
+            // 角色搜索框
+            searchRoleData: sReset(userManageData.searchRoleDataEmpty),
+            // 角色表体
+            tableRoleData: [],
+            // 角色表头
+            tableRole: userManageData.tableRole,
         }
-    };
-    export default {
-        data () {
-            return {
-                // 用户
-                tableUser: {
-                    col: {
-                        id : {
-                            label : 'id',
-                            width : '100px'
-                        },
-                        username : '用户名',
-                        roleName : '关联角色',
-                        'chinese_name' : '中文名称',
-                        cellphone : '手机号码',
-                        position : '职位',
-                        location : '地址',
-                        email : '邮箱',
-                        member_since : '首次登录时间',
-                        last_seen : '最近登录时间',
-                        // rolesId : '关联角色id',
-                        // rolesName : '关联角色名称',
-                        option: {
-                            type: 'action',
-                            label: '操作',
-                            width: '120px;'
-                        }
-                    },
-                    colspan: 11
-                },
-                tableUserData: [],
-                // 搜索用户列表-展示搜索框
-                searchUserData: JSON.parse(JSON.stringify(searchUserDataEmpty)),
-                // 编辑的用户
-                editUserVal: {
-                    "position": "",
-                    "chinese_name": "",
-                    "roles": [],
-                    "cellphone": "",
-                    "location": "",
-                },
-                // 搜索角色列表-展示搜索框
-                searchRoleData: JSON.parse(JSON.stringify(searchRoleDataEmpty)),
-                tableRoleData: [],
-                // 弹窗角色
-                alertTableRole: {
-                    col: {
-                        id : {
-                            label : 'id',
-                            width: '30px'
-                        },
-                        name : {
-                            label: '角色名称',
-                            width: '30px'
-                        },
-                        option: {
-                            type: 'action',
-                            label: '操作',
-                            width: '20px'
-                        }
-                    },
-                }
-            }
+    },
+    components:{
+        vpSelect : Select,
+        vpGrid: Datagrid,
+        vpDialog: dialog,
+        vpPager: Pager,
+        btn: Button,
+        Alert : Alert,
+        vpMnpager: MiniPager,
+    },
+    mounted(){
+        sInit(this);
+    },
+    directives: {
+        "valid":Valid,
+    },
+    methods: {
+        // 重置用户搜索框
+        resetForm(){
+            this.searchUserData = sReset(userManageData.searchUserDataEmpty);
         },
-        components:{
-            vpSelect : Select,
-            vpGrid: Datagrid,
-            vpDialog: dialog,
-            vpPager: Pager,
-            btn: Button,
-            Alert : Alert,
-            vpMnpager: MiniPager,
+        // 重置角色搜索框
+        resetRoleForm(){
+            this.searchRoleData = sReset(userManageData.searchRoleDataEmpty);
         },
-        mounted(){
-            this.fetchUserInit();
+        // 编辑用户
+        userEdit (id, index) {
+            sEdit(this, {
+                isEditActive : [id],
+                isEditLogic : [index]
+            });
         },
-        directives: {
-            "valid":Valid,
+        // 保存编辑
+        modifyUser (id, index) {
+            editSave(this);
         },
-        methods: {
-            resetForm(){
-                this.searchUserData = JSON.parse(JSON.stringify(searchUserDataEmpty));
-            },
-            resetRoleForm(){
-                this.searchRoleData = JSON.parse(JSON.stringify(searchRoleDataEmpty));
-            },
-            fetchUserInit () {
-                this.fetchUser(this, {
-                    pageSize : 10,
-                    currentPage : 1
-                }, 'http://hfdns-test.ipo.com/admin/users');
-            },
-            
-            // 获取用户列表
-            fetchUser (that, data, url) {
-                let self = this;
-                adminAjax.get({
-                    url : url,
-                    data : data,
-                    success : function (response) {
-                        if (!response.data.users) return;
-                        that.tableUserData = response.data.users;
-                        that.tableUserData.forEach(function (item) {
-                            if (!Array.isArray(item.roles)) return;
-                            var itarr = [];
-                            var itarr2 = [];
-                            item.roles.forEach(function (a) {
-                                itarr.push(a.id);
-                                itarr2.push(a.name);
-                            });
-                            itarr.push();
-                            item.role = itarr.join(',');
-                            item.roleName = itarr2.join(',');
-                        });
-                        
-                        // 初始页数
-                        var total = pageNub(response.data.total);
-                        self.$refs.userPagination.setPage(total, response.data.current_page);
-                    }
-                });
-            },
-            // 编辑用户
-            userEdit (id, index) {
-                this.$refs.editDialogUser.show();
-                this.$vform['editUser'].resetStyle();
-                this.modifyUser.id = id;
-                this.modifyUser.index = index;
-                // this.editUserVal = this.tableUserData[index];
-                this.editUserVal = _.clone(this.tableUserData[index]);
-
-                // 过滤null，验证组件默认是有的
-                for (var key in this.editUserVal) {
-                    if (this.editUserVal[key] === null) this.editUserVal[key] = '';
-                }
-
-                // 关联名称换行显示
-                var userEditArr = this.editUserVal.roleName.split(',');
-                userEditArr.forEach((item, index, arr) => {
-                    if (!index) return;
-                    if (/\n/.test(item)) return;
-                    arr[index] = '\n' + item;
-                });
-                this.editUserVal.roleName = userEditArr.join(',');
-
-
-                this.getRoleList();
-                // 显示关联角色按钮状态
-                var arr = JSON.parse('[' + this.editUserVal.role + ']');
-                for (let key in this.tableRoleData) {
-                    if (arr.indexOf(this.tableRoleData[key].id) != -1) {
-                        this.tableRoleData[key].isDanger = 'danger';    
-                    } else {
-                        this.tableRoleData[key].isDanger = '';
-                    }
-                }
-            },
-            // 编辑表单验证
-            validEditUser () {
-                let errLen = this.$vform['editUser'].checkAll().length;
-                this.$vform['editUser'].checkAll();
-                // !errLen && Toast.success('验证通过，发送请求', true);
-                return !errLen;
-            },
-            modifyUser () {
-                this.editUserVal.role_ids = JSON.parse('[' + this.editUserVal.role + ']');
-                if (!this.validEditUser()) return;
-                var that = this;
-                _.trim(this.editUserVal);
-                adminAjax.put({
-                    url : 'http://hfdns-test.ipo.com/admin/users/' + this.modifyUser.id,
-                    data : this.editUserVal,
-                    success : function () {
-                        Toast.success('修改成功');
-                        for (let key in that.editUserVal) that.tableUserData[that.modifyUser.index][key] = that.editUserVal[key];
-                    }
-                });
-                this.$refs.editDialogUser.hide();
-            },
-            // 获取全部角色列表
-            getRoleList () {
-                var tableRole = document.querySelector('.role table');
-                var self = this;
-                if (tableRole) tableRole.rows[this.selectActive.role].style.backgroundColor = 'transparent';
-                this.roleAjax(this, {
-                    pageSize : 10,
-                    currentPage : 1
-                }, 'http://hfdns-test.ipo.com/admin/roles', function () {
-                    if (!this.editUserVal.role) return;
-                    var arr = JSON.parse('[' + this.editUserVal.role + ']');
-                    for (let key in this.tableRoleData) {
-                        if (arr.indexOf(this.tableRoleData[key].id) != -1) {
-                            this.tableRoleData[key].isDanger = 'danger';    
-                        } else {
-                            this.tableRoleData[key].isDanger = '';
-                        }
-                    }
-                }.bind(this));
-            },
-            rolePageTo (index){
-                this.searchData('searchRoleData', index);
-            },
-            userPageTo (index){
-                this.fetchUser(this, {
-                    currentPage : index
-                }, 'http://hfdns-test.ipo.com/admin/users');
-            },
-            // 获取全部权限列表
-            getPrivilegeList () {
-                this.privilegeAjax(this,{
-                    pageSize : 10,
-                    currentPage : 1
-                }, 'http://hfdns-test.ipo.com/admin/privileges');
-            },
-            // 获取角色列表
-            roleAjax (that, data, url, fn) {
-                let self = this;
-                adminAjax.get({
-                    url : url,
-                    data : data,
-                    success : function (response) {
-                        if (!response.data.roles) return;
-                        response.data.roles.forEach(function (item, index, arr) {
-                            if (!Array.isArray(item.privileges)) return;
-                            var itarr = [];
-                            item.privileges.forEach(function (a, b, c) {
-                                itarr.push(a.id);
-                            });
-                            // 要先绑才会监听，后绑不行
-                            item.privilege = itarr.join(', ');
-                            item.isDanger = '';
-                        });
-                        that.tableRoleData = response.data.roles;
-                        var val = 2222;
-                        that.tableRoleData.forEach(function (item, index, arr) {
-                            item.select = {
-                                value: val++,
-                                checked: true
-                            };
-                        });
-                        var total = pageNub(response.data.total);
-                        self.$refs.rolePagination.setPage(total, response.data.current_page);
-                        // 初始页数
-                        fn && fn();
-                    }
-                });
-            },
-            pageToRole (i) {
-                // 获取角色分页列表
-                this.roleAjax(this, {
-                    currentPage : i
-                }, 'http://hfdns-test.ipo.com/admin/roles', function () {
-                    // 显示关联角色按钮状态
-                    // 我怎么知道是弹窗
-                    // 管他是不是弹窗，反正外面没有写那个按钮的渲染
-                    if (!this.editUserVal.role) return;
-                    var arr = JSON.parse('[' + this.editUserVal.role + ']');
-                    for (let key in this.tableRoleData) {
-                        if (arr.indexOf(this.tableRoleData[key].id) != -1) {
-                            this.tableRoleData[key].isDanger = 'danger';    
-                        } else {
-                            this.tableRoleData[key].isDanger = '';
-                        }
-                    }
-                }.bind(this));
-            },
-            searchData,
-            relation
-        }
+        // 角色分页
+        rolePageTo (index){
+            this.searchData('searchRoleData', index);
+        },
+        // 用户分页
+        userPageTo (index){
+            getUserTableList(this, {
+                currentPage : index
+            });
+        },
+        // 用户搜索
+        searchUser () {
+            getUserTableList(this, req(this.searchUserData));
+        },
+        // 权限搜索
+        searchRole () {
+            getRoleTableList(this, req(this.searchRoleData));
+        },
+        // 关联
+        relation (id, item) {
+            relationOperation(this, id, item);
+        },
     }
+}
+
+
+
+/*
+    状态
+*/
+// 编辑用户的当前状态
+var sEdit = _.decorate(function isEditActive (id) {
+    // 当前id
+    this.nowEditId = id;
+});
+// 编辑用户的关联状态
+var sRelation = _.decorate(function isRelationActive () {
+    // 显示关联角色按钮状态
+    if (!this.editUserVal.role) return;
+    var arr = JSON.parse('[' + this.editUserVal.role + ']');
+    for (let key in this.tableRoleData) {
+        arr.indexOf(this.tableRoleData[key].id) != -1 ? this.tableRoleData[key].isDanger = 'danger' : this.tableRoleData[key].isDanger = '';
+    }
+}, false);
+// 编辑用户的关联状态操作
+var sRelationState = function (bl) {
+    var o = function () {
+        this.isDanger = '';
+    };
+    var t = function () {
+        this.isDanger = 'danger';
+    };
+    var arr = bl ? [o, t] : [t, o];
+    return (function () {
+        return _.state.apply(null, arr);
+    })();
+};
+
+// 初始状态
+var sInit = function (that) {
+    getUserTableList(that);
+    // 编辑user
+    sEdit.add(function isEditLogic (index) {
+        this.$refs.editDialogUser.show();
+        this.$vform['editUser'].resetStyle();
+        this.editUserVal = _.clone(this.tableUserData[index]);
+        // 过滤null
+        for (var key in this.editUserVal) if (this.editUserVal[key] === null) this.editUserVal[key] = '';
+        getRoleTableList(this);
+    });
+    // 编辑user的table
+    sRelation.add(function isRelationLogic (response) {
+        if (!response.data.roles) return;
+        // 添加isDanger
+        response.data.roles.forEach(function (item, index, arr) {
+            item.isDanger = '';
+        });
+        this.tableRoleData = response.data.roles;
+        this.$refs.rolePagination.setPage(pageNub(response.data.total), response.data.current_page);
+    });
+};
+
+// 重置状态
+var sReset = function (data) {
+    return JSON.parse(JSON.stringify(data));
+};
+
+// ajax
+// 获取用户表格数据
+var getUserTableList = function (that, data) {
+    var obj = {
+        pageSize : 10,
+        currentPage : 1,
+    };
+    data ? Object.assign(obj, data) : obj;
+    dnsAjax.get({
+        url : userManageDataUrl.user,
+        data : data,
+        success : function (response) {
+            if (!response.data.users) return;
+            that.tableUserData = addAttr(response.data.users);
+            that.$refs.userPagination.setPage(pageNub(response.data.total), response.data.current_page);
+        }
+    });
+};
+// 获取角色表格数据
+var getRoleTableList = function (that, data) {
+    var obj = {
+        pageSize : 10,
+        currentPage : 1,
+    };
+    data ? Object.assign(obj, data) : obj;
+    dnsAjax.get({
+        url : userManageDataUrl.role,
+        data : data,
+        success : function (response) {
+            sRelation(that, {
+                isRelationLogic : [response],
+            });
+        }
+    });
+};
+// 保存编辑
+var editSave = function (that, data) {
+    that.editUserVal.role_ids = JSON.parse('[' + that.editUserVal.role + ']');
+    if (!validEditUser(that)) return;
+    _.trim(that.editUserVal);
+    dnsAjax.put({
+        url : userManageDataUrl.user + '/' + that.nowEditId,
+        data : that.editUserVal,
+        success : function () {
+            Toast.success('修改成功');
+            getUserTableList(that);
+            that.$refs.editDialogUser.hide();
+        }
+    });
+};
+// 为关联角色对象添加id和name的字段用于展示
+var addAttr = function (users) {
+    users.forEach(function (item) {
+        if (!Array.isArray(item.roles)) return;
+        // 添加展示的关联角色名字和角色id
+        var addRoleId = [];
+        var addRoleName = [];
+        item.roles.forEach(function (a) {
+            addRoleId.push(a.id);
+            addRoleName.push(a.name);
+        });
+        item.role = addRoleId.join(',');
+        item.roleName = strBr(this, addRoleName.join(','));
+    });
+    return users;
+};
+// 关联状态变化操作
+var relationOperation = function (that, id, item) {
+    var arr = JSON.parse('[' + that.editUserVal.role + ']');
+    var arrName = [];
+    that.editUserVal.roleName && arrName.push(that.editUserVal.roleName.split(','));
+    arrName = _.flatten(arrName);
+    // 创建独立的状态
+    var nowState = arr.indexOf(id) != -1 ? sRelationState(true) : sRelationState(false);
+    if (arr.indexOf(id) != -1) {
+        var idx = arr.indexOf(id);
+        arr.splice(idx, 1);
+        arrName.splice(idx, 1);
+    } else {
+        arr.push(id);
+        arrName.push(item.name);
+    }
+    nowState.currState(item);
+    that.editUserVal.role = arr.join(',');
+    that.editUserVal.roleName = strBr(that, arrName.join(','));
+};
+// 编辑表单验证
+var validEditUser = function (that) {
+    let errLen = that.$vform['editUser'].checkAll().length;
+    that.$vform['editUser'].checkAll();
+    return !errLen;
+};
+// 换行
+var strBr = function (that, data) {
+    var newArr = data.split(',');
+    newArr.forEach((item, index, arr) => {
+        if (!index) return;
+        if (/\n/.test(item)) return;
+        arr[index] = '\n' + item;
+    });
+    return newArr.join(',');
+};
+// 提交
+var req = function (data) {
+    // 提交数据处理
+    var r = {};
+    for (let key in data) r[key] = data[key].value;
+    r = _.compact(r);
+    r = _.trim(r);
+    return r;
+};
 </script>
 

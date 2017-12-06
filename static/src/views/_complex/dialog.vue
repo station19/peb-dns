@@ -51,6 +51,9 @@
     }
 </script>
 <style scoped>
+    #modal-default{
+        overflow:auto;
+    }
     .modal{
         display: block;
     }

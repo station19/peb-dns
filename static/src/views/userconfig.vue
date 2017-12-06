@@ -11,8 +11,11 @@
 import Ajax from 'ajax';
 import { Button, Alert, Toast } from 'vpui';
 import _ from '../components/fn/tool';
+import dnsData from './dnsData';
+
 
 var dnsAjax = new Ajax();
+var userConfigUrl = dnsData('url');
 var kv = {
     id : 'id',
     "username": "用户名",
@@ -42,6 +45,7 @@ export default {
         sInit(this);
     },
     methods : {
+        // 保存设置
         saveData () {
             userSave(this);
         }
@@ -61,7 +65,7 @@ var sInit = function (that) {
 // 获取用户信息
 var getUserMessage = function (that, data) {
     dnsAjax.get({
-        url : 'http://hfdns-test.ipo.com/admin/users?username=' + that.$cookies.get('dns-cookie-username'),
+        url : userConfigUrl.user + '?username=' + that.$cookies.get('dns-cookie-username'),
         success (response) {
             var user = response.data.users[0];
             user.role = '';
@@ -91,10 +95,11 @@ var getUserMessage = function (that, data) {
 // 保存用户信息
 var userSave = function (that) {
     dnsAjax.put({
-        url : 'http://hfdns-test.ipo.com/admin/users/' + that.usersMessage.id.value,
+        url : userConfigUrl.user + '/' + that.usersMessage.id.value,
         data : _.wrapBack(_.paraKey(that.usersMessage, kv)),
         success (response) {
             Toast.success('修改成功');
+            getUserMessage(that);
         }
     });
 };

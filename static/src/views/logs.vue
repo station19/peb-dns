@@ -29,6 +29,7 @@ import _ from '../components/fn/tool';
 import dnsData from './dnsData';
 
 let logs = dnsData('logs');
+let logsUrl = dnsData('url');
 let dnsAjax = new Ajax();
 
 export default {
@@ -97,7 +98,7 @@ var getTableList = function (that, data) {
     };
     data ? Object.assign(obj, data) : obj;
     dnsAjax.get({
-        url : 'http://hfdns-test.ipo.com/dns/oplogs',
+        url : logsUrl.log,
         data : data,
         success : function (response) {
             res(that, response.data);

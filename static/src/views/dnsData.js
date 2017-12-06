@@ -1,3 +1,18 @@
+let domainName = 'http://hfdns-test.ipo.com/';
+let domainUrl = {
+    role : domainName + 'admin/roles',
+    privilege : domainName + 'admin/privileges',
+    user : domainName + 'admin/users',
+    zone : domainName + 'dns/zones',
+    view : domainName + 'dns/views',
+    server : domainName + 'dns/servers',
+    bind : domainName + 'dns/bind_conf',
+    record : domainName + 'dns/records',
+    log : domainName + 'dns/oplogs'
+};
+
+
+
 // logs页
 let logs = {
     // 搜索
@@ -234,12 +249,315 @@ var view = {
 
 
 
+// zone页
+let zone = {
+    modalEmpty : {
+        name : '', 
+        view_ids : [],
+        forwarders : '',
+        zone_type : 'master',
+        zone_group : '0'
+    },
+    searchZoneDataEmpty : {
+        id : {
+            name : 'id',
+            value : '',
+            type : 'text',
+        },
+        name : {
+            name : '名称',
+            value : '',
+            type : 'text',
+        },
+        zone_group : {
+            name : '归类',
+            value : '',
+            display : [{label: '全部', value: ''},'外部', '内部', '劫持'],
+            type : 'select',
+        },
+        zone_type : {
+            name : '类型',
+            value : '',
+            display : [{label: '全部', value: ''},'forword', 'master', 'salve'],
+            type : 'select',
+        }
+    },
+    gridColumn : {
+        id: {
+            label: 'ID',
+            width: '80px'
+        },
+        name: 'ZONE',
+        zone_group: {
+            label: '域名归类'
+        },
+        zone_type: '域名类别',
+        view_name_list_string: '关联区域',
+        forwarders :'转发域名IP地址',
+        option: {
+            type: 'action',
+            label: '操作',
+            width: '130px'
+        }
+    },
+    pager :{
+        current: 1,
+        total: 0,
+        volumn: 10
+    },
+};
+
+
+
+// 用户管理页
+let userManage = {
+    searchUserDataEmpty : {
+        id : { 
+            name : 'id',
+            value : ''
+        },
+        username : { 
+            name : '用户名',
+            value : ''
+        },
+        chinese_name : { 
+            name : '中文名称',
+            value : ''
+        },
+        cellphone : { 
+            name : '手机号码',
+            value : '' 
+        },
+    },
+    searchRoleDataEmpty : {
+        id : {
+            name : 'id',
+            value : '',
+        },
+        name : {
+            name : '角色名称',
+            value : '',
+        }
+    },
+    tableUser : {
+        col: {
+            id : {
+                label : 'id',
+                width : '100px'
+            },
+            username : '用户名',
+            roleName : '关联角色',
+            'chinese_name' : '中文名称',
+            cellphone : '手机号码',
+            position : '职位',
+            location : '地址',
+            email : '邮箱',
+            member_since : '首次登录时间',
+            last_seen : '最近登录时间',
+            // rolesId : '关联角色id',
+            // rolesName : '关联角色名称',
+            option: {
+                type: 'action',
+                label: '操作',
+                width: '120px;'
+            }
+        },
+        colspan: 11
+    },
+    tableRole : {
+        col: {
+            id : {
+                label : 'id',
+                width: '30px'
+            },
+            name : {
+                label: '角色名称',
+                width: '30px'
+            },
+            option: {
+                type: 'action',
+                label: '操作',
+                width: '20px'
+            }
+        },
+    },
+    editUserVal : {
+        "position": "",
+        "chinese_name": "",
+        "roles": [],
+        "cellphone": "",
+        "location": "",
+    }
+};
+
+
+
+// 角色管理页
+let roleManage = {
+    searchRoleDataEmpty : {
+        id : {
+            name : 'id',
+            value : '',
+        },
+        name : {
+            name : '角色名称',
+            value : '',
+        },
+    },
+    searchPrivilegeDataEmpty : {
+        id : {
+            name : 'id',
+            value : '',
+            type : 'text'
+        },
+        name : {
+            name : '权限名称',
+            value : '',
+            type : 'text'
+        },
+        operation : {
+            name : '操作类型',
+            display : ['访问', '修改', '删除'],
+            value : '',
+            type : 'select'
+        },
+        resource_type : {
+            name : '资源类型',
+            display : ['SERVER', 'VIEW', 'ZONE', 'RECORD', 'USER', 'ROLE', 'PRIVILEGE', 'PAGE'],
+            value : '',
+            type : 'select'
+        },
+        resource_id : {
+            name : '资源ID',
+            value : '',
+            type : 'text'
+        }
+    },
+    tableRole : {
+        col: {
+            id : {
+                label : 'id',
+                width : '100px'
+            },
+            name : '角色名称',
+            privilegeName : '关联权限',
+            option: {
+                type: 'action',
+                label: '操作',
+                width: '150px;'
+            }
+        },
+    },
+    tablePrivilege : {
+        col: {
+            id : {
+                label : 'id',
+                width: '100px'
+            },
+            name : {
+                label: '权限名称',
+                width: '300px'
+            },
+            option: {
+                type: 'action',
+                label: '操作',
+                width: '45px'
+            }
+        },
+    },
+    editRoleVal : {
+        "name": "",
+        "privileges": "",
+        'privilege_ids' : '',
+        privilegeName : ''
+    }
+};
+
+
+
+// 权限管理页
+let privilegeManage = {
+    searchPrivilegeDataEmpty : {
+        id : {
+            name : 'id',
+            value : '',
+            type : 'text'
+        },
+        name : {
+            name : '权限名称',
+            value : '',
+            type : 'text'
+        },
+        operation : {
+            name : '操作类型',
+            display : ['访问', '修改', '删除'],
+            value : '',
+            type : 'select'
+        },
+        resource_type : {
+            name : '资源类型',
+            display : ['SERVER', 'VIEW', 'ZONE', 'RECORD', 'USER', 'ROLE', 'PRIVILEGE', 'PAGE'],
+            value : '',
+            type : 'select'
+        },
+        resource_id : {
+            name : '资源ID',
+            value : '',
+            type : 'text'
+        }
+    },
+    editPrivilegeVal : {
+        "name": "",     //#权限名称
+        "operation": '',    //#操作类型
+        "resource_type": '',    //#资源类型
+        "resource_id": '',     //#资源ID
+        "comment": "",
+    },
+    tablePrivilege : {
+        col: {
+            id : {
+                label : 'id',
+                width : '100px'
+            },
+            name : {
+                label: '权限名称',
+                width: '280px'
+            },
+            operation : {
+                label: '操作类型',
+                width: '100px;'
+            },
+            'resource_type' : {
+                label: '资源类型',
+                width: '100px;'
+            },
+            'resource_id' : {
+                label: '资源ID',
+                width: '80px'
+            },
+            comment : '备注',
+            option: {
+                type: 'action',
+                label: '操作',
+                width: '150px'
+            }
+        },
+    },
+};
+
+
+
 // 全部的数据
 let allData = {
     logs,
     domainmanager,
     dnsServer,
     view,
+    zone,
+    userManage,
+    roleManage,
+    privilegeManage,
+    url : domainUrl,
 };
 
 export default (str) => {
