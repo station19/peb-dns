@@ -54,7 +54,7 @@ def create_app(config_name='default'):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     app.config.from_pyfile(config_pyfiles[config_name])
-    app.config.from_pyfile('config/dns_templates.cfg')
+    app.config.from_pyfile('config/dns_templates.tpl')
     configure_extensions(app)
     configure_blueprints(app, [auth_bp, dns_bp, admin, page_bp])
     configure_error_handlers(app)

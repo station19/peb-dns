@@ -22,13 +22,13 @@ def permission_required(resource_type, operation_type):
             resource = all_resources_models[resource_type].query.get(resource_id)
             if all_resources_models[resource_type] == DBRecord:
                 if not g.current_user.can_do(operation_type, ResourceType.ZONE, resource.zone.id):
-                    return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权访问当前资源，请联系管理员。')
+                    return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
                 return f(*args, **kwargs)
             if not g.current_user.can_do(
                         operation_type, 
                         resource_type, 
                         resource_id):
-                return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权访问当前资源，请联系管理员。')
+                return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
             return f(*args, **kwargs)
         return wrapper
     return decorator
@@ -50,7 +50,7 @@ def indicated_privilege_required(privilege_name):
         @wraps(f)
         def wrapper(*args, **kwargs):
             if not g.current_user.can(privilege_name):
-                return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权访问当前资源，请联系管理员。')
+                return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
             return f(*args, **kwargs)
         return wrapper
     return decorator
@@ -59,7 +59,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not g.current_user.is_admin():
-            return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权访问当前资源，请联系管理员。')
+            return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -68,7 +68,7 @@ def access_permission_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not g.current_user.can_access_zone(*args, **kwargs):
-            return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权访问当前资源，请联系管理员。')
+            return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
         return f(*args, **kwargs)
     return decorated_function
 
@@ -94,6 +94,6 @@ def owner_or_admin_required(f):
     def wrapper(*args, **kwargs):
         print(kwargs)
         if not (g.current_user.is_admin() or g.current_user.id == kwargs.get('user_id')):
-            return get_response(RequestCode.OTHER_FAILED,  '无权限！您无权访问当前资源，请联系管理员。')
+            return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
         return f(*args, **kwargs)
     return wrapper
