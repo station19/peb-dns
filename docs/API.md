@@ -54,7 +54,7 @@ password    |string     |是       |无     |passwd123      |密码
 #### 请求方式：
 URL       |请求方式       
 ------------|-----------
-/auth/login_ldap       |POST 
+/auth/login_local       |POST 
 
 
 #### 参数列表：
