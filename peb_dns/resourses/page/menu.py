@@ -33,7 +33,7 @@ class MenuSidebar(Resource):
                 {'item_name':'角色管理', 'url':'/admin/roles'},
                 {'item_name':'权限管理', 'url':'/admin/privileges'}
             ]
-            menu_group['menu'].append({'title':'后台管理系统', 'items': admin_items})
+            menu_group['menu'].append({'title':'后台管理', 'items': admin_items})
         menu_group['menu'].append({'title':'操作记录', 'items':None, 'url':'/dns/logs'})
         return get_response(RequestCode.SUCCESS, '获取成功！', menu_group)
 
