@@ -4,3 +4,4 @@ uploads/*
 .idea/
 env_dns/*
 sftp-config.json
+*.cfg
