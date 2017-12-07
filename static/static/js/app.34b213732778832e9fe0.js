@@ -3352,17 +3352,8 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 
 
 
-var NODE_ENV = "production";
-var baseURL = '//localhost:3001/';
-if (NODE_ENV == 'production') {
-    baseURL = '//hfdns-test.ipo.com/';
-    //http://hfdns-test.ipo.com/auth/login_ldap
-}
-//const baseURL = '//hfdns-test.ipo.com/';
-
 
 var instance = __WEBPACK_IMPORTED_MODULE_2_axios___default.a.create({
-    baseURL: baseURL,
     timeout: 10000,
     withCredentials: true
 });
@@ -3381,11 +3372,10 @@ instance.interceptors.response.use(function (response) {
     switch (response.data.code) {
         case 100000:
             return response.data;
-            break;
         case 100001:
             __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_vpui__["d" /* Alert */])(response.data.msg, {
                 buttons: {
-                    '确定123': {
+                    '确定': {
                         type: 'main',
                         click: function click() {
                             window.$cookies.remove('dns-cookie-token');
@@ -3397,13 +3387,19 @@ instance.interceptors.response.use(function (response) {
             });
             break;
         case 105000:
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_vpui__["d" /* Alert */])(response.data.msg);
+            __WEBPACK_IMPORTED_MODULE_3_vpui__["e" /* Toast */].error(response.data.msg);
+            break;
+        case 100002:
+            var loginEvent = document.createEvent('HTMLEvents');
+            loginEvent.initEvent('GLOBAL-EVENT-LOGIN', false, false);
+            loginEvent.errorMsg = response.data.msg;
+            document.getElementById('J-app-div').dispatchEvent(loginEvent);
+            __WEBPACK_IMPORTED_MODULE_3_vpui__["e" /* Toast */].destroy();
             break;
         default:
             break;
     }
 }, function (error) {
-    console.log(error.response);
     if (error.response) {
         var msg = '';
         switch (error.response.status) {
@@ -5837,7 +5833,7 @@ new __WEBPACK_IMPORTED_MODULE_0_vue__["a" /* default */]({
         };
     },
 
-    template: '<div id="app" class="dns-app">' + '<div v-if="showApp" style="width:100%">' + '<dns-header  @aside:toogle="asideToogle()"></dns-header>' + '<left ref="aside" class="sidebar"></left>' + '<right ref="rightContent">' + '<keep-alive>' + '<router-view></router-view>' + '</keep-alive>' + '</right>' + '</div>' + '<login-window ref="loginWindow" @loginSuccess="loginSuccess"></login-window>' + '<register-window ref="registerWindow"></register-window>' + '</div>',
+    template: '<div id="J-app-div" class="dns-app">' + '<div v-if="showApp" style="width:100%">' + '<dns-header  @aside:toogle="asideToogle()"></dns-header>' + '<left ref="aside" class="sidebar"></left>' + '<right ref="rightContent">' + '<keep-alive>' + '<router-view></router-view>' + '</keep-alive>' + '</right>' + '</div>' + '<login-window ref="loginWindow" @loginSuccess="loginSuccess"></login-window>' + '<register-window ref="registerWindow"></register-window>' + '</div>',
     components: {
         left: __WEBPACK_IMPORTED_MODULE_4__components_layout_left_vue__["a" /* default */],
         right: __WEBPACK_IMPORTED_MODULE_3__components_layout_right_vue__["a" /* default */],
@@ -6163,6 +6159,7 @@ var Component = normalizeComponent(
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__counter_vue__ = __webpack_require__("so4L");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ajax__ = __webpack_require__("CE6F");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dnsData__ = __webpack_require__("sUkt");
 //
 //
 //
@@ -6176,6 +6173,8 @@ var Component = normalizeComponent(
 
 
 var counterAjax = new __WEBPACK_IMPORTED_MODULE_1_ajax__["a" /* default */]();
+
+var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__dnsData__["a" /* default */])('url');
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
         return {
@@ -6191,7 +6190,7 @@ var counterAjax = new __WEBPACK_IMPORTED_MODULE_1_ajax__["a" /* default */]();
     mounted: function mounted() {
         var self = this;
         counterAjax.get({
-            url: 'http://hfdns-test.ipo.com/page/resource_amount',
+            url: dnsServerDataUrl.resourceAmount,
             success: function success(response) {
                 self.countData = response.data;
             }
@@ -7978,6 +7977,7 @@ __WEBPACK_IMPORTED_MODULE_0__overlay__["a" /* default */].manager = __WEBPACK_IM
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_echarts__ = __webpack_require__("XLwt");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_echarts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_echarts__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__complex_dialog_vue__ = __webpack_require__("2IZi");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__dnsData__ = __webpack_require__("sUkt");
 
 
 //
@@ -8085,6 +8085,9 @@ var indexAjax = new __WEBPACK_IMPORTED_MODULE_5_ajax__["a" /* default */]();
 
 
 
+
+var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__dnsData__["a" /* default */])('url');
+
 var arr = [{
     text: '1小时前',
     value: 1
@@ -8166,7 +8169,7 @@ console.log(arr);
         var that = this;
         // 操作日志-1页
         indexAjax.get({
-            url: 'http://hfdns-test.ipo.com/dns/oplogs',
+            url: dnsServerDataUrl.log,
             data: {
                 pageSize: 10,
                 currentPage: 1
@@ -8205,7 +8208,7 @@ console.log(arr);
             var that = this;
             // 服务器接口
             indexAjax.get({
-                url: 'http://hfdns-test.ipo.com/dns/servers',
+                url: dnsServerDataUrl.server,
                 data: {},
                 success: function success(response) {
 
@@ -8214,7 +8217,7 @@ console.log(arr);
                     response.data.servers.forEach(function (item, index, arr) {
                         // 服务器状态
                         indexAjax.get({
-                            url: 'http://hfdns-test.ipo.com/page/server_status',
+                            url: dnsServerDataUrl.serverStatus,
                             data: {
                                 "server_id": item.id
                             },
@@ -8258,7 +8261,7 @@ console.log(arr);
         pageTo: function pageTo(index) {
             var that = this;
             indexAjax.get({
-                url: 'http://hfdns-test.ipo.com/dns/oplogs',
+                url: dnsServerDataUrl.log,
                 data: {
                     pageSize: 10,
                     currentPage: index
@@ -8299,7 +8302,7 @@ console.log(arr);
             var that = this;
             // 服务器解析量
             indexAjax.get({
-                url: 'http://hfdns-test.ipo.com/page/servers_resolve_rate',
+                url: dnsServerDataUrl.serversResolve,
                 data: data,
                 success: function success(response) {
                     if (!__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys___default()(response.data).length) {
@@ -8346,7 +8349,7 @@ console.log(arr);
             var that = this;
             // 创建新服务器
             indexAjax.post({
-                url: 'http://hfdns-test.ipo.com/dns/servers',
+                url: dnsServerDataUrl.server,
                 data: that.newServer,
                 success: function success(response) {
                     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_vpui__["d" /* Alert */])('创建成功');
@@ -9099,6 +9102,7 @@ var validInner = function validInner(that) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_json_stringify__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vpui__ = __webpack_require__("80P7");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ajax__ = __webpack_require__("CE6F");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__views_dnsData__ = __webpack_require__("sUkt");
 
 //
 //
@@ -9131,6 +9135,8 @@ var validInner = function validInner(that) {
 
 
 var loginAjax = new __WEBPACK_IMPORTED_MODULE_2_ajax__["a" /* default */]();
+
+var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__views_dnsData__["a" /* default */])('url');
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
         return {
@@ -9153,17 +9159,12 @@ var loginAjax = new __WEBPACK_IMPORTED_MODULE_2_ajax__["a" /* default */]();
     },
     mounted: function mounted() {
         var self = this;
-        /*setTimeout(function(){
-            self.$refs.userNameInput.focus();
-        });*/
+        document.getElementById('J-app-div').addEventListener('GLOBAL-EVENT-LOGIN', function (e) {
+            self.errorMsg = e.errorMsg;
+        });
     },
 
     methods: {
-        // 记住密码
-        rememberPassword: function rememberPassword(e) {
-            console.log(e.target.checked);
-        },
-
         // 新用户注册页面
         newUser: function newUser() {
             this.$parent.$refs.loginWindow.hide();
@@ -9178,9 +9179,9 @@ var loginAjax = new __WEBPACK_IMPORTED_MODULE_2_ajax__["a" /* default */]();
         login: function login() {
             var self = this;
             self.errorMsg = '';
-            var url = 'http://hfdns-test.ipo.com/auth/login_ldap';
+            var url = dnsServerDataUrl.loginLdap;
             if (self.isLocal) {
-                url = 'http://hfdns-test.ipo.com/auth/login_local';
+                url = dnsServerDataUrl.loginLocal;
             }
             if (self.username.length == 0 || self.password.length == 0) {
                 self.errorMsg = '用户名 或 密码不能为空！';
@@ -9977,6 +9978,7 @@ var createList = function createList(n) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_ajax__ = __webpack_require__("CE6F");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__views_dnsData__ = __webpack_require__("sUkt");
 //
 //
 //
@@ -10015,6 +10017,8 @@ var createList = function createList(n) {
 
 
 var _ajax = new __WEBPACK_IMPORTED_MODULE_0_ajax__["a" /* default */]();
+
+var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__views_dnsData__["a" /* default */])('url');
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
         return {
@@ -10049,7 +10053,7 @@ var _ajax = new __WEBPACK_IMPORTED_MODULE_0_ajax__["a" /* default */]();
             var self = this;
             _ajax.get({
                 showLoading: false,
-                url: 'http://hfdns-test.ipo.com/page/menu_sidebar',
+                url: dnsServerDataUrl.sidebar,
                 success: function success(response) {
                     self.menus.treeviews = response.data.menu;
                     // 刷新页面保留当前侧边栏选中状态
@@ -13728,7 +13732,8 @@ var res = function res(that, data) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var domainName = 'http://hfdns-test.ipo.com/';
+//let domainName = '//hfdns-test.ipo.com/';
+var domainName = '//localhost:8080/';
 var domainUrl = {
     role: domainName + 'admin/roles',
     privilege: domainName + 'admin/privileges',
@@ -13738,7 +13743,13 @@ var domainUrl = {
     server: domainName + 'dns/servers',
     bind: domainName + 'dns/bind_conf',
     record: domainName + 'dns/records',
-    log: domainName + 'dns/oplogs'
+    log: domainName + 'dns/oplogs',
+    serverStatus: domainName + 'page/server_status',
+    serversResolve: domainName + 'page/servers_resolve_rate',
+    sidebar: domainName + 'page/menu_sidebar',
+    loginLdap: domainName + 'auth/login_ldap',
+    loginLocal: domainName + 'auth/login_local',
+    resourceAmount: domainName + 'page/resource_amount'
 };
 
 // logs页
@@ -14800,6 +14811,7 @@ var Component = normalizeComponent(
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vpui__ = __webpack_require__("80P7");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_fn_tool__ = __webpack_require__("kVm/");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ajax__ = __webpack_require__("CE6F");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__views_dnsData__ = __webpack_require__("sUkt");
 //
 //
 //
@@ -14824,6 +14836,8 @@ var Component = normalizeComponent(
 
 
 var registerAjax = new __WEBPACK_IMPORTED_MODULE_2_ajax__["a" /* default */]();
+
+var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__views_dnsData__["a" /* default */])('url');
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
         return {
@@ -14874,7 +14888,7 @@ var registerAjax = new __WEBPACK_IMPORTED_MODULE_2_ajax__["a" /* default */]();
             }
             if (!this.validRegister()) return;
 
-            var url = 'http://hfdns-test.ipo.com/auth/login_local';
+            var url = dnsServerDataUrl.loginLocal;
             var self = this;
             var data = {
                 "username": self.username,
@@ -16293,4 +16307,4 @@ var Datagrid = {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.1e997cf44d3cef0dd6f9.js.map
+//# sourceMappingURL=app.34b213732778832e9fe0.js.map
