@@ -32,6 +32,10 @@ dns_user_common_parser.add_argument('position',
 dns_user_common_parser.add_argument('location', 
                                 type = str, 
                                 location = 'json')
+dns_user_common_parser.add_argument('actived', 
+                                type = int, 
+                                location = 'json')
+
 
 role_fields = {
     'id': fields.Integer,
@@ -49,6 +53,7 @@ user_fields = {
     'location': fields.String,
     'member_since': fields.String,
     'last_seen': fields.String,
+    'actived': fields.Integer,
     'roles': fields.List(fields.Nested(role_fields)),
 }
 
@@ -91,6 +96,7 @@ class UserList(Resource):
         username = args.get('username', type=str)
         chinese_name = args.get('chinese_name', type=str)
         cellphone = args.get('cellphone', type=str)
+        actived = args.get('actived', type=int)
         user_query = DBUser.query
         if id is not None:
             user_query = user_query.filter_by(id=id)
@@ -102,6 +108,8 @@ class UserList(Resource):
             user_query = user_query.filter_by(chinese_name=chinese_name)
         if cellphone is not None:
             user_query = user_query.filter_by(cellphone=cellphone)
+        if actived is not None:
+            user_query = user_query.filter_by(actived=actived)
         marshal_records = marshal(
             user_query.order_by(DBUser.id.desc()).paginate(
                 current_page, 
@@ -139,11 +147,12 @@ class User(Resource):
         args = dns_user_common_parser.parse_args()
         role_ids = args.get('role_ids')
         try:
-            current_u.cellphone = args.get('cellphone', '')
-            current_u.chinese_name = args.get('chinese_name', '')
-            current_u.email = args.get('email', '')
-            current_u.location = args.get('location', '')
-            current_u.position = args.get('position', '')
+            current_u.cellphone = args.get('cellphone', current_u.cellphone)
+            current_u.chinese_name = args.get('chinese_name', current_u.chinese_name)
+            current_u.email = args.get('email', current_u.email)
+            current_u.location = args.get('location', current_u.location)
+            current_u.position = args.get('position', current_u.position)
+            current_u.actived = args.get('actived', current_u.actived)
             db.session.add(current_u)
             if role_ids is not None:
                 for del_ur in DBUserRole.query.filter(
@@ -158,7 +167,7 @@ class User(Resource):
                         new_user_role = DBUserRole(
                                 user_id=user_id, role_id=role_id)
                         db.session.add(new_user_role)
-                db.session.commit()
+            db.session.commit()
         except Exception as e:
             db.session.rollback()
             return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))

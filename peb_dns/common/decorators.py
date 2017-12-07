@@ -86,6 +86,8 @@ def token_required(f):
         g.current_user = DBUser.query.filter_by(username=data.get('user')).first()
         if g.current_user is None:
             return get_response(RequestCode.AUTH_FAILED,  '认证失败！')
+        if g.current_user.actived == 0:
+            return get_response(RequestCode.AUTH_FAILED,  '对不起，您已经被管理员禁止登陆！')
         return f(*args, **kwargs)
     return decorated
 
