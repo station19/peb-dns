@@ -25,7 +25,7 @@ class AuthLDAP(Resource):
         if self._auth_via_ldap(username, password):
             user = DBUser.query.filter_by(username=username).first()
             if user.actived == 0:
-                return get_response(RequestCode.AUTH_FAILED,  '对不起，您已经被管理员禁止登陆！')
+                return get_response(RequestCode.LOGIN_FAILED,  '对不起，您已经被管理员禁止登陆！')
             if user is not None :
                 token = jwt.encode({
                     'user' : user.username, 
@@ -49,7 +49,7 @@ class AuthLDAP(Resource):
                 'user_info': new_user.to_json()
                 }
             return get_response(RequestCode.SUCCESS, '认证成功！', response_data)
-        return get_response(RequestCode.OTHER_FAILED,  '认证失败！')
+        return get_response(RequestCode.LOGIN_FAILED,  '登录失败！账号密码错误！')
 
     def _auth_via_ldap(self, username, passwd):
         try:
@@ -81,12 +81,12 @@ class AuthLocal(Resource):
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
         if auth_user is None:
-            return get_response(RequestCode.OTHER_FAILED,  '认证失败！用户不存在！')
+            return get_response(RequestCode.LOGIN_FAILED,  '认证失败！用户不存在！')
         if not auth_user.verify_password(args['password']) :
-            return get_response(RequestCode.OTHER_FAILED,  '认证失败！账号或密码错误！')
+            return get_response(RequestCode.LOGIN_FAILED,  '认证失败！账号或密码错误！')
         local_user = DBUser.query.filter_by(username=args['username']).first()
         if local_user.actived == 0:
-            return get_response(RequestCode.AUTH_FAILED,  '对不起，您已经被管理员禁止登陆！')
+            return get_response(RequestCode.LOGIN_FAILED,  '对不起，您已经被管理员禁止登陆！')
         token = jwt.encode(
             {
                 'user' : local_user.username, 
