@@ -5,3 +5,4 @@ uploads/*
 env_dns/*
 sftp-config.json
 *.cfg
+logs/*

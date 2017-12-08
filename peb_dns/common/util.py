@@ -192,7 +192,7 @@ class ZBapi(object):
         self._url = current_app.config.get('ZABBIX_URL')
         self._header = {"Content-Type":"application/json"}
         self._server = server
-        self._num = 12
+        self._num = 30
 
     def _get_authid(self):
         data = {
