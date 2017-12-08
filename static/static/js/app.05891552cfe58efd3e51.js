@@ -1642,7 +1642,7 @@ var Timeline = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"page-wrap"},[_c('counter-warp'),_vm._v(" "),_c('waterfall',{staticClass:"content-wrap",attrs:{"column":1}},[_c('item',[_c('box',{attrs:{"title":"服务器解析量","id":"serverParse"}},[_c('div',{staticStyle:{"position":"absolute","right":"68px","z-index":"1000"}},[(_vm.drawData)?_c('vp-select',{attrs:{"options":_vm.list},on:{"select":_vm.select1},model:{value:(_vm.val),callback:function ($$v) {_vm.val=$$v},expression:"val"}}):_vm._e()],1),_vm._v(" "),(_vm.drawData)?_c('div',{staticClass:"datetime"},[_vm._v("\n                    开始："),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.datetimeStart),expression:"datetimeStart"}],attrs:{"type":"datetime-local"},domProps:{"value":(_vm.datetimeStart)},on:{"input":function($event){if($event.target.composing){ return; }_vm.datetimeStart=$event.target.value}}}),_vm._v("\n                    结束："),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.datetimeEnd),expression:"datetimeEnd"}],attrs:{"type":"datetime-local"},domProps:{"value":(_vm.datetimeEnd)},on:{"input":function($event){if($event.target.composing){ return; }_vm.datetimeEnd=$event.target.value}}}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchDatetime}},[_vm._v("搜索")])],1):_vm._e(),_vm._v(" "),_c('div',{attrs:{"id":"echarts1"}})])],1),_vm._v(" "),_c('item',[_c('box',{attrs:{"title":"服务器状态"}},[_c('div',{staticClass:"row"},[_c('div',{staticClass:"col-md-3 serverStatus"},[(_vm.serversState.length != 0)?_c('div',{staticStyle:{"float":"left"}},_vm._l((_vm.serversState),function(state,index){return _c('div',{staticClass:"snow",class:{no: !state.active, yes:state.active}},[_c('h4',{staticClass:"serverStatusName"},[_vm._v(_vm._s(state.active ? 'online' : '异常'))]),_vm._v(" "),_c('h4',{staticClass:"serverHost"},[_vm._v(_vm._s(state.name))]),_vm._v(" "),_c('ul',{staticClass:"serverStatusList"},[_c('li',[_c('span',{staticClass:"normal",class:state.state.process}),_c('span',[_vm._v("进程")])]),_vm._v(" "),_c('li',[_c('span',{staticClass:"normal",class:state.state.port}),_c('span',[_vm._v("端口")])]),_vm._v(" "),_c('li',[_c('span',{staticClass:"normal",class:state.state.resolve}),_c('span',[_vm._v("解析")])])])])})):_vm._e(),_vm._v(" "),(_vm.can_add_server)?_c('div',{staticClass:"snow add"},[_c('h4',[_vm._v("添加新的服务器")]),_vm._v(" "),_c('div',{on:{"click":_vm.addRecord}},[_vm._v("添加")])]):_vm._e()])])])],1),_vm._v(" "),_c('item',[_c('box',{attrs:{"title":"用户操作记录"}},[_c('vp-grid',{attrs:{"head":_vm.table_base.col,"data":_vm.operationLogs,"colspan":_vm.table_base.colspan}}),_vm._v(" "),_c('vp-pager',{attrs:{"total":_vm.pager.total,"current":_vm.pager.current,"position":'right',"volumn":_vm.pager.volumn},on:{"to":_vm.pageTo}})],1)],1)],1),_vm._v(" "),_c('vp-dialog',{ref:"addDialog",attrs:{"title":"创建DNS服务器"},on:{"dialog:save":_vm.createDNS}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("主机名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.host),expression:"newServer.host"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.host)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.host=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("IP地址")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.ip),expression:"newServer.ip"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.ip)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.ip=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("环境")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.env),expression:"newServer.env"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_env","group":"newServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.env=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"dev"}},[_vm._v("dev")]),_vm._v(" "),_c('option',{attrs:{"value":"anhouse"}},[_vm._v("anhouse")]),_vm._v(" "),_c('option',{attrs:{"value":"ga"}},[_vm._v("ga")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("DNS类型")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.dns_server_type),expression:"newServer.dns_server_type"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_type","group":"newServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.dns_server_type=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"master"}},[_vm._v("master")]),_vm._v(" "),_c('option',{attrs:{"value":"salve"}},[_vm._v("salve")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("进程Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_process_itemid),expression:"newServer.zb_process_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_process_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_process_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("端口Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_port_itemid),expression:"newServer.zb_port_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_port_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_port_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("解析Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_itemid),expression:"newServer.zb_resolve_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_resolve_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("解析量Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_rate_itemid),expression:"newServer.zb_resolve_rate_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_resolve_rate_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_rate_itemid=$event.target.value}}})])])])],1)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"page-wrap"},[_c('counter-warp'),_vm._v(" "),_c('waterfall',{staticClass:"content-wrap",attrs:{"column":1}},[_c('item',[_c('box',{attrs:{"title":"服务器解析量","id":"serverParse"}},[_c('div',{staticStyle:{"position":"absolute","right":"68px","z-index":"1000"}},[_c('vp-select',{attrs:{"options":_vm.list},on:{"select":_vm.select1},model:{value:(_vm.val),callback:function ($$v) {_vm.val=$$v},expression:"val"}})],1),_vm._v(" "),_c('div',{staticClass:"date-range"},[_c('datetimerangepicker',{staticStyle:{"float":"left","margin-right":"10px"},attrs:{"format":"YYYY-MM-DD hh:mm:ss","has-seconds":true,"lang":"zh"},model:{value:(_vm.timeRangeArray),callback:function ($$v) {_vm.timeRangeArray=$$v},expression:"timeRangeArray"}}),_vm._v(" "),_c('btn',{staticStyle:{"margin-top":"2px"},on:{"click":_vm.searchDatetime}},[_vm._v("搜索")])],1),_vm._v(" "),_c('div',{staticStyle:{"min-height":"100px"},attrs:{"id":"J-echarts1"}})])],1),_vm._v(" "),_c('item',[_c('box',{attrs:{"title":"服务器状态"}},[_c('div',{staticClass:"row"},[_c('div',{staticClass:"col-md-3 serverStatus"},[(_vm.serversState.length != 0)?_vm._l((_vm.serversState),function(state,index){return _c('div',{staticClass:"snow",class:{no: !state.active, yes:state.active}},[_c('h4',{staticClass:"serverStatusName"},[_vm._v(_vm._s(state.active ? 'online' : '异常'))]),_vm._v(" "),_c('h4',{staticClass:"serverHost"},[_vm._v(_vm._s(state.name))]),_vm._v(" "),_c('ul',{staticClass:"serverStatusList"},[_c('li',[_c('span',{staticClass:"normal",class:state.state.process}),_c('span',[_vm._v("进程")])]),_vm._v(" "),_c('li',[_c('span',{staticClass:"normal",class:state.state.port}),_c('span',[_vm._v("端口")])]),_vm._v(" "),_c('li',[_c('span',{staticClass:"normal",class:state.state.resolve}),_c('span',[_vm._v("解析")])])])])}):_vm._e(),_vm._v(" "),(_vm.can_add_server)?_c('div',{staticClass:"snow add"},[_c('h4',[_vm._v("添加新的服务器")]),_vm._v(" "),_c('div',{on:{"click":_vm.addRecord}},[_vm._v("添加")])]):_vm._e()],2)])])],1),_vm._v(" "),_c('item',[_c('box',{attrs:{"title":"用户操作记录"}},[_c('vp-grid',{attrs:{"head":_vm.table_base.col,"data":_vm.operationLogs,"colspan":_vm.table_base.colspan}}),_vm._v(" "),_c('vp-pager',{attrs:{"total":_vm.pager.total,"current":_vm.pager.current,"position":'right',"volumn":_vm.pager.volumn},on:{"to":_vm.pageTo}})],1)],1)],1),_vm._v(" "),_c('vp-dialog',{ref:"addDialog",attrs:{"title":"创建DNS服务器"},on:{"dialog:save":_vm.createDNS}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("主机名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.host),expression:"newServer.host"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.host)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.host=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("IP地址")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.ip),expression:"newServer.ip"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.ip)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.ip=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("环境")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.env),expression:"newServer.env"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_env","group":"newServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.env=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"dev"}},[_vm._v("dev")]),_vm._v(" "),_c('option',{attrs:{"value":"anhouse"}},[_vm._v("anhouse")]),_vm._v(" "),_c('option',{attrs:{"value":"ga"}},[_vm._v("ga")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("DNS类型")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.dns_server_type),expression:"newServer.dns_server_type"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_type","group":"newServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.dns_server_type=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"master"}},[_vm._v("master")]),_vm._v(" "),_c('option',{attrs:{"value":"salve"}},[_vm._v("salve")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("进程Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_process_itemid),expression:"newServer.zb_process_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_process_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_process_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("端口Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_port_itemid),expression:"newServer.zb_port_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_port_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_port_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("解析Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_itemid),expression:"newServer.zb_resolve_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_resolve_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("解析量Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_rate_itemid),expression:"newServer.zb_resolve_rate_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"newServer"},domProps:{"value":(_vm.newServer.zb_resolve_rate_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_rate_itemid=$event.target.value}}})])])])],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -2600,7 +2600,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* unused harmony reexport Datepicker */
 /* unused harmony reexport Datetimepicker */
 /* unused harmony reexport Daterangepicker */
-/* unused harmony reexport Datetimerangepicker */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return __WEBPACK_IMPORTED_MODULE_10__components_datepicker__["j"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_24__components_toast__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_16__components_waterfall__["a"]; });
 /* unused harmony reexport Uploader */
@@ -2969,7 +2969,7 @@ var MONTH = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"admin-block",attrs:{"id":"admin"}},[_c('h1',{staticStyle:{"background-color":"LightGreen"}},[_vm._v("角色")]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchRoleData),function(value,key,index){return _c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchRoleData[key].value),expression:"searchRoleData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name},domProps:{"value":(_vm.searchRoleData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchRoleData[key].value=$event.target.value}}})}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchRole}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetRoleForm}},[_vm._v("重置")]),_vm._v(" "),_c('btn',{on:{"click":_vm.addRole}},[_vm._v("添加")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tableRole.col,"data":_vm.tableRoleData,"colspan":4}},_vm._l((_vm.tableRoleData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"size":"small"},on:{"click":function($event){_vm.roleEdit(i)}}},[_vm._v("编辑")]),_vm._v(" "),_c('btn',{attrs:{"size":"small","type":"danger"},on:{"click":function($event){_vm.delRole(item.id)}}},[_vm._v("删除")])],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"rolePagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.rolePageTo}}),_vm._v(" "),_c('vp-dialog',{ref:"addDialogRole",attrs:{"title":"添加角色"},on:{"dialog:save":_vm.saveRole}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("角色名称")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.name),expression:"editRoleVal.name"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"addRole"},domProps:{"value":(_vm.editRoleVal.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.name=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("关联权限")]),_vm._v(" "),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.privilegeName),expression:"editRoleVal.privilegeName"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"cols":"30","rows":"10","group":"addRole","disabled":""},domProps:{"value":(_vm.editRoleVal.privilegeName)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.privilegeName=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchPrivilegeData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchPrivilegeData[key].value),expression:"searchPrivilegeData[key].value"}],staticClass:"search-item",style:('width:'+ ((value.name == '权限名称') ? '62px; width:300px;' : '100px;')),attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchPrivilegeData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchPrivilegeData[key].value=$event.target.value}}}):_vm._e()}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchPrivilege}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetPrivilegeForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tablePrivilege.col,"data":_vm.tablePrivilegeData,"colspan":3}},_vm._l((_vm.tablePrivilegeData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"type":item.isDanger,"size":"small"},on:{"click":function($event){_vm.relation(item.id, item)}}},[(item.isDanger)?[_vm._v("取消关联")]:[_vm._v("关联角色")]],2)],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"privilegePagination2",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.privilegePageTo}})],1)]),_vm._v(" "),_c('vp-dialog',{ref:"editDialogRole",attrs:{"title":"编辑角色"},on:{"dialog:save":_vm.saveRole}},[_c('div',{staticClass:"clearfix"},[_c('div',{staticClass:"clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("角色名称")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.name),expression:"editRoleVal.name"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"editRole"},domProps:{"value":(_vm.editRoleVal.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.name=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("关联权限名称")]),_vm._v(" "),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.privilegeName),expression:"editRoleVal.privilegeName"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"cols":"30","rows":"10","disabled":"","group":"editRole"},domProps:{"value":(_vm.editRoleVal.privilegeName)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.privilegeName=$event.target.value}}})])]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchPrivilegeData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchPrivilegeData[key].value),expression:"searchPrivilegeData[key].value"}],staticClass:"search-item",style:('width:'+ ((value.name == '权限名称') ? '62px; width:300px;' : '100px;')),attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchPrivilegeData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchPrivilegeData[key].value=$event.target.value}}}):_vm._e()}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchPrivilege}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetPrivilegeForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tablePrivilege.col,"data":_vm.tablePrivilegeData,"colspan":3}},_vm._l((_vm.tablePrivilegeData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"type":item.isDanger,"size":"small"},on:{"click":function($event){_vm.relation(item.id, item)}}},[(item.isDanger)?[_vm._v("取消关联")]:[_vm._v("关联角色")]],2)],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"privilegePagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.privilegePageTo}})],1)])],1)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"admin-block",attrs:{"id":"admin"}},[_c('h1',{staticStyle:{"background-color":"LightGreen"}},[_vm._v("角色")]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchRoleData),function(value,key,index){return _c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchRoleData[key].value),expression:"searchRoleData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name},domProps:{"value":(_vm.searchRoleData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchRoleData[key].value=$event.target.value}}})}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchRole}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetRoleForm}},[_vm._v("重置")]),_vm._v(" "),_c('btn',{on:{"click":_vm.addRole}},[_vm._v("添加")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tableRole.col,"data":_vm.tableRoleData,"colspan":4}},_vm._l((_vm.tableRoleData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"size":"small"},on:{"click":function($event){_vm.roleEdit(i)}}},[_vm._v("编辑")]),_vm._v(" "),_c('btn',{attrs:{"size":"small","type":"danger"},on:{"click":function($event){_vm.delRole(item.id)}}},[_vm._v("删除")])],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"rolePagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.rolePageTo}}),_vm._v(" "),_c('vp-dialog',{ref:"addDialogRole",attrs:{"title":"添加角色"},on:{"dialog:save":_vm.saveRole}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("角色名称")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.name),expression:"editRoleVal.name"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"addRole"},domProps:{"value":(_vm.editRoleVal.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.name=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("关联权限")]),_vm._v(" "),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.privilegeName),expression:"editRoleVal.privilegeName"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"cols":"30","rows":"10","group":"addRole","disabled":""},domProps:{"value":(_vm.editRoleVal.privilegeName)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.privilegeName=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchPrivilegeData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchPrivilegeData[key].value),expression:"searchPrivilegeData[key].value"}],staticClass:"search-item",style:('width:'+ ((value.name == '权限名称') ? '62px; width:300px;' : '100px;')),attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchPrivilegeData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchPrivilegeData[key].value=$event.target.value}}}):_vm._e()}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchPrivilege}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetPrivilegeForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tablePrivilege.col,"data":_vm.tablePrivilegeData,"colspan":3}},_vm._l((_vm.tablePrivilegeData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"type":item.isDanger,"size":"small"},on:{"click":function($event){_vm.relation(item.id, item)}}},[(item.isDanger)?[_vm._v("取消关联")]:[_vm._v("关联角色")]],2)],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"privilegePagination2",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.privilegePageTo}})],1)]),_vm._v(" "),_c('vp-dialog',{ref:"editDialogRole",attrs:{"title":"编辑角色"},on:{"dialog:save":_vm.saveRole}},[_c('div',{staticClass:"clearfix"},[_c('div',{staticClass:"clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("角色名称")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.name),expression:"editRoleVal.name"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"editRole"},domProps:{"value":(_vm.editRoleVal.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.name=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("关联权限名称")]),_vm._v(" "),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.editRoleVal.privilegeName),expression:"editRoleVal.privilegeName"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"cols":"30","rows":"3","disabled":"","group":"editRole"},domProps:{"value":(_vm.editRoleVal.privilegeName)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editRoleVal.privilegeName=$event.target.value}}})])]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchPrivilegeData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchPrivilegeData[key].value),expression:"searchPrivilegeData[key].value"}],staticClass:"search-item",style:('width:'+ ((value.name == '权限名称') ? '62px; width:300px;' : '100px;')),attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchPrivilegeData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchPrivilegeData[key].value=$event.target.value}}}):_vm._e()}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchPrivilege}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetPrivilegeForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tablePrivilege.col,"data":_vm.tablePrivilegeData,"colspan":3}},_vm._l((_vm.tablePrivilegeData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"type":item.isDanger,"size":"small"},on:{"click":function($event){_vm.relation(item.id, item)}}},[(item.isDanger)?[_vm._v("取消关联")]:[_vm._v("关联角色")]],2)],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"privilegePagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.privilegePageTo}})],1)])],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -7094,7 +7094,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"monthpicker"},[_c('div',{staticClass:"input",on:{"click":function($event){_vm.open = !_vm.open}}},[_c('input',{staticClass:"input-text",attrs:{"type":"text","readonly":"","placeholder":_vm.placeholder[0]},domProps:{"value":_vm.begin}}),_vm._v(" "),_c('span',{staticClass:"div"},[_vm._v("-")]),_vm._v(" "),_c('input',{staticClass:"input-text",attrs:{"type":"text","readonly":"","placeholder":_vm.placeholder[1]},domProps:{"value":_vm.end}}),_vm._v(" "),_c('span',{staticClass:"picker-icon"},[_c('svg',{staticClass:"icon",attrs:{"t":"1509440995295","viewBox":"0 0 1024 1024","version":"1.1","xmlns":"http://www.w3.org/2000/svg","p-id":"4681","xmlns:xlink":"http://www.w3.org/1999/xlink","width":"22","height":"22"}},[_c('path',{attrs:{"d":"M358.2 436h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM358.2 616h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM538.2 436h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM538.2 616h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM718.2 540c14.4 0 26-11.8 26-26v-52c0-14.4-11.6-26-26-26h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52zM816.2 738v-44c0-15.4-12.6-28-28-28s-28 12.6-28 28v72c0 15.4 12.6 28 28 28h72c15.4 0 28-12.6 28-28s-12.6-28-28-28h-44z","fill":"#999","p-id":"4682"}}),_vm._v(" "),_c('path',{attrs:{"d":"M898 623.8V344c0-79.2-64.8-144-144-144h-58V150c0-15.4-12.6-28-28-28s-28 12.6-28 28v50H388V150c0-15.4-12.6-28-28-28s-28 12.6-28 28v50h-58c-79.2 0-144 64.8-144 144v428c0 79.2 64.8 144 144 144h413.8c29 20.2 64.4 32 102.4 32 99.4 0 180-80.6 180-180 0.2-59-28.4-111.4-72.2-144.2zM635.6 860H274c-23.4 0-45.4-9.2-62.2-25.8C195.2 817.4 186 795.4 186 772V344c0-23.4 9.2-45.4 25.8-62.2 16.8-16.8 38.8-25.8 62.2-25.8h58v42c0 15.4 12.6 28 28 28s28-12.6 28-28v-42h252v42c0 15.4 12.6 28 28 28s28-12.6 28-28v-42h58c23.4 0 45.4 9.2 62.2 25.8 16.8 16.8 25.8 38.8 25.8 62.2v251.6c-16.4-5-33.8-7.6-51.6-7.6-99.4 0-180 80.6-180 180 0 33.6 9.2 65 25.2 92z m154.8 32c-68.4 0-124-55.6-124-124s55.6-124 124-124 124 55.6 124 124-55.8 124-124 124z","fill":"#999","p-id":"4683"}})])])]),_vm._v(" "),_c('transition',{attrs:{"name":"dropDown"}},[(_vm.open)?_c('div',{staticClass:"drop-box"},[(!_vm.showTime)?[_c('div',{staticClass:"header-group"},_vm._l((2),function(it,i){return _c('div',{staticClass:"picker-header"},[_c('span',[_c('i',{staticClass:"picker-icon left",on:{"click":function($event){_vm.flush(i, '/')}}})]),_vm._v(" "),_c('span',{on:{"click":function($event){_vm.changePanel(i)}}},[_c('em',[_vm._v(_vm._s(_vm.title[i]))])]),_vm._v(" "),_c('span',[_c('i',{staticClass:"picker-icon right",on:{"click":function($event){_vm.flush(i, '+')}}})])])})),_vm._v(" "),_c('div',{staticClass:"body-group"},[_c('div',{staticClass:"panel-group"},_vm._l((2),function(it,i){return _c('div',{class:_vm.line(i)},[(_vm.showRange[i])?_c('yearrangepanel',{staticClass:"panel",on:{"change":function($event){_vm.checkPanel(3, i)}},model:{value:(_vm.range[i]),callback:function ($$v) {_vm.$set(_vm.range, i, $$v)},expression:"range[i]"}}):(_vm.showYear[i])?_c('yearpanel',{staticClass:"panel",on:{"change":function($event){_vm.checkPanel(2, i)}},model:{value:(_vm.year[i]),callback:function ($$v) {_vm.$set(_vm.year, i, $$v)},expression:"year[i]"}}):(_vm.showMonth[i])?_c('monthpanel',{staticClass:"panel",attrs:{"lang":_vm.lang},on:{"change":function($event){_vm.checkPanel(1, i)}},model:{value:(_vm.month[i]),callback:function ($$v) {_vm.$set(_vm.month, i, $$v)},expression:"month[i]"}}):_vm._e()],1)})),_vm._v(" "),_c('daterangepanel',{attrs:{"showSimple":_vm.showSimple,"prevMonth":_vm.beginMonth,"nextMonth":_vm.endMonth,"validRange":_vm.validRange,"lang":_vm.lang,"hasTime":true},model:{value:(_vm.val),callback:function ($$v) {_vm.val=$$v},expression:"val"}})],1),_vm._v(" "),_c('div',{staticClass:"footer"},[_c('span',{on:{"click":function($event){_vm.showTime = !_vm.showTime}}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '选择时间' : 'Select Time'))]),_c('button',{on:{"click":_vm.OK}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '确定' : 'OK'))])])]:[_c('div',{staticClass:"header-group time"},_vm._l((2),function(it,i){return _c('div',{staticClass:"picker-header"},[_c('span',[_vm._v(_vm._s(_vm.title[i]))])])})),_vm._v(" "),_c('div',{staticClass:"time-group"},_vm._l((2),function(it,i){return _c('div',{key:i},[_c('timpepanel',{attrs:{"hasSeconds":_vm.hasSeconds},model:{value:(_vm.time[i]),callback:function ($$v) {_vm.$set(_vm.time, i, $$v)},expression:"time[i]"}})],1)})),_vm._v(" "),_c('div',{staticClass:"footer"},[_c('span',{on:{"click":function($event){_vm.showTime = !_vm.showTime}}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '选择日期' : 'Select Date'))]),_c('button',{on:{"click":_vm.OK}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '确定' : 'OK'))])])]],2):_vm._e()])],1)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"monthpicker"},[_c('div',{staticClass:"range-picker-input-wrap",on:{"click":function($event){_vm.open = !_vm.open}}},[_c('input',{staticClass:"range-picker-input-text",attrs:{"type":"text","readonly":"","placeholder":_vm.placeholder[0]},domProps:{"value":_vm.begin}}),_vm._v(" "),_c('span',{staticClass:"div"},[_vm._v("-")]),_vm._v(" "),_c('input',{staticClass:"range-picker-input-text",attrs:{"type":"text","readonly":"","placeholder":_vm.placeholder[1]},domProps:{"value":_vm.end}}),_vm._v(" "),_c('span',{staticClass:"picker-icon"},[_c('svg',{staticClass:"icon",attrs:{"t":"1509440995295","viewBox":"0 0 1024 1024","version":"1.1","xmlns":"http://www.w3.org/2000/svg","p-id":"4681","xmlns:xlink":"http://www.w3.org/1999/xlink","width":"22","height":"22"}},[_c('path',{attrs:{"d":"M358.2 436h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM358.2 616h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM538.2 436h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM538.2 616h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52c14.4 0 26-11.8 26-26v-52c0-14.4-11.8-26-26-26zM718.2 540c14.4 0 26-11.8 26-26v-52c0-14.4-11.6-26-26-26h-52c-14.4 0-26 11.6-26 26v52c0 14.2 11.6 26 26 26h52zM816.2 738v-44c0-15.4-12.6-28-28-28s-28 12.6-28 28v72c0 15.4 12.6 28 28 28h72c15.4 0 28-12.6 28-28s-12.6-28-28-28h-44z","fill":"#999","p-id":"4682"}}),_vm._v(" "),_c('path',{attrs:{"d":"M898 623.8V344c0-79.2-64.8-144-144-144h-58V150c0-15.4-12.6-28-28-28s-28 12.6-28 28v50H388V150c0-15.4-12.6-28-28-28s-28 12.6-28 28v50h-58c-79.2 0-144 64.8-144 144v428c0 79.2 64.8 144 144 144h413.8c29 20.2 64.4 32 102.4 32 99.4 0 180-80.6 180-180 0.2-59-28.4-111.4-72.2-144.2zM635.6 860H274c-23.4 0-45.4-9.2-62.2-25.8C195.2 817.4 186 795.4 186 772V344c0-23.4 9.2-45.4 25.8-62.2 16.8-16.8 38.8-25.8 62.2-25.8h58v42c0 15.4 12.6 28 28 28s28-12.6 28-28v-42h252v42c0 15.4 12.6 28 28 28s28-12.6 28-28v-42h58c23.4 0 45.4 9.2 62.2 25.8 16.8 16.8 25.8 38.8 25.8 62.2v251.6c-16.4-5-33.8-7.6-51.6-7.6-99.4 0-180 80.6-180 180 0 33.6 9.2 65 25.2 92z m154.8 32c-68.4 0-124-55.6-124-124s55.6-124 124-124 124 55.6 124 124-55.8 124-124 124z","fill":"#999","p-id":"4683"}})])])]),_vm._v(" "),_c('transition',{attrs:{"name":"dropDown"}},[(_vm.open)?_c('div',{staticClass:"drop-box"},[(!_vm.showTime)?[_c('div',{staticClass:"header-group"},_vm._l((2),function(it,i){return _c('div',{staticClass:"picker-header"},[_c('span',[_c('i',{staticClass:"picker-icon left",on:{"click":function($event){_vm.flush(i, '/')}}})]),_vm._v(" "),_c('span',{on:{"click":function($event){_vm.changePanel(i)}}},[_c('em',[_vm._v(_vm._s(_vm.title[i]))])]),_vm._v(" "),_c('span',[_c('i',{staticClass:"picker-icon right",on:{"click":function($event){_vm.flush(i, '+')}}})])])})),_vm._v(" "),_c('div',{staticClass:"body-group"},[_c('div',{staticClass:"panel-group"},_vm._l((2),function(it,i){return _c('div',{class:_vm.line(i)},[(_vm.showRange[i])?_c('yearrangepanel',{staticClass:"panel",on:{"change":function($event){_vm.checkPanel(3, i)}},model:{value:(_vm.range[i]),callback:function ($$v) {_vm.$set(_vm.range, i, $$v)},expression:"range[i]"}}):(_vm.showYear[i])?_c('yearpanel',{staticClass:"panel",on:{"change":function($event){_vm.checkPanel(2, i)}},model:{value:(_vm.year[i]),callback:function ($$v) {_vm.$set(_vm.year, i, $$v)},expression:"year[i]"}}):(_vm.showMonth[i])?_c('monthpanel',{staticClass:"panel",attrs:{"lang":_vm.lang},on:{"change":function($event){_vm.checkPanel(1, i)}},model:{value:(_vm.month[i]),callback:function ($$v) {_vm.$set(_vm.month, i, $$v)},expression:"month[i]"}}):_vm._e()],1)})),_vm._v(" "),_c('daterangepanel',{attrs:{"showSimple":_vm.showSimple,"prevMonth":_vm.beginMonth,"nextMonth":_vm.endMonth,"validRange":_vm.validRange,"lang":_vm.lang,"hasTime":true},model:{value:(_vm.val),callback:function ($$v) {_vm.val=$$v},expression:"val"}})],1),_vm._v(" "),_c('div',{staticClass:"footer"},[_c('span',{on:{"click":function($event){_vm.showTime = !_vm.showTime}}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '选择时间' : 'Select Time'))]),_c('button',{on:{"click":_vm.OK}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '确定' : 'OK'))])])]:[_c('div',{staticClass:"header-group time"},_vm._l((2),function(it,i){return _c('div',{staticClass:"picker-header"},[_c('span',[_vm._v(_vm._s(_vm.title[i]))])])})),_vm._v(" "),_c('div',{staticClass:"time-group"},_vm._l((2),function(it,i){return _c('div',{key:i},[_c('timpepanel',{attrs:{"hasSeconds":_vm.hasSeconds},model:{value:(_vm.time[i]),callback:function ($$v) {_vm.$set(_vm.time, i, $$v)},expression:"time[i]"}})],1)})),_vm._v(" "),_c('div',{staticClass:"footer"},[_c('span',{on:{"click":function($event){_vm.showTime = !_vm.showTime}}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '选择日期' : 'Select Date'))]),_c('button',{on:{"click":_vm.OK}},[_vm._v(_vm._s(_vm.lang === 'zh' ? '确定' : 'OK'))])])]],2):_vm._e()])],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -7546,7 +7546,7 @@ var Component = normalizeComponent(
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"line-textarea-wrap"},[_c('textarea',{ref:"txl",staticClass:"text-line",attrs:{"rows":_vm.rows,"disabled":"disabled"}},[_vm._v(_vm._s(_vm.lineContent))]),_vm._v(" "),_vm._t("default")],2)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"line-textarea-wrap"},[_c('textarea',{ref:"txl",staticClass:"line-number",attrs:{"rows":_vm.rows,"disabled":"disabled"}},[_vm._v(_vm._s(_vm.lineContent))]),_vm._v(" "),_c('div',{staticClass:"line-content"},[_vm._t("default")],2)])}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -7966,19 +7966,16 @@ __WEBPACK_IMPORTED_MODULE_0__overlay__["a" /* default */].manager = __WEBPACK_IM
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_defineProperty__ = __webpack_require__("bOdI");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_defineProperty___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_defineProperty__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys__ = __webpack_require__("fZjL");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__cmp_counterWrap_vue__ = __webpack_require__("07KF");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cmp_box_vue__ = __webpack_require__("9KI4");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vpui__ = __webpack_require__("80P7");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_ajax__ = __webpack_require__("CE6F");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_echarts__ = __webpack_require__("XLwt");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_echarts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_echarts__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__complex_dialog_vue__ = __webpack_require__("2IZi");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__dnsData__ = __webpack_require__("sUkt");
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_keys__ = __webpack_require__("fZjL");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_keys___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_keys__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__cmp_counterWrap_vue__ = __webpack_require__("07KF");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__cmp_box_vue__ = __webpack_require__("9KI4");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vpui__ = __webpack_require__("80P7");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_ajax__ = __webpack_require__("CE6F");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_echarts__ = __webpack_require__("XLwt");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_echarts___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_echarts__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__complex_dialog_vue__ = __webpack_require__("2IZi");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__dnsData__ = __webpack_require__("sUkt");
 
 //
 //
@@ -8072,13 +8069,19 @@ __WEBPACK_IMPORTED_MODULE_0__overlay__["a" /* default */].manager = __WEBPACK_IM
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
 
 
 
-var indexAjax = new __WEBPACK_IMPORTED_MODULE_5_ajax__["a" /* default */]();
+var indexAjax = new __WEBPACK_IMPORTED_MODULE_4_ajax__["a" /* default */]();
 
 
 
@@ -8086,7 +8089,7 @@ var indexAjax = new __WEBPACK_IMPORTED_MODULE_5_ajax__["a" /* default */]();
 
 
 
-var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_8__dnsData__["a" /* default */])('url');
+var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__dnsData__["a" /* default */])('url');
 
 var arr = [{
     text: '1小时前',
@@ -8104,7 +8107,7 @@ var arr = [{
     text: '1周前',
     value: 168
 }];
-console.log(arr);
+
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
         return {
@@ -8158,12 +8161,13 @@ console.log(arr);
             // 定时器管理
             timer: '',
             // 获取添加按钮的显示状态
-            can_add_server: ''
+            can_add_server: '',
+            timeRangeArray: []
         };
     },
 
     directives: {
-        "valid": __WEBPACK_IMPORTED_MODULE_4_vpui__["c" /* Valid */]
+        "valid": __WEBPACK_IMPORTED_MODULE_3_vpui__["c" /* Valid */]
     },
     mounted: function mounted() {
         var that = this;
@@ -8192,16 +8196,17 @@ console.log(arr);
     },
 
     components: {
-        box: __WEBPACK_IMPORTED_MODULE_3__cmp_box_vue__["a" /* default */],
-        waterfall: __WEBPACK_IMPORTED_MODULE_4_vpui__["o" /* WaterFall */],
-        item: __WEBPACK_IMPORTED_MODULE_4_vpui__["p" /* WaterFallItem */],
-        'vp-select': __WEBPACK_IMPORTED_MODULE_4_vpui__["k" /* Select */],
-        counterWarp: __WEBPACK_IMPORTED_MODULE_2__cmp_counterWrap_vue__["a" /* default */],
-        "vp-grid": __WEBPACK_IMPORTED_MODULE_4_vpui__["l" /* Datagrid */],
-        vpDialog: __WEBPACK_IMPORTED_MODULE_7__complex_dialog_vue__["a" /* default */],
-        vpPager: __WEBPACK_IMPORTED_MODULE_4_vpui__["m" /* Pager */],
-        Alert: __WEBPACK_IMPORTED_MODULE_4_vpui__["d" /* Alert */],
-        btn: __WEBPACK_IMPORTED_MODULE_4_vpui__["j" /* Button */]
+        box: __WEBPACK_IMPORTED_MODULE_2__cmp_box_vue__["a" /* default */],
+        waterfall: __WEBPACK_IMPORTED_MODULE_3_vpui__["o" /* WaterFall */],
+        item: __WEBPACK_IMPORTED_MODULE_3_vpui__["p" /* WaterFallItem */],
+        'vp-select': __WEBPACK_IMPORTED_MODULE_3_vpui__["k" /* Select */],
+        counterWarp: __WEBPACK_IMPORTED_MODULE_1__cmp_counterWrap_vue__["a" /* default */],
+        "vp-grid": __WEBPACK_IMPORTED_MODULE_3_vpui__["l" /* Datagrid */],
+        vpDialog: __WEBPACK_IMPORTED_MODULE_6__complex_dialog_vue__["a" /* default */],
+        vpPager: __WEBPACK_IMPORTED_MODULE_3_vpui__["m" /* Pager */],
+        Alert: __WEBPACK_IMPORTED_MODULE_3_vpui__["d" /* Alert */],
+        btn: __WEBPACK_IMPORTED_MODULE_3_vpui__["j" /* Button */],
+        Datetimerangepicker: __WEBPACK_IMPORTED_MODULE_3_vpui__["q" /* Datetimerangepicker */]
     },
     methods: {
         getServer: function getServer() {
@@ -8214,7 +8219,7 @@ console.log(arr);
 
                     // 重置服务器状态
                     that.serversState = [];
-                    response.data.servers.forEach(function (item, index, arr) {
+                    response.data.servers.forEach(function (item) {
                         // 服务器状态
                         indexAjax.get({
                             url: dnsServerDataUrl.serverStatus,
@@ -8223,7 +8228,7 @@ console.log(arr);
                             },
                             success: function success(response) {
                                 that.serversState.push(response.data);
-                                var active = __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys___default()(response.data).every(function (item, index, arr) {
+                                var active = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_keys___default()(response.data).every(function (item) {
                                     return response.data[item] == 1;
                                 });
                                 var obj = {};
@@ -8305,11 +8310,6 @@ console.log(arr);
                 url: dnsServerDataUrl.serversResolve,
                 data: data,
                 success: function success(response) {
-                    if (!__WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys___default()(response.data).length) {
-                        that.drawData = false;
-                        return;
-                    }
-                    that.drawData = true;
                     that.serverParse = response.data;
                     // 每次请求都清空再来
                     that.serverName = [];
@@ -8339,7 +8339,7 @@ console.log(arr);
                             }
                         });
                     }
-                    that.serverTime = __WEBPACK_IMPORTED_MODULE_1_babel_runtime_core_js_object_keys___default()(obj).reverse();
+                    that.serverTime = __WEBPACK_IMPORTED_MODULE_0_babel_runtime_core_js_object_keys___default()(obj).reverse();
                     that.draw();
                 }
             });
@@ -8352,7 +8352,7 @@ console.log(arr);
                 url: dnsServerDataUrl.server,
                 data: that.newServer,
                 success: function success(response) {
-                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_vpui__["d" /* Alert */])('创建成功');
+                    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_vpui__["d" /* Alert */])('创建成功');
                     that.select1();
                     taht.getServer();
                 }
@@ -8360,49 +8360,21 @@ console.log(arr);
             this.$refs.addDialog.hide();
         },
         searchDatetime: function searchDatetime() {
-            if (!(this.datetimeEnd && this.datetimeStart)) {
-                __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_vpui__["d" /* Alert */])('请完整选择日期和时间！');
+            if (this.timeRangeArray.length === 0) {
+                __WEBPACK_IMPORTED_MODULE_3_vpui__["e" /* Toast */].error('请选择时间段');
                 return;
             }
-            var threeMonth = 2160;
 
-            function getSomeTime(val) {
-                var dt = new Date();
-                dt.setHours(dt.getHours() - val);
-                var time = dt.getTime();
-                return time;
-            }
-            var threeMonthTime = getSomeTime(threeMonth);
-
-            var startTime = new Date(this.datetimeStart).getTime();
-            var endTime = new Date(this.datetimeEnd).getTime();
-            var nowTime = new Date().getTime();
-
-            startTime = startTime > threeMonthTime ? startTime : threeMonthTime;
-
-            endTime = endTime > nowTime ? nowTime : endTime;
-            endTime = startTime > endTime ? nowTime : endTime;
-
-            function filterTime(time) {
-                time = time.replace(/\s/, '-').replace(/:/, '-');
-                time = /(.{16})/.exec(time)[1];
-                return time;
-            }
-
-            startTime = filterTime(this.getTime(startTime));
-            endTime = filterTime(this.getTime(endTime));
-            console.log(startTime, endTime);
-            return;
             this.analysis({
-                "start_time": startTime,
-                "end_time": endTime
+                "start_time": this.timeRangeArray[0].replace(/\//g, '-'),
+                "end_time": this.timeRangeArray[1].replace(/\//g, '-')
             });
         },
         draw: function draw() {
             var that = this;
             setTimeout(function () {
-                document.querySelector('#echarts1').style.height = '400px';
-                __WEBPACK_IMPORTED_MODULE_6_echarts___default.a.init(document.querySelector('#echarts1')).setOption({
+                document.querySelector('#J-echarts1').style.height = '400px';
+                __WEBPACK_IMPORTED_MODULE_5_echarts___default.a.init(document.querySelector('#J-echarts1')).setOption({
                     color: ['#7CBDE8', '#F0786A'],
                     title: false,
                     grid: {
@@ -8420,16 +8392,26 @@ console.log(arr);
                     xAxis: [{
                         type: 'category',
                         boundaryGap: false,
-                        data: that.serverTime
+                        data: that.serverTime,
+                        nameRotate: 10,
+                        nameTextStyle: {
+                            color: 'red'
+                        },
+                        axisLabel: {
+                            rotate: 330,
+                            interval: 0,
+                            textStyle: {
+                                color: '#333'
+                            }
+                        }
+
                     }],
-                    yAxis: [__WEBPACK_IMPORTED_MODULE_0_babel_runtime_helpers_defineProperty___default()({
+                    yAxis: [{
                         type: 'value',
                         axisLabel: {
-                            formatter: '{value}'
+                            formatter: that.formatter
                         }
-                    }, 'axisLabel', {
-                        formatter: that.formatter
-                    })],
+                    }],
                     series: that.series
                 }, true);
             });
@@ -8574,7 +8556,7 @@ var esExports = { render: render, staticRenderFns: staticRenderFns }
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"admin-block",attrs:{"id":"admin"}},[_c('h1',{staticStyle:{"background-color":"Turquoise"}},[_vm._v("用户")]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchUserData),function(value,key,index){return _c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchUserData[key].value),expression:"searchUserData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name},domProps:{"value":(_vm.searchUserData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchUserData[key].value=$event.target.value}}})}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchUser}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tableUser.col,"data":_vm.tableUserData,"colspan":_vm.tableUser.colspan}},_vm._l((_vm.tableUserData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"size":"small"},on:{"click":function($event){_vm.userEdit(item.id, i)}}},[_vm._v("编辑")])],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"userPagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.userPageTo}}),_vm._v(" "),_c('vp-dialog',{ref:"editDialogUser",attrs:{"title":"编辑用户"},on:{"dialog:save":_vm.modifyUser}},[_c('div',{staticClass:"clearfix"},[_c('div',{staticClass:"user-info clearfix"},[_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("id")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.id),expression:"editUserVal.id"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.id)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.id=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("用户名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.username),expression:"editUserVal.username"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.username)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.username=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("中文名称")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.chinese_name),expression:"editUserVal.chinese_name"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.chinese_name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.chinese_name=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("电话")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.cellphone),expression:"editUserVal.cellphone"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.cellphone)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.cellphone=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("地址")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.location),expression:"editUserVal.location"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.location)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.location=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("职位")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.position),expression:"editUserVal.position"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.position)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.position=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("邮箱")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.email),expression:"editUserVal.email"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.email)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.email=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("首次登录时间")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.member_since),expression:"editUserVal.member_since"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.member_since)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.member_since=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("最近登录时间")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.last_seen),expression:"editUserVal.last_seen"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.last_seen)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.last_seen=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("关联角色名称")]),_vm._v(" "),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.roleName),expression:"editUserVal.roleName"}],staticClass:"form-control",attrs:{"disabled":"","name":"","id":"","cols":"30","rows":"10"},domProps:{"value":(_vm.editUserVal.roleName)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.roleName=$event.target.value}}})])]),_vm._v(" "),_c('div',{staticClass:"user-role"},[_c('div',{staticClass:"search-bar"},[_vm._l((_vm.searchRoleData),function(value,key,index){return _c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchRoleData[key].value),expression:"searchRoleData[key].value"}],style:('width:'+ ((value.name == 'id') ? '62px; margin-left:0px;' : '115px;')),attrs:{"type":"text","placeholder":value.name},domProps:{"value":(_vm.searchRoleData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchRoleData[key].value=$event.target.value}}})}),_vm._v(" "),_c('btn',{staticStyle:{"margin-right":"5px"},on:{"click":_vm.searchRole}},[_vm._v("搜索")]),_c('btn',{on:{"click":_vm.resetRoleForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{staticStyle:{"margin-bottom":"22px"},attrs:{"head":_vm.tableRole.col,"data":_vm.tableRoleData,"colspan":3}},_vm._l((_vm.tableRoleData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"type":item.isDanger,"size":"small"},on:{"click":function($event){_vm.relation(item.id, item)}}},[(item.isDanger)?[_vm._v("取消关联")]:[_vm._v("关联用户")]],2)],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"rolePagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.rolePageTo}})],1)])])],1)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"admin-block",attrs:{"id":"admin"}},[_c('h1',{staticStyle:{"background-color":"Turquoise"}},[_vm._v("用户")]),_vm._v(" "),_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchUserData),function(value,key,index){return _c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchUserData[key].value),expression:"searchUserData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name},domProps:{"value":(_vm.searchUserData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchUserData[key].value=$event.target.value}}})}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchUser}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{attrs:{"head":_vm.tableUser.col,"data":_vm.tableUserData,"colspan":_vm.tableUser.colspan}},_vm._l((_vm.tableUserData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"size":"small"},on:{"click":function($event){_vm.userEdit(item.id, i)}}},[_vm._v("编辑")])],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"userPagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.userPageTo}}),_vm._v(" "),_c('vp-dialog',{ref:"editDialogUser",attrs:{"title":"编辑用户"},on:{"dialog:save":_vm.modifyUser}},[_c('div',{staticClass:"clearfix"},[_c('div',{staticClass:"user-info clearfix"},[_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("id")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.id),expression:"editUserVal.id"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.id)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.id=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("用户名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.username),expression:"editUserVal.username"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.username)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.username=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("中文名称")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.chinese_name),expression:"editUserVal.chinese_name"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.chinese_name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.chinese_name=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("电话")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.cellphone),expression:"editUserVal.cellphone"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.cellphone)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.cellphone=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("地址")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.location),expression:"editUserVal.location"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.location)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.location=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("职位")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.position),expression:"editUserVal.position"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.position)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.position=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("邮箱")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.email),expression:"editUserVal.email"}],staticClass:"form-control",attrs:{"type":"text"},domProps:{"value":(_vm.editUserVal.email)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.email=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("首次登录时间")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.member_since),expression:"editUserVal.member_since"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.member_since)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.member_since=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("最近登录时间")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.last_seen),expression:"editUserVal.last_seen"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":"","type":"text","group":"editUser"},domProps:{"value":(_vm.editUserVal.last_seen)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.last_seen=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("关联角色名称")]),_vm._v(" "),_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.editUserVal.roleName),expression:"editUserVal.roleName"}],staticClass:"form-control",attrs:{"disabled":"","name":"","id":"","cols":"30","rows":"5"},domProps:{"value":(_vm.editUserVal.roleName)},on:{"input":function($event){if($event.target.composing){ return; }_vm.editUserVal.roleName=$event.target.value}}})])]),_vm._v(" "),_c('div',{staticClass:"user-role"},[_c('div',{staticClass:"search-bar"},[_vm._l((_vm.searchRoleData),function(value,key,index){return _c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchRoleData[key].value),expression:"searchRoleData[key].value"}],style:('width:'+ ((value.name == 'id') ? '62px; margin-left:0px;' : '115px;')),attrs:{"type":"text","placeholder":value.name},domProps:{"value":(_vm.searchRoleData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchRoleData[key].value=$event.target.value}}})}),_vm._v(" "),_c('btn',{staticStyle:{"margin-right":"5px"},on:{"click":_vm.searchRole}},[_vm._v("搜索")]),_c('btn',{on:{"click":_vm.resetRoleForm}},[_vm._v("重置")])],2),_vm._v(" "),_c('vp-grid',{staticStyle:{"margin-bottom":"22px"},attrs:{"head":_vm.tableRole.col,"data":_vm.tableRoleData,"colspan":3}},_vm._l((_vm.tableRoleData),function(item,i){return _c('div',{attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{attrs:{"type":item.isDanger,"size":"small"},on:{"click":function($event){_vm.relation(item.id, item)}}},[(item.isDanger)?[_vm._v("取消关联")]:[_vm._v("关联用户")]],2)],1)})),_vm._v(" "),_c('vp-mnpager',{ref:"rolePagination",staticStyle:{"float":"left"},attrs:{"show-short-cut":true},on:{"to":_vm.rolePageTo}})],1)])])],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -9309,6 +9291,8 @@ var dnsServerDataUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__views_
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
@@ -9867,7 +9851,7 @@ module.exports = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"page-wrap"},[_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchZoneData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchZoneData[key].value),expression:"searchZoneData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchZoneData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchZoneData[key].value=$event.target.value}}}):_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchZoneData[key].value),expression:"searchZoneData[key].value"}],staticClass:"search-item",on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.searchZoneData[key].value=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},_vm._l((value.display),function(item,i){return _c('option',{domProps:{"value":item.label? item.value : item}},[_vm._v(_vm._s(item.label?item.label:item))])}))}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchData}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetData}},[_vm._v("重置")])],2),_vm._v(" "),_c('box',{attrs:{"title":"ZONE管理"}},[_c('div',{staticStyle:{"margin-bottom":"10px"}},[(_vm.can_add_zone)?_c('btn',{on:{"click":_vm.addZone}},[_vm._v("添加")]):_vm._e(),_vm._v(" "),(_vm.can_add_zone)?_c('span',{staticStyle:{"color":"red","margin-left":"20px"}},[_vm._v("警示！！添加新zone，或者已有zone关联新的view时，请记得添加master的A记录，否则会reload失败！！！\n            ")]):_vm._e()],1),_vm._v(" "),_c('grid',{staticStyle:{"margin-bottom":"10px"},attrs:{"head":_vm.gridColumn,"data":_vm.gridData,"colspan":7},on:{"callback:deleteRecord":_vm.deleteRecord,"callback:editRecord":_vm.editRecord}},[_vm._l((_vm.gridData),function(item,i){return _c('span',{attrs:{"slot":'cell:zone_group_'+i},domProps:{"innerHTML":_vm._s(_vm.zoneGroup[item.zone_group])},slot:'cell:zone_group_'+i})}),_vm._v(" "),_vm._l((_vm.gridData),function(item,i){return _c('div',{staticClass:"opt-column",attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_update),expression:"item.can_update"}],attrs:{"size":"small"},on:{"click":function($event){_vm.editRecord(item)}}},[_vm._v("编辑")]),_vm._v(" "),_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_delete),expression:"item.can_delete"}],attrs:{"type":"danger","size":"small"},on:{"click":function($event){_vm.deleteRecord(item, i)}}},[_vm._v("删除")])],1)})],2),_vm._v(" "),_c('vp-pager',{attrs:{"total":_vm.pager.total,"current":_vm.pager.current,"position":'right',"volumn":_vm.pager.volumn},on:{"to":_vm.pageTo}})],1),_vm._v(" "),_c('vp-dialog',{ref:"addDialog",attrs:{"title":_vm.titleName},on:{"dialog:save":_vm.saveRecord}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("域名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.name),expression:"modal.name"},{name:"valid",rawName:"v-valid",value:({required:true,reDomainName:_vm.reDomainName}),expression:"{required:true,reDomainName:reDomainName}"}],staticClass:"form-control",attrs:{"disabled":_vm.titleName == '修改ZONE' && 'disabled',"type":"text","group":"zoneManger"},domProps:{"value":(_vm.modal.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.modal.name=$event.target.value}}})]),_vm._v(" "),(_vm.modal.zone_group != 0)?_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("关联区域")]),_vm._v(" "),_c('vp-select',{directives:[{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],attrs:{"width":"535","type":"multiple","options":_vm.viewList,"group":"zoneManger"},model:{value:(_vm.modal.view_ids),callback:function ($$v) {_vm.modal.view_ids=$$v},expression:"modal.view_ids"}})],1):_vm._e(),_vm._v(" "),(_vm.modal.zone_group != 0)?_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("域名类别")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.zone_type),expression:"modal.zone_type"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":_vm.titleName == '修改ZONE' && 'disabled',"id":"s_env","group":"zoneManger"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.modal.zone_type=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"master"}},[_vm._v("主域名")]),_vm._v(" "),_c('option',{attrs:{"value":"forward only"}},[_vm._v("转发域名")])])]):_vm._e(),_vm._v(" "),(_vm.modal.zone_type == 'forward only')?_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("转发域名IP地址")]),_vm._v(" "),_c('line-textarea',{ref:"lineTextArea",attrs:{"rows":5}},[_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.forwarders),expression:"modal.forwarders"},{name:"valid",rawName:"v-valid",value:({required:true,ip:_vm.ip}),expression:"{required:true,ip:ip}"}],staticClass:"domain-setting-area",attrs:{"rows":"5","group":"zoneManger"},domProps:{"value":(_vm.modal.forwarders)},on:{"scroll":_vm.linkage,"input":[function($event){if($event.target.composing){ return; }_vm.modal.forwarders=$event.target.value},_vm.changeText]}})])],1):_vm._e(),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("域名归类")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.zone_group),expression:"modal.zone_group"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"group":"zoneManger"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.modal.zone_group=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},_vm._l((Object.keys(_vm.zoneGroup)),function(key){return _c('option',{domProps:{"value":key}},[_vm._v(_vm._s(_vm.zoneGroup[key]))])}))])])])],1)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"page-wrap"},[_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchZoneData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchZoneData[key].value),expression:"searchZoneData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchZoneData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchZoneData[key].value=$event.target.value}}}):_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchZoneData[key].value),expression:"searchZoneData[key].value"}],staticClass:"search-item",on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.searchZoneData[key].value=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},_vm._l((value.display),function(item,i){return _c('option',{domProps:{"value":item.label? item.value : item}},[_vm._v(_vm._s(item.label?item.label:item))])}))}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchData}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetData}},[_vm._v("重置")])],2),_vm._v(" "),_c('box',{attrs:{"title":"ZONE管理"}},[_c('div',{staticStyle:{"margin-bottom":"10px"}},[(_vm.can_add_zone)?_c('btn',{on:{"click":_vm.addZone}},[_vm._v("添加")]):_vm._e(),_vm._v(" "),(_vm.can_add_zone)?_c('span',{staticStyle:{"color":"red","margin-left":"20px"}},[_vm._v("警示！！添加新zone，或者已有zone关联新的view时，请记得添加master的A记录，否则会reload失败！！！\n            ")]):_vm._e()],1),_vm._v(" "),_c('grid',{staticStyle:{"margin-bottom":"10px"},attrs:{"head":_vm.gridColumn,"data":_vm.gridData,"colspan":7},on:{"callback:deleteRecord":_vm.deleteRecord,"callback:editRecord":_vm.editRecord}},[_vm._l((_vm.gridData),function(item,i){return _c('span',{attrs:{"slot":'cell:zone_group_'+i},domProps:{"innerHTML":_vm._s(_vm.zoneGroup[item.zone_group])},slot:'cell:zone_group_'+i})}),_vm._v(" "),_vm._l((_vm.gridData),function(item,i){return _c('div',{staticClass:"opt-column",attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_update),expression:"item.can_update"}],attrs:{"size":"small"},on:{"click":function($event){_vm.editRecord(item)}}},[_vm._v("编辑")]),_vm._v(" "),_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_delete),expression:"item.can_delete"}],attrs:{"type":"danger","size":"small"},on:{"click":function($event){_vm.deleteRecord(item, i)}}},[_vm._v("删除")])],1)})],2),_vm._v(" "),_c('vp-pager',{attrs:{"total":_vm.pager.total,"current":_vm.pager.current,"position":'right',"volumn":_vm.pager.volumn},on:{"to":_vm.pageTo}})],1),_vm._v(" "),_c('vp-dialog',{ref:"addDialog",attrs:{"title":_vm.titleName},on:{"dialog:save":_vm.saveRecord}},[_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("域名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.name),expression:"modal.name"},{name:"valid",rawName:"v-valid",value:({required:true,reDomainName:_vm.reDomainName}),expression:"{required:true,reDomainName:reDomainName}"}],staticClass:"form-control",attrs:{"disabled":_vm.titleName == '修改ZONE' && 'disabled',"type":"text","group":"zoneManger"},domProps:{"value":(_vm.modal.name)},on:{"input":function($event){if($event.target.composing){ return; }_vm.modal.name=$event.target.value}}})]),_vm._v(" "),(_vm.modal.zone_group != 0)?_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("关联区域")]),_vm._v(" "),_c('vp-select',{directives:[{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],attrs:{"type":"multiple","width":548,"options":_vm.viewList,"group":"zoneManger"},model:{value:(_vm.modal.view_ids),callback:function ($$v) {_vm.modal.view_ids=$$v},expression:"modal.view_ids"}})],1):_vm._e(),_vm._v(" "),(_vm.modal.zone_group != 0)?_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("域名类别")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.zone_type),expression:"modal.zone_type"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"disabled":_vm.titleName == '修改ZONE' && 'disabled',"id":"s_env","group":"zoneManger"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.modal.zone_type=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"master"}},[_vm._v("主域名")]),_vm._v(" "),_c('option',{attrs:{"value":"forward only"}},[_vm._v("转发域名")])])]):_vm._e(),_vm._v(" "),(_vm.modal.zone_type == 'forward only')?_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("转发域名IP地址")]),_vm._v(" "),_c('line-textarea',{ref:"lineTextArea",attrs:{"rows":5}},[_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.forwarders),expression:"modal.forwarders"},{name:"valid",rawName:"v-valid",value:({required:true,ip:_vm.ip}),expression:"{required:true,ip:ip}"}],staticClass:"domain-setting-area",attrs:{"rows":"5","group":"zoneManger"},domProps:{"value":(_vm.modal.forwarders)},on:{"scroll":_vm.linkage,"input":[function($event){if($event.target.composing){ return; }_vm.modal.forwarders=$event.target.value},_vm.changeText]}})])],1):_vm._e(),_vm._v(" "),_c('div',{staticClass:"form-group"},[_c('label',[_vm._v("域名归类")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.modal.zone_group),expression:"modal.zone_group"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"group":"zoneManger"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.modal.zone_group=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},_vm._l((Object.keys(_vm.zoneGroup)),function(key){return _c('option',{domProps:{"value":key}},[_vm._v(_vm._s(_vm.zoneGroup[key]))])}))])])],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -12650,7 +12634,7 @@ var roleManageUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__dnsData__
         vpMnpager: __WEBPACK_IMPORTED_MODULE_5_vpui__["n" /* MiniPager */]
     },
     mounted: function mounted() {
-        sInit(this);
+        pageInit(this);
     },
 
     directives: {
@@ -12674,13 +12658,13 @@ var roleManageUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__dnsData__
 
         // 添加角色
         addRole: function addRole() {
-            sAdd(this);
+            _addRole(this);
         },
 
         // 编辑角色
         roleEdit: function roleEdit(index) {
-            sEdit(this, {
-                isEditLogic: [index]
+            editRole(this, {
+                editLogic: [index]
             });
         },
 
@@ -12700,6 +12684,7 @@ var roleManageUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__dnsData__
         });
     }), __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_defineProperty___default()(_methods, 'privilegePageTo', function privilegePageTo(index) {
         getPrivilegeTableList(this, {
+            pageSize: 5,
             currentPage: index
         });
     }), __WEBPACK_IMPORTED_MODULE_2_babel_runtime_helpers_defineProperty___default()(_methods, 'searchRole', function searchRole() {
@@ -12719,14 +12704,15 @@ var roleManageUrl = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_9__dnsData__
     0----添加
     1----编辑
     */
-});var sAdd = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].decorate(function isAddActive() {
+});var _addRole = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].decorate(function isAddActive() {
     this.addOrEdit = 0;
 });
-var sEdit = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].decorate(function isEditActive() {
+var editRole = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].decorate(function isEditActive() {
     this.addOrEdit = 1;
 });
-// 编辑用户的关联状态
-var sRelation = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].decorate(function isRelationActive() {
+
+// 关联权限操作
+var relationPrivilege = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].decorate(function isRelationActive() {
     // 显示关联权限按钮状态
     if (!this.editRoleVal.privilege) return;
     var arr = JSON.parse('[' + this.editRoleVal.privilege + ']');
@@ -12734,51 +12720,42 @@ var sRelation = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default
         arr.indexOf(this.tablePrivilegeData[key].id) != -1 ? this.tablePrivilegeData[key].isDanger = 'danger' : this.tablePrivilegeData[key].isDanger = '';
     }
 }, false);
-// 编辑用户的关联状态操作
-var sRelationState = function sRelationState(bl) {
-    var o = function o() {
-        this.isDanger = '';
-    };
-    var t = function t() {
-        this.isDanger = 'danger';
-    };
-    var arr = bl ? [o, t] : [t, o];
-    return function () {
-        return __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].state.apply(null, arr);
-    }();
-};
 
-// 初始状态
-var sInit = function sInit(that) {
-    getRoleTableList(that);
+// 初始化
+var pageInit = function pageInit(self) {
+    getRoleTableList(self);
     // 添加role
-    sAdd.add(function isAddLogic() {
+    _addRole.add(function addLogic() {
         this.$vform['addRole'].resetStyle();
         this.$refs.addDialogRole.show();
         this.editRoleVal = sReset(roleManage.editRoleVal);
-        getPrivilegeTableList(this);
+        getPrivilegeTableList(this, {
+            pageSize: 5
+        });
     });
     // 编辑role
-    sEdit.add(function isEditLogic(index) {
+    editRole.add(function editLogic(index) {
         this.$vform['editRole'].resetStyle();
         this.$refs.editDialogRole.show();
         this.editRoleVal = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].clone(this.tableRoleData[index]);
-        getPrivilegeTableList(this);
+        getPrivilegeTableList(this, {
+            pageSize: 5
+        });
     });
     // 编辑role的table
-    sRelation.add(function isRelationLogic(response) {
+    relationPrivilege.add(function relationLogic(response) {
         if (!response.data.privileges) return;
-        that.tablePrivilegeData = response.data.privileges;
-        __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].para(that.tablePrivilegeData, {
-            operation: that.searchPrivilegeData.operation.display,
-            'resource_type': that.searchPrivilegeData.resource_type.display
+        self.tablePrivilegeData = response.data.privileges;
+        __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].para(self.tablePrivilegeData, {
+            operation: self.searchPrivilegeData.operation.display,
+            'resource_type': self.searchPrivilegeData.resource_type.display
         });
         // 添加isDanger
-        response.data.privileges.forEach(function (item, index, arr) {
+        response.data.privileges.forEach(function (item) {
             item.isDanger = '';
         });
         var total = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__methods__["a" /* pageNub */])(response.data.total);
-        that.addOrEdit ? that.$refs.privilegePagination.setPage(total, response.data.current_page) : that.$refs.privilegePagination2.setPage(total, response.data.current_page);
+        self.addOrEdit ? self.$refs.privilegePagination.setPage(total, response.data.current_page) : self.$refs.privilegePagination2.setPage(total, response.data.current_page);
     });
 };
 
@@ -12792,7 +12769,7 @@ var isAddOrEdit = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* defau
 
 // ajax
 // 获取角色表格数据
-var getRoleTableList = function getRoleTableList(that, data) {
+var getRoleTableList = function getRoleTableList(self, data) {
     var obj = {
         pageSize: 10,
         currentPage: 1
@@ -12803,13 +12780,13 @@ var getRoleTableList = function getRoleTableList(that, data) {
         data: data,
         success: function success(response) {
             if (!response.data.roles) return;
-            that.tableRoleData = addAttr(that, response.data.roles);
-            that.$refs.rolePagination.setPage(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__methods__["a" /* pageNub */])(response.data.total), response.data.current_page);
+            self.tableRoleData = addAttr(self, response.data.roles);
+            self.$refs.rolePagination.setPage(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__methods__["a" /* pageNub */])(response.data.total), response.data.current_page);
         }
     });
 };
 // 获取权限表格数据
-var getPrivilegeTableList = function getPrivilegeTableList(that, data) {
+var getPrivilegeTableList = function getPrivilegeTableList(self, data) {
     var obj = {
         pageSize: 10,
         currentPage: 1
@@ -12819,63 +12796,63 @@ var getPrivilegeTableList = function getPrivilegeTableList(that, data) {
         url: roleManageUrl.privilege,
         data: data,
         success: function success(response) {
-            sRelation(that, {
-                isRelationLogic: [response]
+            relationPrivilege(self, {
+                relationLogic: [response]
             });
         }
     });
 };
 // 添加保存
-var addSave = function addSave(that, data) {
-    that.editRoleVal.privilege_ids = that.editRoleVal.privilege.split(',');
+var addSave = function addSave(self, data) {
+    self.editRoleVal.privilege_ids = self.editRoleVal.privilege.split(',');
     __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].trim(data);
     dnsAjax.post({
         url: roleManageUrl.role,
-        data: that.editRoleVal,
+        data: self.editRoleVal,
         success: function success() {
             __WEBPACK_IMPORTED_MODULE_5_vpui__["e" /* Toast */].success('添加成功');
-            getRoleTableList(that);
-            that.$refs.addDialogRole.hide();
+            getRoleTableList(self);
+            self.$refs.addDialogRole.hide();
         }
     });
 };
 // 编辑保存
-var editSave = function editSave(that, data) {
-    that.editRoleVal.privilege_ids = JSON.parse('[' + that.editRoleVal.privilege + ']');
-    __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].trim(that.editRoleVal);
+var editSave = function editSave(self, data) {
+    self.editRoleVal.privilege_ids = JSON.parse('[' + self.editRoleVal.privilege + ']');
+    __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].trim(self.editRoleVal);
     dnsAjax.put({
-        url: roleManageUrl.role + '/' + that.editRoleVal.id,
-        data: that.editRoleVal,
+        url: roleManageUrl.role + '/' + self.editRoleVal.id,
+        data: self.editRoleVal,
         success: function success() {
             __WEBPACK_IMPORTED_MODULE_5_vpui__["e" /* Toast */].success('修改成功!');
-            that.$refs.editDialogRole.hide();
-            getRoleTableList(that);
+            self.$refs.editDialogRole.hide();
+            getRoleTableList(self);
         }
     });
 };
 // 关联状态变化操作
-var relationOperation = function relationOperation(that, id, item) {
-    if (!that.editRoleVal.privilege) that.editRoleVal.privilege = '';
-    var arr = JSON.parse('[' + that.editRoleVal.privilege + ']');
+var relationOperation = function relationOperation(self, id, item) {
+    if (!self.editRoleVal.privilege) self.editRoleVal.privilege = '';
+    var arr = JSON.parse('[' + self.editRoleVal.privilege + ']');
     var arrName = [];
-    that.editRoleVal.privilegeName && arrName.push(that.editRoleVal.privilegeName.split(','));
+    self.editRoleVal.privilegeName && arrName.push(self.editRoleVal.privilegeName.split(','));
     arrName = __WEBPACK_IMPORTED_MODULE_8__components_fn_tool__["a" /* default */].flatten(arrName);
     // 创建独立的状态
-    var nowState = arr.indexOf(id) != -1 ? sRelationState(true) : sRelationState(false);
     if (arr.indexOf(id) != -1) {
         var idx = arr.indexOf(id);
         arr.splice(idx, 1);
         arrName.splice(idx, 1);
+        item.isDanger = '';
     } else {
         arr.push(id);
         arrName.push(item.name);
+        item.isDanger = 'danger';
     }
-    nowState.currState(item);
-    that.editRoleVal.privilege = arr.join(',');
-    that.editRoleVal.privilegeName = strBr(that, arrName.join(','));
+    self.editRoleVal.privilege = arr.join(',');
+    self.editRoleVal.privilegeName = strBr(self, arrName.join(','));
 };
 // 为关联权限对象添加id和name的字段用于展示
-var addAttr = function addAttr(that, roles) {
+var addAttr = function addAttr(self, roles) {
     roles.forEach(function (item) {
         if (!Array.isArray(item.privileges)) return;
         // 添加展示的关联权限名字和权限id
@@ -12886,24 +12863,24 @@ var addAttr = function addAttr(that, roles) {
             addPrivilegeName.push(a.name);
         });
         item.privilege = addPrivilegeId.join(', ');
-        item.privilegeName = strBr(that, addPrivilegeName.join(','));
+        item.privilegeName = strBr(self, addPrivilegeName.join(','));
     });
     return roles;
 };
 // 通知
-var delNoice = function delNoice(that, id) {
+var delNoice = function delNoice(self, id) {
     __WEBPACK_IMPORTED_MODULE_5_vpui__["d" /* Alert */].confirm('确定要删除id是' + id + '的角色吗？', function () {
         dnsAjax.delete({
             url: roleManageUrl.role + '/' + id,
             success: function success() {
-                getRoleTableList(that);
+                getRoleTableList(self);
                 __WEBPACK_IMPORTED_MODULE_5_vpui__["e" /* Toast */].success('删除成功!');
             }
         });
     });
 };
 // 换行
-var strBr = function strBr(that, data) {
+var strBr = function strBr(self, data) {
     var newArr = data.split(',');
     newArr.forEach(function (item, index, arr) {
         if (!index) return;
@@ -12913,9 +12890,9 @@ var strBr = function strBr(that, data) {
     return newArr.join(',');
 };
 // 验证
-var valid = function valid(that, str) {
-    var errLen = that.$vform[str].checkAll().length;
-    that.$vform[str].checkAll();
+var valid = function valid(self, str) {
+    var errLen = self.$vform[str].checkAll().length;
+    self.$vform[str].checkAll();
     return !errLen;
 };
 // 提交
@@ -13218,8 +13195,6 @@ module.exports = __webpack_require__.p + "static/img/boxed-bg.7799dec.jpg";
 
 
 
-//
-//
 //
 //
 //
@@ -13732,8 +13707,8 @@ var res = function res(that, data) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-//let domainName = '//hfdns-test.ipo.com/';
-var domainName = '//localhost:8080/';
+var domainName = '//hfdns-test.ipo.com/';
+//let domainName = '//localhost:8080/';
 var domainUrl = {
     role: domainName + 'admin/roles',
     privilege: domainName + 'admin/privileges',
@@ -15971,7 +15946,7 @@ var d = new Date(),
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"page-wrap"},[_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchServerData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchServerData[key].value),expression:"searchServerData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchServerData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchServerData[key].value=$event.target.value}}}):_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchServerData[key].value),expression:"searchServerData[key].value"}],staticClass:"search-item",on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.searchServerData[key].value=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},_vm._l((value.display),function(item,i){return _c('option',{domProps:{"value":item.label ? item.value : item}},[_vm._v(_vm._s(item.label ? item.label : item))])}))}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchData}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetData}},[_vm._v("重置")])],2),_vm._v(" "),_c('box',{attrs:{"title":"DNS服务器"}},[(_vm.can_add_server)?_c('btn',{staticStyle:{"margin-bottom":"10px"},on:{"click":_vm.addRecord}},[_vm._v("添加")]):_vm._e(),_vm._v(" "),(_vm.can_add_server)?_c('btn',{staticStyle:{"margin-bottom":"10px"},on:{"click":_vm.addBind}},[_vm._v("编辑BIND主配置文件")]):_vm._e(),_vm._v(" "),_c('grid',{staticStyle:{"margin-bottom":"10px"},attrs:{"head":_vm.gridColumn,"data":_vm.gridData,"colspan":6},on:{"callback:deleteRecord":_vm.deleteRecord,"callback:editRecord":_vm.editRecord}},[_vm._l((_vm.gridData),function(item,i){return _c('textarea',{attrs:{"slot":'cell:acl_'+i,"disabled":"disabled"},domProps:{"innerHTML":_vm._s(item.acl)},slot:'cell:acl_'+i})}),_vm._v(" "),_vm._l((_vm.gridData),function(item,i){return _c('div',{staticClass:"opt-column",attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_update),expression:"item.can_update"}],attrs:{"size":"small"},on:{"click":function($event){_vm.editRecord(item)}}},[_vm._v("编辑")]),_vm._v(" "),_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_delete),expression:"item.can_delete"}],attrs:{"type":"danger","size":"small"},on:{"click":function($event){_vm.deleteRecord(item)}}},[_vm._v("删除")])],1)})],2),_vm._v(" "),_c('vp-pager',{attrs:{"total":_vm.pager.total,"current":_vm.pager.current,"position":'right',"volumn":_vm.pager.volumn},on:{"to":_vm.pageTo}})],1),_vm._v(" "),_c('vp-dialog',{ref:"addDialog",attrs:{"title":_vm.titleName},on:{"dialog:save":_vm.saveRecord}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("主机名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.host),expression:"newServer.host"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.host)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.host=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("IP地址")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.ip),expression:"newServer.ip"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.ip)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.ip=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("环境")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.env),expression:"newServer.env"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_env","group":"dnsServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.env=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"dev"}},[_vm._v("dev")]),_vm._v(" "),_c('option',{attrs:{"value":"anhouse"}},[_vm._v("anhouse")]),_vm._v(" "),_c('option',{attrs:{"value":"ga"}},[_vm._v("ga")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("DNS类型")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.dns_server_type),expression:"newServer.dns_server_type"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_type","group":"dnsServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.dns_server_type=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"master"}},[_vm._v("master")]),_vm._v(" "),_c('option',{attrs:{"value":"salve"}},[_vm._v("salve")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("进程Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_process_itemid),expression:"newServer.zb_process_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_process_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_process_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("端口Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_port_itemid),expression:"newServer.zb_port_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_port_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_port_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("解析Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_itemid),expression:"newServer.zb_resolve_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_resolve_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"50%","float":"left"}},[_c('label',[_vm._v("解析量Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_rate_itemid),expression:"newServer.zb_resolve_rate_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_resolve_rate_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_rate_itemid=$event.target.value}}})])])]),_vm._v(" "),_c('vp-dialog',{ref:"bindDialog",attrs:{"title":'BIND主配置文件'},on:{"dialog:save":_vm.saveRecord}},[_c('div',{staticClass:"form-group"},[_c('lta',{ref:"lineTextArea",attrs:{"rows":5}},[_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.bindFileData),expression:"bindFileData"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"domain-setting-area",attrs:{"rows":"5","group":"bf"},domProps:{"value":(_vm.bindFileData)},on:{"scroll":_vm.linkage,"input":[function($event){if($event.target.composing){ return; }_vm.bindFileData=$event.target.value},_vm.changeText]}})])],1)])],1)}
+var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"page-wrap"},[_c('div',{staticClass:"grid-search-form"},[_vm._l((_vm.searchServerData),function(value,key,index){return (value['type']=='text')?_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchServerData[key].value),expression:"searchServerData[key].value"}],staticClass:"search-item",attrs:{"type":"text","placeholder":value.name,"test":value['type']},domProps:{"value":(_vm.searchServerData[key].value)},on:{"input":function($event){if($event.target.composing){ return; }_vm.searchServerData[key].value=$event.target.value}}}):_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.searchServerData[key].value),expression:"searchServerData[key].value"}],staticClass:"search-item",on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.searchServerData[key].value=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},_vm._l((value.display),function(item,i){return _c('option',{domProps:{"value":item.label ? item.value : item}},[_vm._v(_vm._s(item.label ? item.label : item))])}))}),_vm._v(" "),_c('btn',{on:{"click":_vm.searchData}},[_vm._v("搜索")]),_vm._v(" "),_c('btn',{on:{"click":_vm.resetData}},[_vm._v("重置")])],2),_vm._v(" "),_c('box',{attrs:{"title":"DNS服务器"}},[(_vm.can_add_server)?_c('btn',{staticStyle:{"margin-bottom":"10px"},on:{"click":_vm.addRecord}},[_vm._v("添加")]):_vm._e(),_vm._v(" "),(_vm.can_add_server)?_c('btn',{staticStyle:{"margin-bottom":"10px"},on:{"click":_vm.addBind}},[_vm._v("编辑BIND主配置文件")]):_vm._e(),_vm._v(" "),_c('grid',{staticStyle:{"margin-bottom":"10px"},attrs:{"head":_vm.gridColumn,"data":_vm.gridData,"colspan":6},on:{"callback:deleteRecord":_vm.deleteRecord,"callback:editRecord":_vm.editRecord}},[_vm._l((_vm.gridData),function(item,i){return _c('textarea',{attrs:{"slot":'cell:acl_'+i,"disabled":"disabled"},domProps:{"innerHTML":_vm._s(item.acl)},slot:'cell:acl_'+i})}),_vm._v(" "),_vm._l((_vm.gridData),function(item,i){return _c('div',{staticClass:"opt-column",attrs:{"slot":'cell:option_'+i},slot:'cell:option_'+i},[_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_update),expression:"item.can_update"}],attrs:{"size":"small"},on:{"click":function($event){_vm.editRecord(item)}}},[_vm._v("编辑")]),_vm._v(" "),_c('btn',{directives:[{name:"show",rawName:"v-show",value:(item.can_delete),expression:"item.can_delete"}],attrs:{"type":"danger","size":"small"},on:{"click":function($event){_vm.deleteRecord(item)}}},[_vm._v("删除")])],1)})],2),_vm._v(" "),_c('vp-pager',{attrs:{"total":_vm.pager.total,"current":_vm.pager.current,"position":'right',"volumn":_vm.pager.volumn},on:{"to":_vm.pageTo}})],1),_vm._v(" "),_c('vp-dialog',{ref:"addDialog",attrs:{"title":_vm.titleName},on:{"dialog:save":_vm.saveRecord}},[_c('div',{staticClass:"modal-body clearfix"},[_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("主机名")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.host),expression:"newServer.host"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.host)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.host=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left"}},[_c('label',[_vm._v("IP地址")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.ip),expression:"newServer.ip"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.ip)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.ip=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("环境")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.env),expression:"newServer.env"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_env","group":"dnsServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.env=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"dev"}},[_vm._v("dev")]),_vm._v(" "),_c('option',{attrs:{"value":"anhouse"}},[_vm._v("anhouse")]),_vm._v(" "),_c('option',{attrs:{"value":"ga"}},[_vm._v("ga")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left"}},[_c('label',[_vm._v("DNS类型")]),_vm._v(" "),_c('select',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.dns_server_type),expression:"newServer.dns_server_type"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"id":"s_type","group":"dnsServer"},on:{"change":function($event){var $$selectedVal = Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val}); _vm.newServer.dns_server_type=$event.target.multiple ? $$selectedVal : $$selectedVal[0]}}},[_c('option',{attrs:{"value":"master"}},[_vm._v("master")]),_vm._v(" "),_c('option',{attrs:{"value":"salve"}},[_vm._v("salve")])])]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("进程Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_process_itemid),expression:"newServer.zb_process_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_process_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_process_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left"}},[_c('label',[_vm._v("端口Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_port_itemid),expression:"newServer.zb_port_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_port_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_port_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left","margin-right":"10px"}},[_c('label',[_vm._v("解析Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_itemid),expression:"newServer.zb_resolve_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_resolve_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_itemid=$event.target.value}}})]),_vm._v(" "),_c('div',{staticClass:"form-group",staticStyle:{"width":"48%","float":"left"}},[_c('label',[_vm._v("解析量Itemid")]),_vm._v(" "),_c('input',{directives:[{name:"model",rawName:"v-model",value:(_vm.newServer.zb_resolve_rate_itemid),expression:"newServer.zb_resolve_rate_itemid"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"form-control",attrs:{"type":"text","group":"dnsServer"},domProps:{"value":(_vm.newServer.zb_resolve_rate_itemid)},on:{"input":function($event){if($event.target.composing){ return; }_vm.newServer.zb_resolve_rate_itemid=$event.target.value}}})])])]),_vm._v(" "),_c('vp-dialog',{ref:"bindDialog",attrs:{"title":'BIND主配置文件'},on:{"dialog:save":_vm.saveRecord}},[_c('div',{staticClass:"form-group"},[_c('lta',{ref:"lineTextArea",staticStyle:{"height":"300px"},attrs:{"rows":5}},[_c('textarea',{directives:[{name:"model",rawName:"v-model",value:(_vm.bindFileData),expression:"bindFileData"},{name:"valid",rawName:"v-valid",value:({required:true}),expression:"{required:true}"}],staticClass:"domain-setting-area",attrs:{"rows":"5","group":"bf"},domProps:{"value":(_vm.bindFileData)},on:{"scroll":_vm.linkage,"input":[function($event){if($event.target.composing){ return; }_vm.bindFileData=$event.target.value},_vm.changeText]}})])],1)])],1)}
 var staticRenderFns = []
 var esExports = { render: render, staticRenderFns: staticRenderFns }
 /* harmony default export */ __webpack_exports__["a"] = (esExports);
@@ -16307,4 +16282,4 @@ var Datagrid = {
 /***/ })
 
 },["NHnr"]);
-//# sourceMappingURL=app.34b213732778832e9fe0.js.map
+//# sourceMappingURL=app.05891552cfe58efd3e51.js.map
