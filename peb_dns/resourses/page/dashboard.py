@@ -32,10 +32,10 @@ class DNSServerResolveRate(Resource):
 
     def get(self):
         args = request.args
-        start_time = datetime.strptime(args['start_time'], "%Y-%m-%d-%H-%M") 
+        start_time = datetime.strptime(args['start_time'], "%Y-%m-%d %H:%M:%S") 
         end_time = datetime.now()
         if args.get('end_time'):
-            end_time = datetime.strptime(args['end_time'], "%Y-%m-%d-%H-%M")
+            end_time = datetime.strptime(args['end_time'], "%Y-%m-%d %H:%M:%S")
         dns_servers = DBDNSServer.query.all()
         resolve_rates = {}
         try:
