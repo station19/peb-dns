@@ -24,9 +24,9 @@ class AuthLDAP(Resource):
         username, password = args['username'], args['password']
         if self._auth_via_ldap(username, password):
             user = DBUser.query.filter_by(username=username).first()
-            if user.actived == 0:
-                return get_response(RequestCode.LOGIN_FAILED,  '对不起，您已经被管理员禁止登陆！')
             if user is not None :
+                if user.actived == 0:
+                    return get_response(RequestCode.LOGIN_FAILED,  '对不起，您已经被管理员禁止登陆！')
                 token = jwt.encode({
                     'user' : user.username, 
                     'exp' : datetime.datetime.now() + datetime.timedelta(hours=24)
