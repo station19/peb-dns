@@ -46,10 +46,21 @@ class DNSViewList(Resource):
         zone_id = args.get('zone_id', type=int)
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
-
         id = args.get('id', type=int)
         name = args.get('name', type=str)
-        view_query = DBView.query
+        view_query = DBView.query \
+            .join(DBPrivilege, and_(
+                DBView.id == DBPrivilege.resource_id, 
+                DBPrivilege.resource_type == ResourceType.VIEW, 
+                DBPrivilege.operation == Operation.ACCESS
+                )) \
+            .join(DBRolePrivilege, and_(
+                DBPrivilege.id == DBRolePrivilege.privilege_id
+                )) \
+            .join(DBRole, and_(DBRole.id == DBRolePrivilege.role_id)) \
+            .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
+            .join(DBUser, and_(DBUser.id == DBUserRole.user_id)) \
+            .filter(DBUser.id == g.current_user.id)
         if id is not None:
             view_query = view_query.filter_by(id=id)
         if name is not None:
@@ -57,7 +68,6 @@ class DNSViewList(Resource):
         if zone_id is not None:
             current_zone = DBZone.query.get(zone_id)
             if current_zone.zone_group == 0:
-                print(DNSPod.getDNSPodLines(current_zone.name))
                 return DNSPod.getDNSPodLines(current_zone.name)
             view_query = view_query.join(
                 DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
