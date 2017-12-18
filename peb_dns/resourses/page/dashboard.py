@@ -42,6 +42,8 @@ class DNSServerResolveRate(Resource):
             for dns_server in dns_servers:
                 resolve_rate = dns_server.get_resolve_rate(start_time, end_time)
                 resolve_rates[dns_server.host] = resolve_rate
+        except IndexError as ie:
+            return get_response(RequestCode.OTHER_FAILED,  '获取数据失败！Zabbix上没有足够的记录！')
         except Exception as e:
             return get_response(RequestCode.OTHER_FAILED,  '获取数据失败！\n{e}'.format(e=str(e)))
         return get_response(RequestCode.SUCCESS, '获取成功！', resolve_rates)
