@@ -76,6 +76,12 @@ def configure_data(app):
     app.config['ZABBIX_POST_DATA'] = ZABBIX_POST_DATA
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 
+    ETCD_SERVER_HOST = env.get('ETCD_SERVER_HOST')
+    ETCD_SERVER_PORT = env.get('ETCD_SERVER_PORT')
+    if ETCD_SERVER_HOST:
+        app.config['ETCD_SERVER_HOST'] = ETCD_SERVER_HOST
+    if ETCD_SERVER_PORT:
+        app.config['ETCD_SERVER_PORT'] = ETCD_SERVER_PORT
 
 def create_app(config_name='default'):
     app = Flask(APP_NAME)
