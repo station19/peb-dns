@@ -49,12 +49,41 @@ def configure_hooks(app):
 def configure_crossdomain(app):
     CORS(app, supports_credentials=True)
 
+def configure_data(app):
+    env = os.environ
+    app_config = app.config
+    ZABBIX_POST_DATA = {
+        "jsonrpc": "2.0",
+        "method": "history.get",
+        "params": {
+            "output": "extend",
+            "history": 3,
+            "itemids": "",
+            "sortfield": "clock",
+            "sortorder": "DESC",
+            "limit": 1
+        },
+        "auth": "",
+        "id": 1
+    }
+    SQLALCHEMY_DATABASE_URI = \
+    "mysql+mysqlconnector://{db_username}:{db_passwd}@{db_host}/{db_name}?charset=utf8".format(
+        db_username = env.get('DB_USERNAME', app_config.get('DB_USERNAME')),
+        db_passwd = env.get('DB_PASSWORD', app_config.get('DB_PASSWORD')),
+        db_host = env.get('DB_HOST', app_config.get('DB_HOST')),
+        db_name = env.get('DB_NAME', app_config.get('DB_NAME')),
+    )
+    app.config['ZABBIX_POST_DATA'] = ZABBIX_POST_DATA
+    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+
+
 def create_app(config_name='default'):
     app = Flask(APP_NAME)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     app.config.from_pyfile(config_pyfiles[config_name])
     app.config.from_pyfile('config/dns_templates.tpl')
+    configure_data(app)
     configure_extensions(app)
     configure_blueprints(app, [auth_bp, dns_bp, admin, page_bp])
     configure_error_handlers(app)
