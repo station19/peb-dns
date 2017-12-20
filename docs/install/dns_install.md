@@ -1,11 +1,12 @@
-# 环境搭建
+# 部署
+## 一，本地部署
 
 * 本教程基于Ubuntu/Debian，已安装python3 环境的请跳过
 
 * 克隆项目代码到本地
 ```bash
 # 将本仓库clone到本地
-git clone xxx@xxx:haofang/peb-dns.git
+git clone git@github.com:pahf-ops/peb-dns.git
 ```
 
 * 工具安装
@@ -53,10 +54,11 @@ mysql> ^DBye
 ```
 
 2，修改配置文件 
+```bash
 首先进入当前项目根目录， 然后进入 config 子目录，配置文件路径如下：
 peb-dns/config/prod.cfg
 里面所有字段都有详细说明，请严格按照按照说明一一配好。
-
+```
 
 3，配置应用环境变量
 ```bash
@@ -73,8 +75,6 @@ flask db upgrade
 flask initdb
 ```
 
-
-
 #### 简单快速部署方式
 
 进入当前项目根目录下，运行以下命令部署
@@ -83,6 +83,34 @@ nohup gunicorn -w 4 app:app -b 0.0.0.0:8080 --log-level=debug &
 ```
 PS: 上面 -w 为 开启workers数，公式：（系统内核数*2 + 1)
     8080 为端口号
+
+
+## 二，docker部署
+
+* 本教程基于已经安装docker和docker-compose的用户，两者安装请参考官方文档。
+
+* 克隆项目代码到本地
+```bash
+# 将本仓库clone到本地
+git clone git@github.com:pahf-ops/peb-dns.git
+```
+
+* 部署
+```bash
+# 1, 切换目录至 peb-dns 文件夹 平级目录，然后执行：
+cp peb-dns/docker_file/docker-compose.yml .
+cp peb-dns/docker_file/Dockerfile .
+
+# 2，初始化操作
+docker-compose down
+rm -rf .data
+rm -rf peb-dns/migrations/
+
+# 3，部署项目
+docker-compose up
+
+```
+
 
 
 
