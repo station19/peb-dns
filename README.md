@@ -66,4 +66,4 @@ PEB-DNS 管理平台
 
 #### 4. 安装部署
 
-* 可查看[环境搭建文档](docs/install/dns_install.md)
+* 可查看 [项目部署文档](docs/install/dns_install.md)
