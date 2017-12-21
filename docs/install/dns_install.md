@@ -110,6 +110,7 @@ cp peb-dns/docker_file/Dockerfile .
 docker-compose down
 rm -rf .data
 rm -rf peb-dns/migrations/
+chmod 755 peb-dns/docker_start.sh
 
 # 4，部署项目
 docker-compose up
