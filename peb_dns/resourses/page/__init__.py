@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint
 from flask_restful import Api
 
-page_bp = Blueprint('page', __name__, url_prefix='/page')
+page_bp = Blueprint('page', __name__, url_prefix='/api/page')
 
 page_api = Api(page_bp)
 

@@ -99,8 +99,10 @@ git clone git@github.com:pahf-ops/peb-dns.git
 ```bash
 # 1，修改项目配置文件
 配置文件路径如下：
-peb-dns/config/peb_dns.cfg
-自带所有字段都有详细说明，请严格按照按照说明一一配好。
+peb-dns/config/peb_dns.cfg.sample
+先将将配置文件重命名:
+mv peb-dns/config/peb_dns.cfg.sample peb-dns/config/peb_dns.cfg
+所有字段都有详细说明，请严格按照按照说明一一配好。
 
 # 2, 切换目录至 peb-dns 文件夹 平级目录，然后执行：
 cp peb-dns/docker_file/docker-compose.yml .
