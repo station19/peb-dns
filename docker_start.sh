@@ -1,5 +1,7 @@
 #!/bin/sh
 
+######################  此脚本docker部署自动调用，请勿手动运行！  ########################
+
 export FLASK_APP=${PWD}/app.py
 export FLASK_DEBUG=0
 PEB_PORT=$1
