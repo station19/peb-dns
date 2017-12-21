@@ -5,12 +5,10 @@ LDAP_CONFIG = ',ou=users,dc=ipo,dc=com'		# LDAP 认证配置
 
 
 # 设置默认用户账号，密码，邮箱。
-# 默认管理员用户，应用启动后可直接用管理员用户登录,
-##############  如用Docker方式部署，此处可忽略  ################
+# 默认peb-dns系统管理员用户，应用启动后可直接用管理员用户登录,
 DEFAULT_ADMIN_USERNAME = 'admin'   
 DEFAULT_ADMIN_PASSWD = 'admin123'
 DEFAULT_ADMIN_EMAIL = 'xxxx@gmail.com'
-########################################################
 
 
 # 数据库配置
