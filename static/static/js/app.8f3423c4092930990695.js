@@ -2367,7 +2367,7 @@ var d = new Date(),
 
 
 var instance = __WEBPACK_IMPORTED_MODULE_2_axios___default.a.create({
-    baseURL: '//hfdns-test.ipo.com/',
+    baseURL: '/api/',
     timeout: 10000,
     withCredentials: true
 });
