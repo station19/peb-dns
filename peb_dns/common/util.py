@@ -26,7 +26,7 @@ ZONE_GROUP_MAPPING = {
 def getETCDclient():
     client = etcd.Client(
         host=current_app.config.get('ETCD_SERVER_HOST'), 
-        port=current_app.config.get('ETCD_SERVER_PORT')
+        port=int(current_app.config.get('ETCD_SERVER_PORT'))
         )
     try:
         client.read(current_app.config.get('BIND_CONF'))
