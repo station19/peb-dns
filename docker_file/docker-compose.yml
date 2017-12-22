@@ -12,6 +12,7 @@ services:
       MYSQL_DATABASE: peb_dns_db
       MYSQL_USER: peb_admin
       MYSQL_PASSWORD: passwd123
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
 
   etcd:
     image: appcelerator/etcd
