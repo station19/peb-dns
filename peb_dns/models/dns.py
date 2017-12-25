@@ -340,11 +340,11 @@ class DBRecord(db.Model):
     def zone(self):
         return DBZone.query.get(self.zone_id)
 
-    def create(self, current_zone, args):
+    def create(self, current_zone, args, v_name):
         if current_zone.zone_group in [1, 2]:
             record_list = db.session.query(DBRecord).filter(
                 DBRecord.zone_id == args['zone_id'], 
-                DBRecord.view_name == args['view_name'], DBRecord.host != '@'
+                DBRecord.view_name == v_name, DBRecord.host != '@'
                 ).all()
             self._make_record(current_zone.name, record_list)
         else:

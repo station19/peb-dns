@@ -144,8 +144,8 @@ class DNSRecordList(Resource):
         if unique_record:
             return get_response(RequestCode.OTHER_FAILED,  '创建失败 !重复的记录！！同样的Zone，同样的主机，\
                     同样的View 的记录只能存在一个。')
+        # print(v_name_list)
         for v_name in v_name_list:
-
             new_record = DBRecord(
                 host=args['host'], 
                 record_type=args['record_type'],
@@ -166,7 +166,7 @@ class DNSRecordList(Resource):
                     target_detail=new_record.get_content_str())
             db.session.add(log)
             try:
-                new_record.create(current_zone, args)
+                new_record.create(current_zone, args, v_name)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
