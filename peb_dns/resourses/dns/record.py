@@ -171,7 +171,7 @@ class DNSRecordList(Resource):
             except Exception as e:
                 db.session.rollback()
                 return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
-            return get_response(RequestCode.SUCCESS, '创建成功！')
+        return get_response(RequestCode.SUCCESS, '创建成功！')
 
     def _add_privilege_for_record(self, current_zone, new_record):
         """Add privilege for the new record."""
