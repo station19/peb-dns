@@ -40,12 +40,12 @@ view "{{ view_name }}" {
  
 {% for zone in zone_list %}
     zone "{{ zone.name }}" IN {
-            {% if zone.z_type == 'forward only' %}
+            {% if zone.zone_type == 'forward only' %}
             type forward;
             forward only;
             forwarders { {{ zone.forwarders }} };
             {% else %}
-            type {{ zone.z_type }};
+            type {{ zone.zone_type }};
             file "zone/{{ view_name }}/zone.{{ zone.name }}";
             notify yes;
             {% endif %}
@@ -70,7 +70,7 @@ $ORIGIN {{ zone_name }}.
  
 @    86400    IN    NS    master.{{ zone_name }}.
 {% for record in record_list -%}
-{{ record.host }}    {{ record.TTL }}    IN    {{ record.record_type }}    {{ record.value }}
+{{ record.host }}    {{ record.ttl }}    IN    {{ record.record_type }}    {{ record.value }}
 {% endfor %}
 '''
 
