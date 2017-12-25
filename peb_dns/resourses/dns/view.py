@@ -234,7 +234,7 @@ class DNSView(Resource):
         db.session.add(log)
         db.session.delete(view)
         view_list = db.session.query(DBView).all()
-        view.make_view('delete', view_list)
+        view.make_view('del', view_list)
 
     def _remove_view_privileges(self, current_view):
         """Remove all the privileges from the indicated view."""
