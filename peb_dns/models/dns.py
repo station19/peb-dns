@@ -77,8 +77,9 @@ class DBView(db.Model):
         if action == 'del':
             view_base_dir = current_app.config.get('ETCD_BASE_DIR') + self.name
             etcd_client.delete(view_base_dir, recursive=True)
+            print(view_base_dir)
             time.sleep(0.2)
-            return
+            # return
         if action == 'create':
             view_zone_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/view.conf'
             view_zone_conf_content = Template(
@@ -86,21 +87,21 @@ class DBView(db.Model):
             etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=prevExist)
             time.sleep(0.2)   #连续几个提交速度过快，etcd server检测不到提交
 
+        if action == 'create' or action == 'del':
             view_define_conf_content = Template(
                 current_app.config.get('VIEW_DEFINE_TEMPLATE')).render(view_list=view_list)
-            # print(current_app.config.get('VIEW_DEFINE_CONF'))
-            # print(view_define_conf_content)
             etcd_client.write(
                 current_app.config.get('VIEW_DEFINE_CONF'), 
                 view_define_conf_content, 
                 prevExist=True)
             time.sleep(0.2)
 
-        acl_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/acl.conf'
-        acl_conf_content = Template(current_app.config.get('ACL_TEMPLATE')).render(
-            view_name=self.name, ip_list=self.acl.split())
-        etcd_client.write(acl_conf, acl_conf_content, prevExist=prevExist)
-        time.sleep(0.2)
+        if action == 'create' or action == 'modify':
+            acl_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/acl.conf'
+            acl_conf_content = Template(current_app.config.get('ACL_TEMPLATE')).render(
+                view_name=self.name, ip_list=self.acl.split())
+            etcd_client.write(acl_conf, acl_conf_content, prevExist=prevExist)
+            time.sleep(0.2)
 
 
 class DBViewZone(db.Model):
@@ -154,13 +155,15 @@ class DBZone(db.Model):
 
     @property
     def views(self):
-        related_views = db.session.query(DBView).join(
-            DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
-            .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
+        # print(self.id)
+        related_views = DBView.query\
+            .join(DBViewZone, and_(DBViewZone.view_id == DBView.id))\
+            .join(DBZone, and_(DBZone.id == DBViewZone.zone_id))\
             .filter(DBZone.id == self.id).all()
-        if not related_views:
-            return []
-        return related_views
+        # print('xxxxxxxxxxxx -- ' + str(db.session.query(DBView).all()))
+        if related_views:
+            return related_views
+        return []
 
     @property
     def view_name_list(self):
@@ -244,7 +247,10 @@ class DBZone(db.Model):
 
     def _del_inner(self):
         zone_list = db.session.query(DBZone).filter(
-            or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
+            or_(DBZone.zone_group == 1, DBZone.zone_group == 2)
+            ).all()
+        # print("zone_list  --  " + str(zone_list))
+        # print("self.view_name_list  --  " + str(self.view_name_list))
         for z_view in self.view_name_list:
             self._make_zone('del', z_view, zone_list, [])
 
@@ -264,21 +270,22 @@ class DBZone(db.Model):
     def _make_zone(self, action, view_name, zone_list, record_list):
         etcd_client = getETCDclient()
         view_zone_conf = current_app.config.get('ETCD_BASE_DIR') + view_name + '/view.conf'
+        bind_zones = []
         if action == 'del':
-            bind_zones = []
             for zz in zone_list:
-                if view_name in self.view_name_list and zz.name != self.name :
+                if view_name in zz.view_name_list and zz.name != self.name :
                     bind_zones.append(zz)
-            view_zone_conf_content = Template(
-                current_app.config.get('ZONE_TEMPLATE')).render(
-                view_name=view_name, zone_list=bind_zones)
         else:
-            bind_zones = []
             for zz in zone_list:
-                if view_name in self.view_name_list:
+                if view_name in zz.view_name_list:
                     bind_zones.append(zz)
-            view_zone_conf_content = Template(current_app.config.get('ZONE_TEMPLATE')).render(
-                view_name=view_name, zone_list=bind_zones)
+        # print(view_name)
+        # print(bind_zones)
+        view_zone_conf_content = Template(
+            current_app.config.get('ZONE_TEMPLATE')
+            ).render(
+            view_name=view_name, zone_list=bind_zones
+            )
         etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=True)
         time.sleep(0.2)
         # view_zone_confiig 文件操作
@@ -301,7 +308,8 @@ class DBZone(db.Model):
                     etcd_client.write(
                         zone_record_conf, zone_record_conf_content, prevExist=False)
                 time.sleep(0.2)
-            if action == 'del':
+            elif action == 'del':
+                # print(zone_record_conf)
                 etcd_client.delete(zone_record_conf)
                 time.sleep(0.2)
 

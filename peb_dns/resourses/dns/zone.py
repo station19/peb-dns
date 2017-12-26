@@ -274,11 +274,11 @@ class DNSZone(Resource):
                     target_detail=current_zone.get_content_str(prefix="修改前：")
                     )
         db.session.add(log)
-
+        current_zone.delete()
         DBViewZone.query.filter(DBViewZone.zone_id==current_zone.id).delete()
         DBRecord.query.filter(DBRecord.zone_id == current_zone.id).delete()
         db.session.delete(current_zone)
-        current_zone.delete()
+        
 
 
     def _remove_zone_privileges(self, current_zone):
