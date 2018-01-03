@@ -151,23 +151,26 @@ var instance = __WEBPACK_IMPORTED_MODULE_2_axios___default.a.create({
 首先安装 nginx
 sudo apt-get install nginx
 
-然后添加/etc/nginx/conf.d/peb_dns.conf配置文件
+然后添加
+/etc/nginx/conf.d/peb_dns.conf
+配置文件
+
 内容如下：
   
 server {
-    listen 8080  default;
+    listen 80  default;
     server_name _;
     location / {
         index /index.html;
-        root /home/ubuntu/peb-dns/static;
+        root /home/ubuntu/peb-dns/static;  //peb-dns项目下static文件夹的绝对路径
     }
     location /static {
         index index.html;
-        root /home/ubuntu/peb-dns/static;
+        root /home/ubuntu/peb-dns/static;  //peb-dns项目下static文件夹的绝对路径
     }
  
     location /api {
-        proxy_pass http://127.0.0.1:5000;
+        proxy_pass http://<后端URL>;   //这里配置为 后端项目部署成功之后的访问地址
     }
 }
 
