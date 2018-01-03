@@ -77,14 +77,14 @@ class DBView(db.Model):
             view_base_dir = current_app.config.get('ETCD_BASE_DIR') + self.name
             etcd_client.delete(view_base_dir, recursive=True)
             print(view_base_dir)
-            time.sleep(0.2)
+            time.sleep(0.5)
             # return
         if action == 'create':
             view_zone_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/view.conf'
             view_zone_conf_content = Template(
                         current_app.config.get('VIEW_TEMPLATE')).render(view_name=self.name)
             etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=prevExist)
-            time.sleep(0.2)   #连续几个提交速度过快，etcd server检测不到提交
+            time.sleep(0.5)   #连续几个提交速度过快，etcd server检测不到提交
 
         if action == 'create' or action == 'del':
             view_define_conf_content = Template(
@@ -93,14 +93,14 @@ class DBView(db.Model):
                 current_app.config.get('VIEW_DEFINE_CONF'), 
                 view_define_conf_content, 
                 prevExist=True)
-            time.sleep(0.2)
+            time.sleep(0.5)
 
         if action == 'create' or action == 'modify':
             acl_conf = current_app.config.get('ETCD_BASE_DIR') + self.name + '/acl.conf'
             acl_conf_content = Template(current_app.config.get('ACL_TEMPLATE')).render(
                 view_name=self.name, ip_list=self.acl.split())
             etcd_client.write(acl_conf, acl_conf_content, prevExist=prevExist)
-            time.sleep(0.2)
+            time.sleep(0.5)
 
 
 class DBViewZone(db.Model):
@@ -196,7 +196,7 @@ class DBZone(db.Model):
             or_(DBZone.zone_group == 1, DBZone.zone_group == 2)).all()
         for z_view in self.view_name_list:
             self._make_zone('create', z_view, zone_list, [])
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def _create_outter(self):
         create_url = current_app.config.get('DNSPOD_DOMAIN_BASE_URL') + 'Create'
@@ -286,7 +286,7 @@ class DBZone(db.Model):
             view_name=view_name, zone_list=bind_zones
             )
         etcd_client.write(view_zone_conf, view_zone_conf_content, prevExist=True)
-        time.sleep(0.2)
+        time.sleep(0.5)
         # view_zone_confiig 文件操作
         # forward only类型的zone，不生成 zone.xx.xx 文件
         # 修改zone不需要更改zone.xx.xx 文件
@@ -306,11 +306,11 @@ class DBZone(db.Model):
                         zone_name=self.name, record_list=[])
                     etcd_client.write(
                         zone_record_conf, zone_record_conf_content, prevExist=False)
-                time.sleep(0.2)
+                time.sleep(0.5)
             elif action == 'del':
                 # print(zone_record_conf)
                 etcd_client.delete(zone_record_conf)
-                time.sleep(0.2)
+                time.sleep(0.5)
 
 
 class DBRecord(db.Model):
@@ -414,7 +414,7 @@ class DBRecord(db.Model):
                 )
         etcd_client.write(
             zone_record_conf, zone_record_conf_content, prevExist=True)
-        time.sleep(0.2)
+        time.sleep(0.5)
 
     def _do_dnspod(self, url, data):
         body_info = {

@@ -18,7 +18,7 @@ PEB-DNS 管理平台
 
 #### 1. 平台管理方式：
 
-公司使用 BIND 搭建 DNS 服务器。
+公司使用 BIND 作为 DNS 服务器。
 
 平台使用 ETCD 来管理 DNS 服务器的 BIND 配置文件，包括 VIEW，ZONE，RECORD 的各个配置文件。
 
