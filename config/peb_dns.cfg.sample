@@ -38,6 +38,73 @@ ETCD_BASE_DIR = '/opscmdb/dns/etc/named/'   # 配置文件根目录
 ZONE_BASE_DIR = '/opscmdb/dns/var/named/zone/'			 # zone 文件跟目录
 BIND_CONF = '/opscmdb/dns/etc/named.conf'				 # ETCD上保存 BIND 主配置文件
 VIEW_DEFINE_CONF = ETCD_BASE_DIR + 'view_define.conf'    # ETCD上保存 VIEW 声明配置文件目录
+# BIND 主配置文件默认配置内容
+DEFAULT_BIND_CONF_CONTENT = '''// Global config                                                                                                                                                                             
+                                                                                                                                                                                             
+options {                                                                                                                                                                                    
+        #listen-on port 53 { 127.0.0.1; };                                                                                                                                                   
+        #listen-on-v6 port 53 { ::1; };                                                                                                                                                      
+        directory       "/var/named/";                                                                                                                                                       
+        dump-file       "/var/named/data/cache_dump.db";
+        statistics-file "/var/named/data/named_stats.txt";                                                                                            
+        memstatistics-file "/var/named/data/named_mem_stats.txt";
+        allow-query { any; };
+        allow-query-cache { any; };
+        allow-transfer  { };
+        also-notify     { };
+
+        #shanghai dns 
+        forwarders { 202.96.199.133; 202.106.0.20; 202.96.209.5; 202.96.209.133; };
+        allow-recursion { any; };
+        recursion yes;
+
+        dnssec-enable yes;
+        dnssec-validation no;
+        dnssec-lookaside auto;
+
+        /* Path to ISC DLV key */
+        bindkeys-file "/etc/named.iscdlv.key";
+
+        managed-keys-directory "/var/named/dynamic";
+};
+
+// 日志定义
+logging {
+    channel custom_log {
+        file "data/named.log" versions 5 size 100m;
+        print-time yes;
+        severity dynamic;
+    };
+
+    channel query_log {
+        file "data/query.log" versions 5 size 100m;
+        print-time yes;
+        severity info;
+    };
+
+    channel general_log {
+        file "data/general.log" versions 5 size 100m;
+        print-time yes;
+        severity info;
+    };
+
+    category queries { query_log; };
+    category default { custom_log; };
+    category client  { custom_log; };
+    category xfer-in { custom_log; };
+    category general { general_log; };
+};
+
+
+//view define
+include "/etc/named/view_define.conf";
+
+//
+'''      
+
+
+# 服务器创建表单，<环境> 选择框的选项
+SERVER_ENVS = ['qa', 'smoke', 'prod']
 
 
 # DNSPOD 配置文件，只需配置TOKEN，未说明的变量，保持默认值即可

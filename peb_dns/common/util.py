@@ -28,15 +28,6 @@ def getETCDclient():
         host=current_app.config.get('ETCD_SERVER_HOST'), 
         port=int(current_app.config.get('ETCD_SERVER_PORT'))
         )
-    try:
-        client.read(current_app.config.get('BIND_CONF'))
-    except etcd.EtcdKeyNotFound:
-        client.write(current_app.config.get('BIND_CONF'), '', prevExist=False)
-    try:
-        client.read(current_app.config.get('VIEW_DEFINE_CONF'))
-    except etcd.EtcdKeyNotFound:
-        client.write(current_app.config.get('VIEW_DEFINE_CONF'), 
-                    '', prevExist=False)
     return client
 
 

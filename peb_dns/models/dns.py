@@ -29,8 +29,8 @@ class DBView(db.Model):
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 
-    def __init__(self, **kwargs):
-        super(DBView, self).__init__(**kwargs)
+    # def __init__(self, **kwargs):
+    #     super(DBView, self).__init__(**kwargs)
 
     def __repr__(self):
         return '<DBView %r>' % self.name
@@ -48,7 +48,6 @@ class DBView(db.Model):
     @property
     def zone_name_list(self):
         return [v.name for v in self.zones]
-
 
     def get_content_str(self, prefix=None):
         content = 'id: ' + str(self.id) + '\n' \

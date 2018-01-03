@@ -298,7 +298,6 @@ class DNSBindConf(Resource):
         except Exception as e:
             return get_response(RequestCode.OTHER_FAILED,  '获取数据失败！')
         
-
     def post(self):
         try:
             req = self.post_reqparse.parse_args()
@@ -313,3 +312,9 @@ class DNSBindConf(Resource):
         except Exception as e:
             return get_response(RequestCode.OTHER_FAILED,  '提交数据失败 ！')
 
+
+class DNSServerEnvs(Resource):
+    method_decorators = [token_required] 
+
+    def get(self):
+        return current_app.config['SERVER_ENVS']

@@ -7,10 +7,11 @@ dns_bp = Blueprint('dns', __name__, url_prefix='/api/dns')
 dns_api = Api(dns_bp)
 
 
-from .server import DNSServerList, DNSServer, DNSBindConf
+from .server import DNSServerList, DNSServer, DNSBindConf, DNSServerEnvs
 dns_api.add_resource(DNSServerList, '/servers')
 dns_api.add_resource(DNSServer, '/servers/<int:server_id>')
 dns_api.add_resource(DNSBindConf, '/bind_conf')
+dns_api.add_resource(DNSServerEnvs, '/server_envs')
 
 from .view import DNSViewList, DNSView
 dns_api.add_resource(DNSViewList, '/views')
