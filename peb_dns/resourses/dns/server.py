@@ -294,7 +294,7 @@ class DNSBindConf(Resource):
             etcd_client = getETCDclient()
             bind_conf_content = etcd_client.read(
                 current_app.config.get('BIND_CONF')).value
-            return get_response(RequestCode.SUCCESS, '修改成功！', dict(bind_conf=bind_conf_content))
+            return get_response(RequestCode.SUCCESS, '获取成功！', dict(bind_conf=bind_conf_content))
         except Exception as e:
             return get_response(RequestCode.OTHER_FAILED,  '获取数据失败！')
         

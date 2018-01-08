@@ -135,11 +135,13 @@ def init_view(app):
         print('initing the default views...')
         default_view = DBView(
             id=1,
-            name='default',
+            name='default_view',
             acl='0.0.0.0/0'
         )
         db.session.add(default_view)
         add_privilege_for_view(default_view)
+        view_list = db.session.query(DBView).all()
+        default_view.make_view('create', view_list)
 
 def init_bind_config(app):
     client = getETCDclient()
@@ -147,12 +149,14 @@ def init_bind_config(app):
     try:
         client.read(app.config.get('BIND_CONF'))
     except etcd.EtcdKeyNotFound:
-        client.write(app.config.get('BIND_CONF'), '', prevExist=False)
+        client.write(app.config.get('BIND_CONF'),
+                    app.config.get('DEFAULT_BIND_CONF_CONTENT'), 
+                    prevExist=False)
     try:
         client.read(app.config.get('VIEW_DEFINE_CONF'))
     except etcd.EtcdKeyNotFound:
         client.write(app.config.get('VIEW_DEFINE_CONF'), 
-                    app.config.get('DEFAULT_BIND_CONF_CONTENT'), 
+                    '', 
                     prevExist=False)
 
 @app.cli.command('initdb')
@@ -162,8 +166,8 @@ def initdb_command():
         init_user_role(app)
         init_privilege()
         db.session.flush()
-        init_view(app)
         init_bind_config(app)
+        init_view(app)
         db.session.commit()
     print('done.')
 
