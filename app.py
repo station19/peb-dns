@@ -1,6 +1,6 @@
 from peb_dns import create_app
 from peb_dns.extensions import mail, db
-from peb_dns.models.mappings import ROLE_MAPPINGS, DefaultPrivilege
+from peb_dns.models.mappings import Operation, ResourceType, OPERATION_STR_MAPPING, ROLE_MAPPINGS, DefaultPrivilege
 from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBLocalAuth, \
                             DBPrivilege, DBRolePrivilege
 from peb_dns.models.dns import DBView
@@ -83,6 +83,52 @@ def init_user_role(app):
             )
         db.session.add(admin_user_role)
 
+
+def add_privilege_for_view(new_view):
+    """Add privilege for the new view."""
+    access_privilege_name =  'VIEW#' + new_view.name + \
+                '#' + OPERATION_STR_MAPPING[Operation.ACCESS]
+    update_privilege_name =  'VIEW#' + new_view.name + \
+                '#' + OPERATION_STR_MAPPING[Operation.UPDATE]
+    delete_privilege_name =  'VIEW#' + new_view.name + \
+                '#' + OPERATION_STR_MAPPING[Operation.DELETE]
+    access_privilege = DBPrivilege(
+                        name=access_privilege_name, 
+                        resource_type=ResourceType.VIEW, 
+                        operation=Operation.ACCESS, 
+                        resource_id=new_view.id
+                        )
+    update_privilege = DBPrivilege(
+                        name=update_privilege_name, 
+                        resource_type=ResourceType.VIEW, 
+                        operation=Operation.UPDATE, 
+                        resource_id=new_view.id
+                        )
+    delete_privilege = DBPrivilege(
+                        name=delete_privilege_name, 
+                        resource_type=ResourceType.VIEW, 
+                        operation=Operation.DELETE, 
+                        resource_id=new_view.id
+                        )
+    db.session.add(access_privilege)
+    db.session.add(update_privilege)
+    db.session.add(delete_privilege)
+    db.session.flush()
+    for role in ['admin', 'view_admin', 'view_guest']:
+        role_access =  DBRolePrivilege(
+                            role_id=ROLE_MAPPINGS[role],
+                            privilege_id=access_privilege.id)
+        db.session.add(role_access)
+        if role not in ['view_guest']:
+            role_update =  DBRolePrivilege(
+                                role_id=ROLE_MAPPINGS[role],
+                                privilege_id=update_privilege.id)
+            role_delete =  DBRolePrivilege(
+                                role_id=ROLE_MAPPINGS[role],
+                                privilege_id=delete_privilege.id)
+            db.session.add(role_update)
+            db.session.add(role_delete)
+
 def init_view(app):
     view_count = db.session.query(DBView).count()
     if view_count < 1:
@@ -93,6 +139,7 @@ def init_view(app):
             acl='0.0.0.0/0'
         )
         db.session.add(default_view)
+        add_privilege_for_view(default_view)
 
 def init_bind_config(app):
     client = getETCDclient()
@@ -108,13 +155,13 @@ def init_bind_config(app):
                     app.config.get('DEFAULT_BIND_CONF_CONTENT'), 
                     prevExist=False)
 
-
 @app.cli.command('initdb')
 def initdb_command():
     """init the default data in database when you first time start the app."""
     with app.app_context(): 
         init_user_role(app)
         init_privilege()
+        db.session.flush()
         init_view(app)
         init_bind_config(app)
         db.session.commit()

@@ -85,7 +85,7 @@ character-set-server = utf8
 
 2，创建数据库
 ```bash
-# 进入当前项目根目录下
+# 创建数据库实例
 ❯ mysql -u root -p
 
 mysql> create database <your_db_name>;
@@ -185,7 +185,8 @@ sudo service nginx reload
 拷贝代码目录下脚本到服务器root目录下：
 etcd_client/hfdns_client_etcd_config.sh
 
-配置默认ETCD地址: ETCD_SERVER_NAME="http://1.1.1.1:2379/v2/keys/opscmdb"
+配置默认ETCD地址: 
+ETCD_SERVER_NAME="http://1.1.1.1:2379/v2/keys/opscmdb"
   
 如公司有多套环境，根据自身情况，配置每个环境对应的ETCD地址:
 #ETCD集群服务器
