@@ -1,35 +1,13 @@
--- MySQL dump 10.13  Distrib 5.6.30, for linux-glibc2.5 (x86_64)
---
--- Host: 10.59.87.3    Database: peb_dns_test_db2
--- ------------------------------------------------------
--- Server version	5.7.11-pingan-log
+/*
+Date: 2018-01-08 11:54:35
+*/
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
+SET FOREIGN_KEY_CHECKS=0;
 
---
--- GTID state at the beginning of the backup 
---
-
-SET @@GLOBAL.GTID_PURGED='b52b4c01-9b29-11e6-96b8-fa163edaed56:1-1936';
-
---
--- Table structure for table `account_local_auth`
---
-
+-- ----------------------------
+-- Table structure for `account_local_auth`
+-- ----------------------------
 DROP TABLE IF EXISTS `account_local_auth`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account_local_auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(64) DEFAULT NULL,
@@ -38,25 +16,16 @@ CREATE TABLE `account_local_auth` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_account_local_auth_username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `account_local_auth`
---
+-- ----------------------------
+-- Records of account_local_auth
+-- ----------------------------
+INSERT INTO `account_local_auth` VALUES ('1', 'admin', 'pbkdf2:sha256:50000$B8xHsDQ7$6c01906213113c1fc3e94e897f2128a407da5e9b41dd18bb9799f080230bd95e', 'xxxx@gmail.com');
 
-LOCK TABLES `account_local_auth` WRITE;
-/*!40000 ALTER TABLE `account_local_auth` DISABLE KEYS */;
-INSERT INTO `account_local_auth` VALUES (1,'admin','pbkdf2:sha256:50000$i2oNCJgA$e7363c2c738997e2e6c7e5a46bfb616b60e5a10f6e89062867d3e680926eb13f','xxxx@gmail.com');
-/*!40000 ALTER TABLE `account_local_auth` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `account_privilege`
---
-
+-- ----------------------------
+-- Table structure for `account_privilege`
+-- ----------------------------
 DROP TABLE IF EXISTS `account_privilege`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account_privilege` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) DEFAULT NULL,
@@ -66,51 +35,48 @@ CREATE TABLE `account_privilege` (
   `comment` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_account_privilege_resource_id` (`resource_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `account_privilege`
---
+-- ----------------------------
+-- Records of account_privilege
+-- ----------------------------
+INSERT INTO `account_privilege` VALUES ('1', 'SERVER_ADD', null, null, null, null);
+INSERT INTO `account_privilege` VALUES ('2', 'ZONE_ADD', null, null, null, null);
+INSERT INTO `account_privilege` VALUES ('3', 'VIEW_ADD', null, null, null, null);
+INSERT INTO `account_privilege` VALUES ('4', 'BIND_CONF_EDIT', null, null, null, null);
+INSERT INTO `account_privilege` VALUES ('5', 'VIEW#default_view#ACCESS', '0', '1', '1', null);
+INSERT INTO `account_privilege` VALUES ('6', 'VIEW#default_view#UPDATE', '1', '1', '1', null);
+INSERT INTO `account_privilege` VALUES ('7', 'VIEW#default_view#DELETE', '2', '1', '1', null);
+INSERT INTO `account_privilege` VALUES ('8', 'ZONE#z1.com#ACCESS', '0', '2', '1', null);
+INSERT INTO `account_privilege` VALUES ('9', 'ZONE#z1.com#UPDATE', '1', '2', '1', null);
+INSERT INTO `account_privilege` VALUES ('10', 'ZONE#z1.com#DELETE', '2', '2', '1', null);
 
-LOCK TABLES `account_privilege` WRITE;
-/*!40000 ALTER TABLE `account_privilege` DISABLE KEYS */;
-INSERT INTO `account_privilege` VALUES (1,'SERVER_ADD',NULL,NULL,NULL,NULL),(2,'ZONE_ADD',NULL,NULL,NULL,NULL),(3,'VIEW_ADD',NULL,NULL,NULL,NULL),(4,'BIND_CONF_EDIT',NULL,NULL,NULL,NULL);
-/*!40000 ALTER TABLE `account_privilege` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `account_role`
---
-
+-- ----------------------------
+-- Table structure for `account_role`
+-- ----------------------------
 DROP TABLE IF EXISTS `account_role`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `account_role`
---
+-- ----------------------------
+-- Records of account_role
+-- ----------------------------
+INSERT INTO `account_role` VALUES ('1', 'admin');
+INSERT INTO `account_role` VALUES ('2', 'server_admin');
+INSERT INTO `account_role` VALUES ('3', 'server_guest');
+INSERT INTO `account_role` VALUES ('4', 'view_admin');
+INSERT INTO `account_role` VALUES ('5', 'view_guest');
+INSERT INTO `account_role` VALUES ('6', 'zone_admin');
+INSERT INTO `account_role` VALUES ('7', 'zone_guest');
 
-LOCK TABLES `account_role` WRITE;
-/*!40000 ALTER TABLE `account_role` DISABLE KEYS */;
-INSERT INTO `account_role` VALUES (1,'admin'),(2,'server_admin'),(3,'server_guest'),(4,'view_admin'),(5,'view_guest'),(6,'zone_admin'),(7,'zone_guest');
-/*!40000 ALTER TABLE `account_role` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `account_role_privilege`
---
-
+-- ----------------------------
+-- Table structure for `account_role_privilege`
+-- ----------------------------
 DROP TABLE IF EXISTS `account_role_privilege`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account_role_privilege` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `role_id` int(11) DEFAULT NULL,
@@ -118,60 +84,61 @@ CREATE TABLE `account_role_privilege` (
   PRIMARY KEY (`id`),
   KEY `ix_account_role_privilege_privilege_id` (`privilege_id`),
   KEY `ix_account_role_privilege_role_id` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `account_role_privilege`
---
+-- ----------------------------
+-- Records of account_role_privilege
+-- ----------------------------
+INSERT INTO `account_role_privilege` VALUES ('1', '1', '1');
+INSERT INTO `account_role_privilege` VALUES ('2', '2', '1');
+INSERT INTO `account_role_privilege` VALUES ('3', '1', '2');
+INSERT INTO `account_role_privilege` VALUES ('4', '6', '2');
+INSERT INTO `account_role_privilege` VALUES ('5', '1', '3');
+INSERT INTO `account_role_privilege` VALUES ('6', '4', '3');
+INSERT INTO `account_role_privilege` VALUES ('7', '1', '4');
+INSERT INTO `account_role_privilege` VALUES ('8', '1', '5');
+INSERT INTO `account_role_privilege` VALUES ('9', '1', '6');
+INSERT INTO `account_role_privilege` VALUES ('10', '1', '7');
+INSERT INTO `account_role_privilege` VALUES ('11', '4', '5');
+INSERT INTO `account_role_privilege` VALUES ('12', '4', '6');
+INSERT INTO `account_role_privilege` VALUES ('13', '4', '7');
+INSERT INTO `account_role_privilege` VALUES ('14', '5', '5');
+INSERT INTO `account_role_privilege` VALUES ('15', '1', '8');
+INSERT INTO `account_role_privilege` VALUES ('16', '1', '9');
+INSERT INTO `account_role_privilege` VALUES ('17', '1', '10');
+INSERT INTO `account_role_privilege` VALUES ('18', '6', '8');
+INSERT INTO `account_role_privilege` VALUES ('19', '6', '9');
+INSERT INTO `account_role_privilege` VALUES ('20', '6', '10');
+INSERT INTO `account_role_privilege` VALUES ('21', '7', '8');
 
-LOCK TABLES `account_role_privilege` WRITE;
-/*!40000 ALTER TABLE `account_role_privilege` DISABLE KEYS */;
-INSERT INTO `account_role_privilege` VALUES (1,1,1),(2,2,1),(3,1,2),(4,6,2),(5,1,3),(6,4,3),(7,1,4);
-/*!40000 ALTER TABLE `account_role_privilege` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `account_user`
---
-
+-- ----------------------------
+-- Table structure for `account_user`
+-- ----------------------------
 DROP TABLE IF EXISTS `account_user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(64) DEFAULT NULL,
   `username` varchar(64) DEFAULT NULL,
   `chinese_name` varchar(64) DEFAULT NULL,
   `cellphone` varchar(64) DEFAULT NULL,
-  `actived` tinyint(1) DEFAULT NULL,
+  `actived` int(11) DEFAULT NULL,
   `position` varchar(64) DEFAULT NULL,
   `location` varchar(64) DEFAULT NULL,
-  `acitve` int(11) DEFAULT NULL,
   `member_since` datetime DEFAULT NULL,
   `last_seen` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_account_user_username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `account_user`
---
+-- ----------------------------
+-- Records of account_user
+-- ----------------------------
+INSERT INTO `account_user` VALUES ('1', 'xxxx@gmail.com', 'admin', '', '', '1', '', '', '2018-01-08 11:47:22', '2018-01-08 11:47:22');
 
-LOCK TABLES `account_user` WRITE;
-/*!40000 ALTER TABLE `account_user` DISABLE KEYS */;
-INSERT INTO `account_user` VALUES (1,'xxxx@gmail.com','admin','','',0,'','',1,'2017-12-05 15:50:23','2017-12-05 15:50:23'),(2,'','LIJIAJIA873','','',0,'','',1,'2017-12-05 15:55:43','2017-12-05 15:55:43');
-/*!40000 ALTER TABLE `account_user` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `account_user_role`
---
-
+-- ----------------------------
+-- Table structure for `account_user_role`
+-- ----------------------------
 DROP TABLE IF EXISTS `account_user_role`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account_user_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
@@ -180,48 +147,30 @@ CREATE TABLE `account_user_role` (
   KEY `ix_account_user_role_role_id` (`role_id`),
   KEY `ix_account_user_role_user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `account_user_role`
---
+-- ----------------------------
+-- Records of account_user_role
+-- ----------------------------
+INSERT INTO `account_user_role` VALUES ('1', '1', '1');
 
-LOCK TABLES `account_user_role` WRITE;
-/*!40000 ALTER TABLE `account_user_role` DISABLE KEYS */;
-INSERT INTO `account_user_role` VALUES (1,1,1);
-/*!40000 ALTER TABLE `account_user_role` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `alembic_version`
---
-
+-- ----------------------------
+-- Table structure for `alembic_version`
+-- ----------------------------
 DROP TABLE IF EXISTS `alembic_version`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `alembic_version` (
   `version_num` varchar(32) NOT NULL,
   PRIMARY KEY (`version_num`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `alembic_version`
---
+-- ----------------------------
+-- Records of alembic_version
+-- ----------------------------
+INSERT INTO `alembic_version` VALUES ('73e7a686b691');
 
-LOCK TABLES `alembic_version` WRITE;
-/*!40000 ALTER TABLE `alembic_version` DISABLE KEYS */;
-INSERT INTO `alembic_version` VALUES ('ae93dc48247a');
-/*!40000 ALTER TABLE `alembic_version` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `dns_operation_log`
---
-
+-- ----------------------------
+-- Table structure for `dns_operation_log`
+-- ----------------------------
 DROP TABLE IF EXISTS `dns_operation_log`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dns_operation_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `operation_time` datetime DEFAULT NULL,
@@ -234,25 +183,18 @@ CREATE TABLE `dns_operation_log` (
   `gmt_create` datetime DEFAULT NULL,
   `gmt_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `dns_operation_log`
---
+-- ----------------------------
+-- Records of dns_operation_log
+-- ----------------------------
+INSERT INTO `dns_operation_log` VALUES ('1', '2018-01-08 11:47:51', '添加', 'admin', 'Zone', 'z1.com', '1', 'id: 1\nZone名称: z1.com\nZone归属: 内部域名\nZone类型: master\n关联View: [\'default_view\']\n', '2018-01-08 11:47:51', '2018-01-08 11:47:51');
+INSERT INTO `dns_operation_log` VALUES ('2', '2018-01-08 11:48:16', '添加', 'admin', 'Record', 'r1111', '2', 'id: 2\n记录主机: r1111\n记录类型: A\n记录值: 0.0.0.\nTTL: 600\n线路类型: default_view\n备注: asdf\n创建人: None\n创建时间: 2018-01-08 11:48:15.547158', '2018-01-08 11:48:16', '2018-01-08 11:48:16');
 
-LOCK TABLES `dns_operation_log` WRITE;
-/*!40000 ALTER TABLE `dns_operation_log` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dns_operation_log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `dns_record`
---
-
+-- ----------------------------
+-- Table structure for `dns_record`
+-- ----------------------------
 DROP TABLE IF EXISTS `dns_record`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dns_record` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `host` varchar(64) DEFAULT NULL,
@@ -272,25 +214,18 @@ CREATE TABLE `dns_record` (
   PRIMARY KEY (`id`),
   KEY `ix_dns_record_host` (`host`),
   KEY `ix_dns_record_zone_id` (`zone_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `dns_record`
---
+-- ----------------------------
+-- Records of dns_record
+-- ----------------------------
+INSERT INTO `dns_record` VALUES ('1', '@', 'NS', '86400', 'master.z1.com.', 'default_view', null, 'admin', 'enabled', '1', 'ON', '', '1', '2018-01-08 11:47:51', '2018-01-08 11:47:51');
+INSERT INTO `dns_record` VALUES ('2', 'r1111', 'A', '600', '0.0.0.', 'default_view', 'asdf', null, 'enabled', '1', 'ON', '', '1', '2018-01-08 11:48:16', '2018-01-08 11:48:16');
 
-LOCK TABLES `dns_record` WRITE;
-/*!40000 ALTER TABLE `dns_record` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dns_record` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `dns_server`
---
-
+-- ----------------------------
+-- Table structure for `dns_server`
+-- ----------------------------
 DROP TABLE IF EXISTS `dns_server`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dns_server` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `host` varchar(64) DEFAULT NULL,
@@ -308,24 +243,15 @@ CREATE TABLE `dns_server` (
   PRIMARY KEY (`id`),
   KEY `ix_dns_server_host` (`host`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `dns_server`
---
+-- ----------------------------
+-- Records of dns_server
+-- ----------------------------
 
-LOCK TABLES `dns_server` WRITE;
-/*!40000 ALTER TABLE `dns_server` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dns_server` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `dns_view`
---
-
+-- ----------------------------
+-- Table structure for `dns_view`
+-- ----------------------------
 DROP TABLE IF EXISTS `dns_view`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dns_view` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) DEFAULT NULL,
@@ -334,25 +260,17 @@ CREATE TABLE `dns_view` (
   `gmt_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_dns_view_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `dns_view`
---
+-- ----------------------------
+-- Records of dns_view
+-- ----------------------------
+INSERT INTO `dns_view` VALUES ('1', 'default_view', '0.0.0.0/0', '2018-01-08 11:47:22', '2018-01-08 11:47:22');
 
-LOCK TABLES `dns_view` WRITE;
-/*!40000 ALTER TABLE `dns_view` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dns_view` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `dns_view_zone`
---
-
+-- ----------------------------
+-- Table structure for `dns_view_zone`
+-- ----------------------------
 DROP TABLE IF EXISTS `dns_view_zone`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dns_view_zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `view_id` int(11) DEFAULT NULL,
@@ -362,25 +280,17 @@ CREATE TABLE `dns_view_zone` (
   PRIMARY KEY (`id`),
   KEY `ix_dns_view_zone_view_id` (`view_id`),
   KEY `ix_dns_view_zone_zone_id` (`zone_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `dns_view_zone`
---
+-- ----------------------------
+-- Records of dns_view_zone
+-- ----------------------------
+INSERT INTO `dns_view_zone` VALUES ('1', '1', '1', '2018-01-08 11:47:51', '2018-01-08 11:47:51');
 
-LOCK TABLES `dns_view_zone` WRITE;
-/*!40000 ALTER TABLE `dns_view_zone` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dns_view_zone` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `dns_zone`
---
-
+-- ----------------------------
+-- Table structure for `dns_zone`
+-- ----------------------------
 DROP TABLE IF EXISTS `dns_zone`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dns_zone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) DEFAULT NULL,
@@ -391,26 +301,9 @@ CREATE TABLE `dns_zone` (
   `gmt_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_dns_zone_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `dns_zone`
---
-
-LOCK TABLES `dns_zone` WRITE;
-/*!40000 ALTER TABLE `dns_zone` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dns_zone` ENABLE KEYS */;
-UNLOCK TABLES;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2017-12-05 16:06:27
+-- ----------------------------
+-- Records of dns_zone
+-- ----------------------------
+INSERT INTO `dns_zone` VALUES ('1', 'z1.com', '1', 'master', '', '2018-01-08 11:47:51', '2018-01-08 11:47:51');
