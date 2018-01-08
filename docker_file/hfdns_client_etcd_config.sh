@@ -53,7 +53,7 @@ if [ "x${ETCD_STOP}" == "xstop" ];then
 fi
 
 #默认ETCD配置
-ETCD_SERVER_NAME="http://dev-etcd01:2379/v2/keys/opscmdb"
+ETCD_SERVER_NAME="http://10.59.87.121:2379/v2/keys/opscmdb"
 
 echo "-------------------${DOCKER_ETCD_ADDRESS}--------------------"
 #ETCD集群服务器
