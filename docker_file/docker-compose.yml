@@ -66,4 +66,4 @@ services:
       - "53:53"
     environment:
       DOCKER_ETCD_ADDRESS: etcd:2379
-    command: /bin/bash /root/hfdns_client_etcd_config.sh single
+    command: sh -c '/etc/init.d/named stop && /etc/init.d/named start && /bin/bash /root/hfdns_client_etcd_config.sh single'

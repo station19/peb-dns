@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ######################  此脚本docker部署自动调用，请勿手动运行！  ########################
-
+sleep 5
 export FLASK_APP=${PWD}/app.py
 export FLASK_DEBUG=0
 PEB_PORT=$1
@@ -38,3 +38,5 @@ gunicorn -w 4 app:app -b 0.0.0.0:${PEB_PORT} \
         --access-logfile logs/peb_dns_access.log \
         --error-logfile logs/peb_dns_error.log \
         --log-file logs/peb_dns.log
+
+echo "################# peb_dns started !!!  #######################"
