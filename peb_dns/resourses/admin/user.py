@@ -170,7 +170,7 @@ class User(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！')
         return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @admin_required
@@ -186,7 +186,7 @@ class User(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  '删除失败！\n{e}'.format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  '删除失败！')
         return get_response(RequestCode.SUCCESS, '删除成功！')
 
 

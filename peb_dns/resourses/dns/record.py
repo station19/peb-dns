@@ -170,7 +170,7 @@ class DNSRecordList(Resource):
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
-                return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+                return get_response(RequestCode.OTHER_FAILED,  "创建失败！")
         return get_response(RequestCode.SUCCESS, '创建成功！')
 
     def _add_privilege_for_record(self, current_zone, new_record):
@@ -251,7 +251,7 @@ class DNSRecord(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  "修改失败！")
         return get_response(RequestCode.SUCCESS, '修改成功！')
 
     @resource_exists_required(ResourceType.RECORD)
@@ -264,7 +264,7 @@ class DNSRecord(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  "{e}".format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  "删除失败！")
         return get_response(RequestCode.SUCCESS, '删除成功！')
 
     def _update_record(self, current_zone, current_record, args):

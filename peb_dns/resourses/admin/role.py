@@ -108,7 +108,7 @@ class RoleList(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！')
         return get_response(RequestCode.SUCCESS, '修改成功！')
 
 
@@ -150,7 +150,7 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  '修改失败！\n{e}'.format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  '修改失败！')
         return get_response(RequestCode.SUCCESS, '修改成功！')
 
     def delete(self, role_id):
@@ -168,7 +168,7 @@ class Role(Resource):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            return get_response(RequestCode.OTHER_FAILED,  '删除失败！\n{e}'.format(e=str(e)))
+            return get_response(RequestCode.OTHER_FAILED,  '删除失败！')
         return get_response(RequestCode.SUCCESS, '删除成功！')
 
 
