@@ -308,6 +308,7 @@ class DNSBindConf(Resource):
                 bind_conf_content, 
                 prevExist=True
                 )
+            time.sleep(0.5)
             return get_response(RequestCode.SUCCESS, '修改成功')
         except Exception as e:
             return get_response(RequestCode.OTHER_FAILED,  '提交数据失败 ！')
@@ -318,3 +319,5 @@ class DNSServerEnvs(Resource):
 
     def get(self):
         return current_app.config['SERVER_ENVS']
+
+    

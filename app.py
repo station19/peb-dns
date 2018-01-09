@@ -6,6 +6,7 @@ from peb_dns.models.account import DBUser, DBUserRole, DBRole, DBLocalAuth, \
 from peb_dns.models.dns import DBView
 from peb_dns.common.util import getETCDclient
 import etcd
+import time
 
 app = create_app()
 
@@ -152,12 +153,14 @@ def init_bind_config(app):
         client.write(app.config.get('BIND_CONF'),
                     app.config.get('DEFAULT_BIND_CONF_CONTENT'), 
                     prevExist=False)
+        time.sleep(1)
     try:
         client.read(app.config.get('VIEW_DEFINE_CONF'))
     except etcd.EtcdKeyNotFound:
         client.write(app.config.get('VIEW_DEFINE_CONF'), 
                     '', 
                     prevExist=False)
+        time.sleep(1)
 
 @app.cli.command('initdb')
 def initdb_command():
