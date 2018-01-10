@@ -80,7 +80,7 @@ class DNSZoneList(Resource):
         if id is not None:
             zone_query = zone_query.filter(DBZone.id==id)
         if name is not None:
-            zone_query = zone_query.filter(DBZone.name==name)
+            zone_query = zone_query.filter(DBZone.name.like('%'+name+'%'))
         if zone_group is not None:
             zone_query = zone_query.filter(DBZone.zone_group==zone_group)
         if zone_type is not None:

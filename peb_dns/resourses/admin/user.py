@@ -101,13 +101,13 @@ class UserList(Resource):
         if id is not None:
             user_query = user_query.filter_by(id=id)
         if email is not None:
-            user_query = user_query.filter_by(email=email)
+            user_query = user_query.filter(DBUser.email.like('%'+email+'%'))
         if username is not None:
-            user_query = user_query.filter_by(username=username)
+            user_query = user_query.filter(DBUser.username.like('%'+username+'%'))
         if chinese_name is not None:
-            user_query = user_query.filter_by(chinese_name=chinese_name)
+            user_query = user_query.filter(DBUser.chinese_name.like('%'+chinese_name+'%'))
         if cellphone is not None:
-            user_query = user_query.filter_by(cellphone=cellphone)
+            user_query = user_query.filter(DBUser.cellphone.like('%'+cellphone+'%'))
         if actived is not None:
             user_query = user_query.filter_by(actived=actived)
         marshal_records = marshal(

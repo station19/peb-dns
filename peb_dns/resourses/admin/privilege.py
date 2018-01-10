@@ -72,7 +72,7 @@ class PrivilegeList(Resource):
         if id is not None:
             privilege_query = privilege_query.filter_by(id=id)
         if name is not None:
-            privilege_query = privilege_query.filter_by(name=name)
+            privilege_query = privilege_query.filter(DBPrivilege.name.like('%'+name+'%'))
         if operation is not None:
             privilege_query = privilege_query.filter_by(operation=operation)
         if resource_type is not None:

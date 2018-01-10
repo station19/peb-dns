@@ -53,11 +53,11 @@ class DNSOperationLogList(Resource):
         if operation_type is not None:
             oplog_query = oplog_query.filter(DBOperationLog.operation_type==operation_type)
         if operator is not None:
-            oplog_query = oplog_query.filter(DBOperationLog.operator==operator)
+            oplog_query = oplog_query.filter(DBOperationLog.operator.like('%'+operator+'%'))
         if target_type is not None:
             oplog_query = oplog_query.filter(DBOperationLog.target_type==target_type)
         if target_name is not None:
-            oplog_query = oplog_query.filter(DBOperationLog.target_name==target_name) 
+            oplog_query = oplog_query.filter(DBOperationLog.target_name.like('%'+target_name+'%'))
         marshal_records = marshal(
                     oplog_query.order_by(DBOperationLog.id.desc()).paginate(
                         current_page, 

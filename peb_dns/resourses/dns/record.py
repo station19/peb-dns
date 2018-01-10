@@ -103,7 +103,7 @@ class DNSRecordList(Resource):
         if ttl is not None:
             record_query = record_query.filter(DBRecord.ttl==ttl)
         if value is not None:
-            record_query = record_query.filter(DBRecord.value==value)
+            record_query = record_query.filter(DBRecord.value.like('%'+value+'%'))
         if view_name is not None:
             record_query = record_query.filter(DBRecord.view_name==view_name) 
         if zone_id is not None:
