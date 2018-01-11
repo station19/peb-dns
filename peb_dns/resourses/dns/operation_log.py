@@ -78,7 +78,7 @@ class DNSOperationLog(Resource):
     method_decorators = [token_required] 
 
     def get(self, log_id):
-        """Get the detail info of the single log."""
+        """Get the detail info of the single log.."""
         current_log = DBOperationLog.query.get(log_id)
         if not current_log:
             return get_response(RequestCode.OTHER_FAILED,  "当前记录 {} 不存在！".format(str(log_id)))
