@@ -71,7 +71,7 @@ class RoleList(Resource):
         if id is not None:
             role_query = role_query.filter_by(id=id)
         if name is not None:
-            role_query = role_query.filter_by(DBRole.name.like('%'+name+'%'))
+            role_query = role_query.filter(DBRole.name.like('%'+name+'%'))
         if user_id is not None:
             role_query = role_query \
                 .join(DBUserRole, and_(DBUserRole.role_id == DBRole.id)) \
