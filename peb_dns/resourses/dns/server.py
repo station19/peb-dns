@@ -318,6 +318,6 @@ class DNSServerEnvs(Resource):
     method_decorators = [token_required] 
 
     def get(self):
-        return current_app.config['SERVER_ENVS']
+        return get_response(RequestCode.SUCCESS, '获取成功！', dict(server_envs=current_app.config['SERVER_ENVS']))
 
     
