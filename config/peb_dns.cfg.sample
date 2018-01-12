@@ -121,5 +121,34 @@ ZABBIX_URL = "http://zabbix.proxy.test.com/api_jsonrpc.php"  #ZABBIX API 地址 
 ZABBIX_USERNAME = "test_admin"   #ZABBIX 用户名
 ZABBIX_PASSWORD = "test_admin"   # 用户密码
 
+#Swagger配置
+SWAGGER_TEMPLATE = {
+  "swagger": "2.0",
+  "info": {
+    "title": "PEB EVENT API",
+    "description": "API for peb_event",
+    "contact": {
+      "responsibleOrganization": "ME",
+      "responsibleDeveloper": "Me",
+      "email": "me@me.com",
+      "url": "www.me.com",
+    },
+    "termsOfService": "http://me.com/terms",
+    "version": "1.0"
+  },
+  "securityDefinitions": {
+    "UserSecurity": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      }
+    },
+  "basePath": "/",  # base bash for blueprint registration
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "operationId": "getmyData"
+}
 
 

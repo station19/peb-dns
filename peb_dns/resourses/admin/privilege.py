@@ -57,7 +57,110 @@ class PrivilegeList(Resource):
     method_decorators = [admin_required, token_required] 
 
     def get(self):
-        """Get privilege list."""
+        """
+        功能: 获取权限列表资源
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Privilege
+        parameters:
+          - name: currentPage
+            in: query
+            description: the page of Privilege
+            type: integer
+            default: 1
+          - name: pageSize
+            in: query
+            description: the max records of page
+            type: integer
+            default: 30
+          - name: id
+            in: query
+            description: Privilege id
+            type: integer
+            default: 1
+          - name: name
+            type: string
+            in: query
+            description: the name of Privilege
+            default: PRIVILEGE_MODIFY
+          - name: operation
+            in: query
+            type: integer
+            description: the value of Privilege
+            default: 1
+            enum: [0, 1, 2]
+          - name: role_id
+            in: query
+            type: integer
+            description: the id of role
+            default: 1
+          - name: resource_type
+            in: query
+            type: integer
+            description: the id of resource_type
+            default: 1
+            enum: [0, 1, 2, 3]
+          - name: resource_id
+            in: query
+            type: integer
+            description: the id of resource
+            default: 1
+        definitions:
+          Privileges:
+            properties:
+              total:
+                type: integer
+                description: the count of records
+              current_page:
+                type: integer
+                description: the current page
+              privileges:
+                type: array
+                items:
+                  $ref: "#/definitions/Privilege"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  $ref: "#/definitions/Privileges"
+            examples:
+                {
+                    "code": 100000,
+                    "data": {
+                        "total": 37,
+                        "privileges": [
+                            {
+                                "id": 58,
+                                "name": "VIEW#v555#DELETE",
+                                "operation": 2,
+                                "resource_type": 1,
+                                "resource_id": 6,
+                                "comment": null
+                            },
+                            {
+                                "id": 57,
+                                "name": "VIEW#v555#UPDATE",
+                                "operation": 1,
+                                "resource_type": 1,
+                                "resource_id": 6,
+                                "comment": null
+                            }
+                        ],
+                        "current_page": 1
+                    },
+                    "msg": "获取成功！"
+                }
+        """
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -101,7 +204,64 @@ class PrivilegeList(Resource):
         return marshal(response_wrapper, response_wrapper_fields)
 
     def post(self):
-        """Create new privilege."""        
+        """
+        功能: 添加权限
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Privilege
+        definitions:
+          Privilege_Parm:
+            properties:
+              name:
+                type: string
+                default: p123
+                description: privilege name
+              operation:
+                type: integer
+                default: 0
+                description: the value of operation
+              resource_type:
+                type: integer
+                default: 0
+                description: the type of resource
+              resource_id:
+                type: integer
+                default: 1
+                description: the id of resource
+              comment:
+                type: string
+                default: 权限修改
+                description: the comment of privilege
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: Add_Privilege
+              required:
+                - name
+              $ref: "#/definitions/Privilege_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "添加成功",
+                    "data": null
+                }
+        """        
         args = dns_privilege_common_parser.parse_args()
         privilege_name = args['name']
         operation = args['operation']
@@ -149,14 +309,107 @@ class Privilege(Resource):
 
     @resource_exists_required(ResourceType.PRIVILEGE)
     def get(self, privilege_id):
-        """Get the detail info of the indicated privilege."""
+        """
+        功能: 获取权限详情
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Privilege
+        parameters:
+          - name: privilege_id
+            in: path
+            description: the id of privilege
+            type: integer
+            required: true
+            default: 1
+        definitions:
+          Privilege:
+            properties:
+              id:
+                type: integer
+                description: the id of privilege
+              name:
+                type: string
+                description: the name of privilege
+              operation:
+                type: integer
+                description: the operationof privilege
+              comment:
+                type: string
+                description: the comment privilege
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  $ref: "#/definitions/Privilege"
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "获取成功！",
+                    "data": {
+                        "id": 37,
+                        "name": "ZONE#xx1.com#DELETE",
+                        "operation": 2,
+                        "resource_type": 2,
+                        "resource_id": 4,
+                        "comment": null
+                    }
+                }
+        """
         current_p = DBPrivilege.query.get(privilege_id)
         results_wrapper = marshal(current_p, privilege_fields)
         return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     @resource_exists_required(ResourceType.PRIVILEGE)
     def put(self, privilege_id):
-        """Update the indicated privilege."""
+        """
+        功能: 权限更新
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Privilege
+        parameters:
+          - name: privilege_id
+            in: path
+            description: the id of privilege
+            type: integer
+            required: true
+            default: 1
+          - name: body
+            in: body
+            schema:
+              id: Update_Privilege
+              $ref: "#/definitions/Privilege_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "修改成功！",
+                    "data": null
+                }
+        """
         current_privilege = DBPrivilege.query.get(privilege_id)
         args = dns_privilege_common_parser.parse_args()
         privilege_name = args['name']
@@ -178,7 +431,40 @@ class Privilege(Resource):
 
     @resource_exists_required(ResourceType.PRIVILEGE)
     def delete(self, privilege_id):
-        """Delete the indicated privilege."""
+        """
+        功能: 删除权限
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Privilege
+        parameters:
+          - name: privilege_id
+            in: path
+            description: the id of privilege
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "删除成功",
+                    "data": null
+                }
+        """
         current_privilege = DBPrivilege.query.get(privilege_id)
         try:
             db.session.delete(current_privilege)

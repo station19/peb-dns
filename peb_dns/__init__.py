@@ -10,6 +10,7 @@ from .resourses.page import page_bp
 import os
 import click
 from .common.util import get_response
+from flasgger import Swagger
 
 APP_NAME = 'PEB-DNS'
 
@@ -17,6 +18,7 @@ def configure_extensions(app):
     mail.init_app(app)
     db.init_app(app)
     migrate = Migrate(app, db)
+    Swagger(app, template=app.config['SWAGGER_TEMPLATE'])
 
 def configure_blueprints(app, blueprints):
     for blueprint in blueprints:
