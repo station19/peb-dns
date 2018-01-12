@@ -11,31 +11,6 @@ from sqlalchemy import and_, or_
 from datetime import datetime
 from peb_dns.common.request_code import RequestCode
 
-
-dns_privilege_common_parser = reqparse.RequestParser()
-dns_privilege_common_parser.add_argument('name', 
-                                        type = str, 
-                                        location = 'json', 
-                                        required=True, 
-                                        help='role name.')
-dns_privilege_common_parser.add_argument('operation', 
-                                        type = int, 
-                                        location = 'json', 
-                                        required=True)
-dns_privilege_common_parser.add_argument('resource_type', 
-                                        type = int, 
-                                        location = 'json', 
-                                        required=True, 
-                                        help='role name.')
-dns_privilege_common_parser.add_argument('resource_id', 
-                                        type = int, 
-                                        location = 'json', 
-                                        required=True)
-dns_privilege_common_parser.add_argument('comment', 
-                                        type = str, 
-                                        location = 'json')
-
-
 privilege_fields = {
     'id': fields.Integer,
     'name': fields.String,
@@ -102,12 +77,13 @@ class PrivilegeList(Resource):
 
     def post(self):
         """Create new privilege."""        
-        args = dns_privilege_common_parser.parse_args()
+        args = request.json
         privilege_name = args['name']
-        operation = args['operation']
-        resource_type = args['resource_type']
-        resource_id = args['resource_id']
+        operation = args.get('operation', 100)
+        resource_type = args.get('resource_type', 100)
+        resource_id = args.get('resource_id', 0)
         comment = args.get('comment', '')
+        print(privilege_name, operation, resource_type, resource_id, comment)
         uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
         if uniq_privilege:
             return get_response(RequestCode.OTHER_FAILED,  "{e} 权限名已存在！".format(e=str(uniq_privilege.name)))
@@ -136,16 +112,16 @@ class PrivilegeList(Resource):
 class Privilege(Resource):
     method_decorators = [admin_required, token_required]
 
-    def __init__(self):
-        self.role_common_parser = reqparse.RequestParser()
-        self.role_common_parser.add_argument(
-            'privilege_ids', 
-            type = int, 
-            location = 'json', 
-            action='append', 
-            required=True
-            )
-        super(Privilege, self).__init__()
+    # def __init__(self):
+    #     self.role_common_parser = reqparse.RequestParser()
+    #     self.role_common_parser.add_argument(
+    #         'privilege_ids', 
+    #         type = int, 
+    #         location = 'json', 
+    #         action='append', 
+    #         required=True
+    #         )
+    #     super(Privilege, self).__init__()
 
     @resource_exists_required(ResourceType.PRIVILEGE)
     def get(self, privilege_id):
@@ -157,13 +133,19 @@ class Privilege(Resource):
     @resource_exists_required(ResourceType.PRIVILEGE)
     def put(self, privilege_id):
         """Update the indicated privilege."""
-        current_privilege = DBPrivilege.query.get(privilege_id)
-        args = dns_privilege_common_parser.parse_args()
+        args = request.json
         privilege_name = args['name']
-        operation = args['operation']
-        resource_type = args['resource_type']
-        resource_id = args['resource_id']
+        operation = args.get('operation', 100)
+        resource_type = args.get('resource_type', 100)
+        resource_id = args.get('resource_id', 0)
         comment = args.get('comment', '')
+        current_privilege = DBPrivilege.query.get(privilege_id)
+        uniq_privilege = DBPrivilege.query.filter(
+            DBPrivilege.name==privilege_name, 
+            DBPrivilege.id!=privilege_id
+            ).first()
+        if uniq_privilege:
+            return get_response(RequestCode.OTHER_FAILED,  "{e} 权限名已存在！".format(e=str(uniq_privilege.name)))
         try:
             current_privilege.name = privilege_name
             current_privilege.operation = operation

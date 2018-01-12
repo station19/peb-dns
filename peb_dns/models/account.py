@@ -199,7 +199,7 @@ class DBPrivilege(db.Model):
     name = db.Column(db.String(128))
     operation = db.Column(db.Integer, default=100)
     resource_type = db.Column(db.Integer, default=100)
-    resource_id = db.Column(db.Integer, index=True)
+    resource_id = db.Column(db.Integer, default=0, index=True)
     comment = db.Column(db.String(128))
 
 
