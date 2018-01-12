@@ -17,6 +17,38 @@ class ResourceAmount(Resource):
     method_decorators = [token_required]
 
     def get(self):
+        """
+        功能: resource amount
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Page
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "获取成功！",
+                    "data": {
+                        "server_amount": 10,
+                        "view_amount": 20,
+                        "zone_amount": 2,
+                        "record_amount": 2
+                    }
+                }
+        """
         resources_amount = dict(
             server_amount=DBDNSServer.query.count(), 
             view_amount=DBView.query.count(), 

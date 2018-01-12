@@ -37,7 +37,92 @@ class DNSOperationLogList(Resource):
         super(DNSOperationLogList, self).__init__()
 
     def get(self):
-        """Get zone list."""
+        """
+        Get zone list.
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - DNSOperationLog
+        parameters:
+          - name: currentPage
+            in: query
+            description: 当前是第几页
+            type: integer
+            required: false
+            default: 1
+          - name: pageSize
+            in: query
+            description: 每页显示的记录数
+            type: integer
+            required: false
+            default: 10
+          - name: id
+            in: query
+            description: 日志ID
+            type: integer
+            required: false
+          - name: operation_type
+            in: query
+            description: 操作类型，添加/修改/删除
+            type: string
+            required: false
+          - name: operator
+            in: query
+            description: 操作人
+            type: string
+            required: false
+          - name: target_type
+            in: query
+            description: 资源类型，Server/View/Zone/Record
+            type: string
+            required: false
+          - name: target_name
+            in: query
+            description: 资源名称
+            type: string
+            required: false
+          - name: target_id
+            in: query
+            description: 资源ID
+            type: integer
+            required: false
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+                  description: response data
+            examples:
+                {
+                    "code": 100000,
+                    "data": {
+                        "total": 66,
+                        "operation_logs": [
+                        {
+                            "id": 67,
+                            "operation_time": "2017-12-04 18:22:19",
+                            "operation_type": "添加",
+                            "operator": "LIJIAJIA873",
+                            "target_type": "Record",
+                            "target_name": "xxx333",
+                            "target_id": "32",
+                            "target_detail": "id: 32\\n记录主机: xxx333\\n记录类型: A\\n记录值: 0.0.0.0\\nTTL: 600\\n线路类型: wqerqwer\\n备注: xxx111\\n创建人: None\\n创建时间: 2017-12-04 18:22:18.805320"
+                        }
+                        ],
+                        "current_page": 1
+                    },
+                    "msg": "获取成功！"
+                }
+        """
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -78,7 +163,41 @@ class DNSOperationLog(Resource):
     method_decorators = [token_required] 
 
     def get(self, log_id):
-        """Get the detail info of the single log.."""
+        """
+        Get the detail info of the single log..
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - DNSOperationLog
+        parameters:
+          - name: log_id
+            in: path
+            description:
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+                  description: response data
+            examples:
+                {
+                    "code": 100000,
+                    "data": {},
+                    "msg": "获取成功！"
+                }
+        """
         current_log = DBOperationLog.query.get(log_id)
         if not current_log:
             return get_response(RequestCode.OTHER_FAILED,  "当前记录 {} 不存在！".format(str(log_id)))

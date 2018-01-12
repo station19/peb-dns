@@ -19,7 +19,48 @@ class AuthLDAP(Resource):
         super(AuthLDAP, self).__init__()
 
     def post(self):
-        """Auth by ldap user"""
+        """
+        功能: Auth by ldap user
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Auth
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: AuthLDAP_post
+              properties:
+                username:
+                  type: string
+                  default: user123
+                  description: 用户名
+                password:
+                  type: string
+                  default: passwd123
+                  description: 密码
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "认证失败！",
+                    "data": null
+                }
+
+        """
         args = self.reqparse.parse_args()
         username, password = args['username'], args['password']
         if self._auth_via_ldap(username, password):
@@ -75,7 +116,47 @@ class AuthLocal(Resource):
         super(AuthLocal, self).__init__()
 
     def post(self):
-        """Auth by the registered users"""
+        """
+        Auth by the registered users
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Auth
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: AuthLocal_post
+              properties:
+                username:
+                  type: string
+                  default: user123
+                  description: 用户名
+                password:
+                  type: string
+                  default: passwd123
+                  description: 密码
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 105000,
+                    "msg": "认证失败！",
+                    "data": null
+                }
+        """
         args = self.reqparse.parse_args()
         username, password = args['username'], args['password']
         auth_user = DBLocalAuth.query.filter_by(
@@ -113,7 +194,51 @@ class RegisterLocal(Resource):
                                     location = 'json', required=True)
 
     def post(self):
-        """Register a new user"""
+        """
+        Register a new user
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Auth
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: RegisterLocal_post
+              properties:
+                username:
+                  type: string
+                  default: user123
+                  description: 用户名
+                password:
+                  type: string
+                  default: passwd123
+                  description: 密码
+                password2:
+                  type: string
+                  default: passwd123
+                  description: 两次密码输入要一致
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "注册成功！",
+                    "data": null
+                }
+        """
         args = self.reqparse.parse_args()
         auth_user = DBLocalAuth.query.filter_by(
             username = args['username']).first()
