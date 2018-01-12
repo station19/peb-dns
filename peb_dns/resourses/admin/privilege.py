@@ -79,11 +79,11 @@ class PrivilegeList(Resource):
         """Create new privilege."""        
         args = request.json
         privilege_name = args['name']
-        operation = args.get('operation', 100)
-        resource_type = args.get('resource_type', 100)
-        resource_id = args.get('resource_id', 0)
-        comment = args.get('comment', '')
-        print(privilege_name, operation, resource_type, resource_id, comment)
+        operation = args.get('operation') if args.get('operation') != '' else 100
+        resource_type = args.get('resource_type') if args.get('resource_type') != '' else 100
+        resource_id = args.get('resource_id') if args.get('resource_id') != '' else 0
+        comment = args.get('comment') if args.get('comment') else ''
+        # print(privilege_name, operation, resource_type, resource_id, comment)
         uniq_privilege = DBPrivilege.query.filter_by(name=privilege_name).first()
         if uniq_privilege:
             return get_response(RequestCode.OTHER_FAILED,  "{e} 权限名已存在！".format(e=str(uniq_privilege.name)))
@@ -135,10 +135,10 @@ class Privilege(Resource):
         """Update the indicated privilege."""
         args = request.json
         privilege_name = args['name']
-        operation = args.get('operation', 100)
-        resource_type = args.get('resource_type', 100)
-        resource_id = args.get('resource_id', 0)
-        comment = args.get('comment', '')
+        operation = args.get('operation') if args.get('operation') != '' else 100
+        resource_type = args.get('resource_type') if args.get('resource_type') != '' else 100
+        resource_id = args.get('resource_id') if args.get('resource_id') != '' else 0
+        comment = args.get('comment') if args.get('comment') else ''
         current_privilege = DBPrivilege.query.get(privilege_id)
         uniq_privilege = DBPrivilege.query.filter(
             DBPrivilege.name==privilege_name, 
