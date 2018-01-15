@@ -86,7 +86,113 @@ class UserList(Resource):
     method_decorators = [admin_required, token_required] 
 
     def get(self):
-        """Get user list."""
+        """
+        功能: 获取角色列表资源
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - User
+        parameters:
+          - name: currentPage
+            in: query
+            description: the page of User
+            type: integer
+            default: 1
+          - name: pageSize
+            in: query
+            description: the max records of page
+            type: integer
+            default: 10
+          - name: id
+            in: query
+            description: User id
+            type: integer
+            default: 1
+          - name: username
+            type: string
+            in: query
+            description: the username of User
+            default: test
+          - name: chinese_name
+            in: query
+            type: string
+            description: the chinese_name of User
+            default: 小李
+          - name: cellphone
+            in: query
+            type: string
+            description: the cellphone of User
+            default: 186121234
+          - name: email
+            in: query
+            type: string
+            description: the email of User
+            default: test@163.com
+          - name: actived
+            in: query
+            type: integer
+            description: the active status of User
+            enum: [0, 1]
+            default: 1
+        definitions:
+          Users:
+            properties:
+              total:
+                type: integer
+              current_page:
+                type: integer
+              groups:
+                type: array
+                items:
+                  $ref: "#/definitions/User"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  $ref: "#/definitions/Users"
+            examples:
+                {
+                    "code": 100000,
+                    "data": {
+                        "total": 8,
+                        "users": [
+                            {
+                                "id": 8,
+                                "email": "xxx@qq.com",
+                                "username": "test222",
+                                "chinese_name": "",
+                                "cellphone": "",
+                                "position": "",
+                                "location": "",
+                                "member_since": "2017-12-04 17:34:25",
+                                "last_seen": "2017-12-04 17:34:25",
+                                "roles": []
+                            },
+                            {
+                                "id": 7,
+                                "email": "xxx@qq.com",
+                                "username": "test111",
+                                "chinese_name": "",
+                                "cellphone": "1371111",
+                                "position": "",
+                                "location": "",
+                                "member_since": "2017-11-29 14:16:27",
+                                "last_seen": "2017-11-29 14:16:27",
+                                "roles": []
+                            }
+                        ],
+                        "current_page": 1
+                    },
+                    "msg": "获取成功！"
+                }
+        """
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -131,7 +237,83 @@ class User(Resource):
 
     @owner_or_admin_required
     def get(self, user_id):
-        """Get the detail info of the indicated user."""
+        """
+        功能: 获取用户详情
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - User
+        parameters:
+          - name: user_id
+            in: path
+            description: User id
+            type: integer
+            required: true
+            default: 1
+        definitions:
+          User:
+            properties:
+              email:
+                type: string
+              username:
+                type: string
+              chinese_name:
+                type: string
+              cellphone:
+                type: string
+              position:
+                type: string
+              location:
+                type: string
+              member_since:
+                type: string
+              last_seen:
+                type: string
+              roles:
+                type: array
+                items:
+                  $ref: "#/definitions/Role"
+              can_add_server:
+                type: boolean
+              can_add_view:
+                type: boolean
+              can_add_zone:
+                type: boolean
+              can_edit_bind_conf:
+                type: boolean
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  $ref: "#/definitions/User"
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "请求成功",
+                    "data": {
+                        "id": 9,
+                        "email": "test123@pingan.com.cn",
+                        "um_account": null,
+                        "username": "test1",
+                        "user_pic": null,
+                        "chinese_name": "",
+                        "cellphone": "",
+                        "position": "",
+                        "location": "",
+                        "member_since": "2017-11-29 15:47:45",
+                        "last_seen": "2017-11-29 15:47:45",
+                        "group": null,
+                        "roles": []
+                    }
+                }
+        """
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return get_response(RequestCode.OTHER_FAILED,  '用户不存在！')
@@ -140,7 +322,76 @@ class User(Resource):
 
     @owner_or_admin_required
     def put(self, user_id):
-        """Update the indicated user."""
+        """
+        功能: 更新用户信息
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - User
+        definitions:
+          User_Parm:
+            properties:
+              email:
+                type: string
+                description: the email of User
+                default: test@163.com
+              chinese_name:
+                type: string
+                description: the chinese_name of User
+                default: 小李
+              cellphone:
+                type: string
+                description: the cellphone of User
+                default: "186123423"
+              position:
+                type: string
+                description: the position of User
+                default: developer
+              location:
+                type: string
+                description: the seat of User
+                default: the 12th floor
+              role_ids:
+                type: array
+                description: the role id of user
+                items:
+                  type: integer
+                  default: 1
+              actived:
+                type: integer
+                default: 1
+                description: the status of user
+        parameters:
+          - name: user_id
+            in: path
+            description: User id
+            type: integer
+            required: true
+            default: 1
+          - in: body
+            name: body
+            schema:
+              id: Update_User
+              $ref: "#/definitions/User_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "修改成功",
+                    "data": null
+                }
+        """
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return get_response(RequestCode.OTHER_FAILED,  "用户不存在！")
@@ -175,7 +426,38 @@ class User(Resource):
 
     @admin_required
     def delete(self, user_id):
-        """Delete the indicated role."""
+        """
+        功能: 删除用户
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - User
+        parameters:
+          - name: user_id
+            in: path
+            description: User id
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "删除成功",
+                    "data": null
+                }
+        """
         current_u = DBUser.query.get(user_id)
         if not current_u:
             return get_response(RequestCode.OTHER_FAILED,  "用户不存在！")
