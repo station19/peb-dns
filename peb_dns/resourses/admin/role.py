@@ -273,7 +273,7 @@ class Role(Resource):
 
     def get(self, role_id):
         """
-        功能: 获取角色详情
+        功能: 获取指定ID的角色详情
         ---
         security:
           - UserSecurity: []
@@ -344,7 +344,7 @@ class Role(Resource):
 
     def put(self, role_id):
         """
-        功能: 更新角色
+        功能: 修改指定ID的角色
         ---
         security:
           - UserSecurity: []
@@ -410,7 +410,7 @@ class Role(Resource):
 
     def delete(self, role_id):
         """
-        功能: 删除角色
+        功能: 删除指定ID的角色
         ---
         security:
           - UserSecurity: []

@@ -20,7 +20,7 @@ class AuthLDAP(Resource):
 
     def post(self):
         """
-        功能: Auth by ldap user
+        功能: LDAP认证接口
         ---
         security:
           - UserSecurity: []
@@ -117,7 +117,7 @@ class AuthLocal(Resource):
 
     def post(self):
         """
-        Auth by the registered users
+        功能: 本地注册用户认证接口
         ---
         security:
           - UserSecurity: []
@@ -195,7 +195,7 @@ class RegisterLocal(Resource):
 
     def post(self):
         """
-        Register a new user
+        功能：本地用户注册接口
         ---
         security:
           - UserSecurity: []

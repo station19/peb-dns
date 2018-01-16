@@ -74,7 +74,7 @@ class PrivilegeList(Resource):
             in: query
             description: the max records of page
             type: integer
-            default: 30
+            default: 10
           - name: id
             in: query
             description: Privilege id
@@ -205,7 +205,7 @@ class PrivilegeList(Resource):
 
     def post(self):
         """
-        功能: 添加权限
+        功能: 创建新的权限
         ---
         security:
           - UserSecurity: []
@@ -220,15 +220,15 @@ class PrivilegeList(Resource):
                 description: privilege name
               operation:
                 type: integer
-                default: 0
+                default: 100
                 description: the value of operation
               resource_type:
                 type: integer
-                default: 0
+                default: 100
                 description: the type of resource
               resource_id:
                 type: integer
-                default: 1
+                default: 0
                 description: the id of resource
               comment:
                 type: string
@@ -310,7 +310,7 @@ class Privilege(Resource):
     @resource_exists_required(ResourceType.PRIVILEGE)
     def get(self, privilege_id):
         """
-        功能: 获取权限详情
+        功能: 获取指定ID的权限详情
         ---
         security:
           - UserSecurity: []
@@ -372,7 +372,7 @@ class Privilege(Resource):
     @resource_exists_required(ResourceType.PRIVILEGE)
     def put(self, privilege_id):
         """
-        功能: 权限更新
+        功能: 修改指定ID的权限
         ---
         security:
           - UserSecurity: []
@@ -432,7 +432,7 @@ class Privilege(Resource):
     @resource_exists_required(ResourceType.PRIVILEGE)
     def delete(self, privilege_id):
         """
-        功能: 删除权限
+        功能: 删除指定ID的权限
         ---
         security:
           - UserSecurity: []

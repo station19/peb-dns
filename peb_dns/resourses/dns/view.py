@@ -41,7 +41,91 @@ class DNSViewList(Resource):
     method_decorators = [token_required] 
 
     def get(self):
-        """Get view list."""
+        """
+        功能：获取View资源列表
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - View
+        parameters:
+          - name: currentPage
+            in: query
+            description: View list in current page
+            type: integer
+            default: 1
+          - name: pageSize
+            in: query
+            description: the number of views per page.
+            type: integer
+            default: 10
+          - name: id
+            in: query
+            description: View id
+            type: integer
+            default: 1
+          - name: name
+            type: string
+            in: query
+            description: the name of View
+            default: z1.com
+          - name: zone_id
+            in: query
+            description: the id of the zone which was related to views
+            type: integer
+            default: 1
+        definitions:
+          View:
+            properties:
+              total:
+                type: integer
+                description: the number of views
+              current_page:
+                type: integer
+                description: current page number
+              views:
+                type: array
+                items:
+                  $ref: "#/definitions/View"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  $ref: "#/definitions/View"
+            examples:
+                {
+                    "code": 100000,
+                    "data": {
+                        "total": 4,
+                        "views": [
+                            {
+                                "id": 2,
+                                "name": "vvvv111111111",
+                                "acl": "0.0.0.0",
+                                "can_update": true,
+                                "can_delete": true
+                            },
+                            {
+                                "id": 1,
+                                "name": "wqerqwer",
+                                "acl": "0.0.0.0\\n1.1.1.1",
+                                "can_update": true,
+                                "can_delete": true
+                            }
+                        ],
+                        "current_page": 1
+                    },
+                    "msg": "获取成功！"
+                }
+        """
         args = request.args
         zone_id = args.get('zone_id', type=int)
         current_page = request.args.get('currentPage', 1, type=int)
@@ -89,7 +173,52 @@ class DNSViewList(Resource):
 
     @indicated_privilege_required(DefaultPrivilege.VIEW_ADD)
     def post(self):
-        """Create new view."""
+        """
+        功能：创建新的View
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - View
+        definitions:
+          View_Parm:
+            properties:
+              name:
+                type: string
+                default: v1
+                description: view name
+              acl:
+                type: string
+                default: 0.0.0.0
+                description: view name
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: Add_View
+              required:
+                - name
+              $ref: "#/definitions/View_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "添加成功",
+                    "data": null
+                }
+        """ 
         args = dns_view_common_parser.parse_args()
         unique_view = DBView.query.filter_by(name=args['name']).first()
         if unique_view:
@@ -168,7 +297,47 @@ class DNSView(Resource):
     @resource_exists_required(ResourceType.VIEW)
     @permission_required(ResourceType.VIEW, Operation.ACCESS)
     def get(self, view_id):
-        """Get the detail info of the single view."""
+        """
+        功能：获取指定ID的View详情
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - View
+        parameters:
+          - name: view_id
+            in: path
+            description:
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+                  description: response data
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "获取成功！",
+                    "data": {
+                        "id": 1,
+                        "name": "wqerqwer",
+                        "acl": "0.0.0.0\\n1.1.1.1",
+                        "can_update": true,
+                        "can_delete": true
+                    }
+                }
+        """
         current_view = DBView.query.get(view_id)
         results_wrapper = marshal(current_view, view_fields)
         return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
@@ -176,7 +345,43 @@ class DNSView(Resource):
     @resource_exists_required(ResourceType.VIEW)
     @permission_required(ResourceType.VIEW, Operation.UPDATE)
     def put(self, view_id):
-        """Update the indicated view."""
+        """
+        功能：修改指定ID的View
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - View
+        parameters:
+          - name: view_id
+            in: path
+            description: view id
+            type: integer
+            required: true
+            default: 1
+          - in: body
+            name: body
+            schema:
+              id: Update_View
+              $ref: "#/definitions/View_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "修改成功",
+                    "data": null
+                }
+        """
         current_view = DBView.query.get(view_id)
         args = dns_view_common_parser.parse_args()
         try:
@@ -190,7 +395,38 @@ class DNSView(Resource):
     @resource_exists_required(ResourceType.VIEW)
     @permission_required(ResourceType.VIEW, Operation.DELETE)
     def delete(self, view_id):
-        """Delete the indicated view."""
+        """
+        功能: 删除指定ID的View
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - View
+        parameters:
+          - name: view_id
+            in: path
+            description: View id
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: string
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "删除成功",
+                    "data": null
+                }
+        """
         current_view = DBView.query.get(view_id)
         current_view_related_zones = current_view.zone_name_list
         if current_view_related_zones:

@@ -87,7 +87,7 @@ class UserList(Resource):
 
     def get(self):
         """
-        功能: 获取角色列表资源
+        功能: 获取用户列表资源
         ---
         security:
           - UserSecurity: []
@@ -238,7 +238,7 @@ class User(Resource):
     @owner_or_admin_required
     def get(self, user_id):
         """
-        功能: 获取用户详情
+        功能: 获取指定ID的用户详情
         ---
         security:
           - UserSecurity: []
@@ -323,7 +323,7 @@ class User(Resource):
     @owner_or_admin_required
     def put(self, user_id):
         """
-        功能: 更新用户信息
+        功能: 修改指定ID的用户
         ---
         security:
           - UserSecurity: []
@@ -427,7 +427,7 @@ class User(Resource):
     @admin_required
     def delete(self, user_id):
         """
-        功能: 删除用户
+        功能: 删除指定ID的用户
         ---
         security:
           - UserSecurity: []

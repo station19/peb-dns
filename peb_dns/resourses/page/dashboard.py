@@ -18,7 +18,7 @@ class ResourceAmount(Resource):
 
     def get(self):
         """
-        功能: resource amount
+        功能: 获取各个资源总数
         ---
         security:
           - UserSecurity: []

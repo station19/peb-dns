@@ -38,7 +38,7 @@ class DNSOperationLogList(Resource):
 
     def get(self):
         """
-        Get zone list.
+        功能：获取日志资源列表
         ---
         security:
           - UserSecurity: []
@@ -164,7 +164,7 @@ class DNSOperationLog(Resource):
 
     def get(self, log_id):
         """
-        Get the detail info of the single log..
+        功能：获取指定ID的日志资源详情
         ---
         security:
           - UserSecurity: []

@@ -56,7 +56,113 @@ class DNSZoneList(Resource):
     method_decorators = [token_required] 
 
     def get(self):
-        """Get zone list."""
+        """
+        功能：获取Zone资源列表
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Zone
+        parameters:
+          - name: currentPage
+            in: query
+            description: Zone list in current page
+            type: integer
+            default: 1
+          - name: pageSize
+            in: query
+            description: the number of zones per page.
+            type: integer
+            default: 30
+          - name: id
+            in: query
+            description: Zone id
+            type: integer
+            default: 1
+          - name: name
+            type: string
+            in: query
+            description: the name of Zone
+            default: z1.com
+          - name: zone_group
+            in: query
+            type: integer
+            description: the group current zone in.
+            default: 1
+            enum: [0, 1, 2]
+          - name: zone_type
+            in: query
+            type: integer
+            description: the id of role
+            default: master
+            enum: ['master', 'forward only']
+        definitions:
+          Zone:
+            properties:
+              total:
+                type: integer
+                description: the number of zones
+              current_page:
+                type: integer
+                description: current page number
+              zones:
+                type: array
+                items:
+                  $ref: "#/definitions/Zone"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  $ref: "#/definitions/Zone"
+            examples:
+                {
+                    "code": 100000,
+                    "data": {
+                        "total": 5,
+                        "zones": [
+                            {
+                                "id": 4,
+                                "name": "xx1.com",
+                                "zone_group": 1,
+                                "zone_type": "master",
+                                "forwarders": "",
+                                "view_name_list": "['wqerqwer', 'vvvv111111111', 'jtest']",
+                                "can_update": true,
+                                "can_delete": true,
+                                "view_ids": [
+                                    1,
+                                    2,
+                                    5
+                                ]
+                            },
+                            {
+                                "id": 3,
+                                "name": "xxx.com",
+                                "zone_group": 1,
+                                "zone_type": "forward only",
+                                "forwarders": "0.0.0.0; 0.0.0.4;",
+                                "view_name_list": "['vvvv111111111', 'wqerqwer']",
+                                "can_update": true,
+                                "can_delete": true,
+                                "view_ids": [
+                                    2,
+                                    1
+                                ]
+                            }
+                        ],
+                        "current_page": 1
+                    },
+                    "msg": "获取成功！"
+                }
+        """
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
@@ -101,7 +207,66 @@ class DNSZoneList(Resource):
 
     @indicated_privilege_required(DefaultPrivilege.ZONE_ADD)
     def post(self):
-        """Create new zone."""
+        """
+        功能：创建新的Zone
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Zone
+        definitions:
+          Zone_Parm:
+            properties:
+              name:
+                type: string
+                default: p123
+                description: zone name
+              zone_group:
+                type: integer
+                default: 1
+                description: the group of the zone, 0=外部域名，1=内部域名，2=劫持域名
+              zone_type:
+                type: string
+                default: master
+                description: the type of zone
+                enum: ['master', 'forward only']
+              forwarders:
+                type: integer
+                default: 0.0.0.0
+                description: the forwarders' ip when zone_type value is 'forward only'
+              view_ids:
+                type: array
+                description: the id of views which the zone will be related to.
+                items:
+                  type: integer
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: Add_Zone
+              required:
+                - name
+              $ref: "#/definitions/Zone_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "添加成功",
+                    "data": null
+                }
+        """ 
         args = dns_zone_common_parser.parse_args()
         zone_group = args['zone_group']
         if zone_group in (1, 2):
@@ -200,7 +365,41 @@ class DNSZone(Resource):
     @resource_exists_required(ResourceType.ZONE)
     @permission_required(ResourceType.ZONE, Operation.ACCESS)
     def get(self, zone_id):
-        """Get the detail info of the indicated zone."""
+        """
+        功能：获取指定ID的Zone详情
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Zone
+        parameters:
+          - name: zone_id
+            in: path
+            description:
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+                  description: response data
+            examples:
+                {
+                    "code": 100000,
+                    "data": {},
+                    "msg": "获取成功！"
+                }
+        """
         current_zone = DBZone.query.get(zone_id)
         results_wrapper = marshal(current_zone, zone_fields)
         return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
@@ -208,7 +407,43 @@ class DNSZone(Resource):
     @resource_exists_required(ResourceType.ZONE)
     @permission_required(ResourceType.ZONE, Operation.UPDATE)
     def put(self, zone_id):
-        """Update the indicated zone ."""
+        """
+        功能：修改指定ID的Zone
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Zone
+        parameters:
+          - name: zone_id
+            in: path
+            description: zone id
+            type: integer
+            required: true
+            default: 1
+          - in: body
+            name: body
+            schema:
+              id: Update_Zone
+              $ref: "#/definitions/Zone_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "修改成功",
+                    "data": null
+                }
+        """
         current_zone = DBZone.query.get(zone_id)
         args = dns_zone_common_parser.parse_args()
         try:
@@ -222,7 +457,38 @@ class DNSZone(Resource):
     @resource_exists_required(ResourceType.ZONE)
     @permission_required(ResourceType.ZONE, Operation.DELETE)
     def delete(self, zone_id):
-        """Delete the indicated zone."""
+        """
+        功能: 删除指定ID的Zone
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Zone
+        parameters:
+          - name: zone_id
+            in: path
+            description: Zone id
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: string
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "删除成功",
+                    "data": null
+                }
+        """
         current_zone = DBZone.query.get(zone_id)
         try:
             self._remove_zone_privileges(current_zone)
