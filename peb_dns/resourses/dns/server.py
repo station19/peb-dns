@@ -73,7 +73,115 @@ class DNSServerList(Resource):
     method_decorators = [token_required]
 
     def get(self):
-        """Get record list."""
+        """
+        功能：获取Server资源列表
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Server
+        parameters:
+          - name: currentPage
+            in: query
+            description: Server list in current page
+            type: integer
+            default: 1
+          - name: pageSize
+            in: query
+            description: the number of servers per page.
+            type: integer
+            default: 10
+          - name: id
+            in: query
+            description: Server id
+            type: integer
+            default: 1
+          - name: host
+            type: string
+            in: query
+            description: server host name
+            default: s1
+          - name: ip
+            in: query
+            description: the ip address of the server
+            type: integer
+            default: 1.1.1.1
+          - name: env
+            type: string
+            in: query
+            description: the env group of the server
+            default: prod
+            enum: ['qa', 'smk', 'prod']
+          - name: dns_server_type
+            type: string
+            in: query
+            description: the env group of the server
+            default: master
+            enum: ['master', 'slave']
+        definitions:
+          Server:
+            properties:
+              total:
+                type: integer
+                description: the number of servers
+              current_page:
+                type: integer
+                description: current page number
+              servers:
+                type: array
+                items:
+                  $ref: "#/definitions/Server"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  $ref: "#/definitions/Server"
+            examples:
+                {
+                    "code": 100000,
+                    "data": {
+                        "total": 4,
+                        "servers": [
+                            {
+                                "id": 2,
+                                "host": "s2",
+                                "ip": "0.0.0.1",
+                                "env": "anhouse",
+                                "dns_server_type": "master",
+                                "zb_process_itemid": "222",
+                                "zb_port_itemid": "222",
+                                "zb_resolve_itemid": "222",
+                                "zb_resolve_rate_itemid": "189254",
+                                "can_update": true,
+                                "can_delete": true
+                            },
+                            {
+                                "id": 1,
+                                "host": "s1",
+                                "ip": "0.0.0.0",
+                                "env": "dev",
+                                "dns_server_type": "master",
+                                "zb_process_itemid": "111",
+                                "zb_port_itemid": "111",
+                                "zb_resolve_itemid": "111",
+                                "zb_resolve_rate_itemid": "189243",
+                                "can_update": true,
+                                "can_delete": true
+                            }
+                        ],
+                        "current_page": 1
+                    },
+                    "msg": "获取成功！"
+                }
+        """
         args = request.args
         current_page = request.args.get('currentPage', 1, type=int)
         page_size = request.args.get('pageSize', 10, type=int)
@@ -123,7 +231,76 @@ class DNSServerList(Resource):
 
     @indicated_privilege_required(DefaultPrivilege.SERVER_ADD)
     def post(self):
-        """Create new server."""
+        """
+        功能：创建新的Server
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Server
+        definitions:
+          Server_Parm:
+            properties:
+              host:
+                type: string
+                default: s1
+                description: server host name
+              ip:
+                type: string
+                default: 0.0.0.0
+                description: ip address
+              env:
+                type: string
+                default: prod
+                description: env group the server in.
+              dns_server_type:
+                type: string
+                default: master
+                description: the type of dns server (master/slave)
+              zb_process_itemid:
+                type: string
+                default: 123
+                description: bind process monitoring itemid on zabbix.
+              zb_port_itemid:
+                type: string
+                default: 123
+                description: bind port monitoring itemid on zabbix.
+              zb_resolve_itemid:
+                type: string
+                default: 123
+                description: bind resolving monitoring itemid on zabbix.
+              zb_resolve_rate_itemid:
+                type: string
+                default: 123
+                description: bind resolve rate monitoring itemid on zabbix.
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: Add_Server
+              required:
+                - name
+              $ref: "#/definitions/Server_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "添加成功",
+                    "data": null
+                }
+        """ 
         args = dns_server_common_parser.parse_args()
         unique_server = db.session.query(DBDNSServer).filter(
                 or_(DBDNSServer.host==args['host'], DBDNSServer.ip==args['ip'])).all()
@@ -199,7 +376,53 @@ class DNSServer(Resource):
     @resource_exists_required(ResourceType.SERVER)
     @permission_required(ResourceType.SERVER, Operation.ACCESS)
     def get(self, server_id):
-        """Get the detail info of the single server."""
+        """
+        功能：获取指定ID的Server详情
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Server
+        parameters:
+          - name: server_id
+            in: path
+            description:
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                  description: response code
+                msg:
+                  type: string
+                  description: response message
+                data:
+                  type: string
+                  description: response data
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "获取成功！",
+                    "data": {
+                        "id": 2,
+                        "host": "s2",
+                        "ip": "0.0.0.1",
+                        "env": "anhouse",
+                        "dns_server_type": "master",
+                        "zb_process_itemid": "222",
+                        "zb_port_itemid": "222",
+                        "zb_resolve_itemid": "222",
+                        "zb_resolve_rate_itemid": "189254",
+                        "can_update": true,
+                        "can_delete": true
+                    }
+                }
+        """
         current_server = DBDNSServer.query.get(server_id)
         results_wrapper = marshal(current_server, server_fields)
         return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
@@ -207,7 +430,43 @@ class DNSServer(Resource):
     @resource_exists_required(ResourceType.SERVER)
     @permission_required(ResourceType.SERVER, Operation.UPDATE)
     def put(self, server_id):
-        """Update the indicated server."""
+        """
+        功能：修改指定ID的Server
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Server
+        parameters:
+          - name: server_id
+            in: path
+            description: server id
+            type: integer
+            required: true
+            default: 1
+          - in: body
+            name: body
+            schema:
+              id: Update_Server
+              $ref: "#/definitions/Server_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "修改成功",
+                    "data": null
+                }
+        """
         current_server = DBDNSServer.query.get(server_id)
         args = dns_server_common_parser.parse_args()
         try:
@@ -221,7 +480,38 @@ class DNSServer(Resource):
     @resource_exists_required(ResourceType.SERVER)
     @permission_required(ResourceType.SERVER, Operation.DELETE)
     def delete(self, server_id):
-        """Delete the indicated server."""
+        """
+        功能: 删除指定ID的Server
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Server
+        parameters:
+          - name: server_id
+            in: path
+            description: server id
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: string
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "删除成功",
+                    "data": null
+                }
+        """
         current_server = DBDNSServer.query.get(server_id)
         try:
             self._delete_server(current_server)

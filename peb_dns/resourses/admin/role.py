@@ -59,7 +59,117 @@ class RoleList(Resource):
     method_decorators = [admin_required, token_required] 
 
     def get(self):
-        """Get role list."""
+        """
+        功能: 获取角色列表资源
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Role
+        parameters:
+          - name: currentPage
+            in: query
+            description: the page of Role
+            type: integer
+            default: 1
+          - name: pageSize
+            in: query
+            description: the max records of page
+            type: integer
+            default: 10
+          - name: id
+            in: query
+            description: Role id
+            type: integer
+            default: 1
+          - name: name
+            type: string
+            in: query
+            description: the name of Role
+            default: Guest
+          - name: user_id
+            in: query
+            type: integer
+            description: the id of User
+            default: 1
+        definitions:
+          Roles:
+            properties:
+              total:
+                type: integer
+              current_page:
+                type: integer
+              roles:
+                type: array
+                items:
+                  $ref: "#/definitions/Role"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  $ref: "#/definitions/Roles"
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "获取成功！",
+                    "data": {
+                        "total": 7,
+                        "roles": [
+                            {
+                                "id": 6,
+                                "name": "zone_admin",
+                                "privileges": [
+                                    {
+                                        "id": 2,
+                                        "name": "ZONE_ADD",
+                                        "operation": 0,
+                                        "resource_type": 0,
+                                        "resource_id": 0,
+                                        "comment": null
+                                    },
+                                    {
+                                        "id": 6,
+                                        "name": "ZONE#xcvwretwgvrfv3wf.com#UPDATE",
+                                        "operation": 1,
+                                        "resource_type": 2,
+                                        "resource_id": 1,
+                                        "comment": null
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 2,
+                                "name": "server_admin",
+                                "privileges": [
+                                    {
+                                        "id": 1,
+                                        "name": "SERVER_ADD",
+                                        "operation": 0,
+                                        "resource_type": 0,
+                                        "resource_id": 0,
+                                        "comment": null
+                                    },
+                                    {
+                                        "id": 17,
+                                        "name": "SERVER#s1#ACCESS",
+                                        "operation": 0,
+                                        "resource_type": 0,
+                                        "resource_id": 1,
+                                        "comment": null
+                                    }
+                                ]
+                            }
+                        ]
+                        },
+                        "current_page": 1
+                    }
+        """
         args = request.args
         current_page = args.get('currentPage', 1, type=int)
         page_size = args.get('pageSize', 10, type=int)
@@ -93,7 +203,53 @@ class RoleList(Resource):
         return marshal(response_wrapper, response_wrapper_fields)
     
     def post(self):
-        """Create new role."""
+        """
+        功能: 添加角色
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Role
+        definitions:
+          Role_Parm:
+            properties:
+              name:
+                type: string
+                default: Guest
+                description: the name of Role
+              privilege_ids:
+                type: array
+                description: the list of privilege
+                items:
+                  type: integer
+                  default: 1
+        parameters:
+          - in: body
+            name: body
+            schema:
+              id: Add_Role
+              required:
+                - name
+                - privilege_ids
+              $ref: "#/definitions/Role_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "创建成功！",
+                    "data": null
+                }
+        """
         args = dns_role_common_parser.parse_args()
         role_name = args['name']
         privilege_ids = args['privilege_ids']
@@ -116,7 +272,70 @@ class Role(Resource):
     method_decorators = [admin_required, token_required]
 
     def get(self, role_id):
-        """Get the detail info of the indicated role."""
+        """
+        功能: 获取指定ID的角色详情
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Role
+        parameters:
+          - name: role_id
+            in: path
+            description: Role id
+            type: integer
+            required: true
+            default: 1
+        definitions:
+          Role:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              privileges:
+                type: array
+                items:
+                  $ref: "#/definitions/Privilege"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  $ref: "#/definitions/Role"
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "获取成功！",
+                    "data": {
+                        "id": 3,
+                        "name": "server_guest",
+                        "privileges": [
+                            {
+                                "id": 17,
+                                "name": "SERVER#s1#ACCESS",
+                                "operation": 0,
+                                "resource_type": 0,
+                                "resource_id": 1,
+                                "comment": null
+                            },
+                            {
+                                "id": 20,
+                                "name": "SERVER#s2#ACCESS",
+                                "operation": 0,
+                                "resource_type": 0,
+                                "resource_id": 2,
+                                "comment": null
+                            }
+                        ]
+                    }
+                }
+        """
         current_role = DBRole.query.get(role_id)
         if not current_role:
             return get_response(RequestCode.OTHER_FAILED,  '角色不存在！')
@@ -124,7 +343,43 @@ class Role(Resource):
         return get_response(RequestCode.SUCCESS, '获取成功！', results_wrapper)
 
     def put(self, role_id):
-        """Update the indicated role."""
+        """
+        功能: 修改指定ID的角色
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Role
+        parameters:
+          - name: role_id
+            in: path
+            description: Role id
+            type: integer
+            required: true
+            default: 1
+          - in: body
+            name: body
+            schema:
+              id: Update_Role
+              $ref: "#/definitions/Role_Parm"
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "修改成功",
+                    "data": null
+                }
+        """
         args = dns_role_common_parser.parse_args()
         role_name = args['name']
         privilege_ids = args['privilege_ids']
@@ -154,7 +409,38 @@ class Role(Resource):
         return get_response(RequestCode.SUCCESS, '修改成功！')
 
     def delete(self, role_id):
-        """Delete the indicated role."""
+        """
+        功能: 删除指定ID的角色
+        ---
+        security:
+          - UserSecurity: []
+        tags:
+          - Role
+        parameters:
+          - name: role_id
+            in: path
+            description: Role id
+            type: integer
+            required: true
+            default: 1
+        responses:
+          200:
+            description: 请求结果
+            schema:
+              properties:
+                code:
+                  type: string
+                msg:
+                  type: string
+                data:
+                  type: string
+            examples:
+                {
+                    "code": 100000,
+                    "msg": "删除成功",
+                    "data": null
+                }
+        """
         current_role = DBRole.query.get(role_id)
         if not current_role:
             return get_response(RequestCode.OTHER_FAILED,  "角色不存在！")

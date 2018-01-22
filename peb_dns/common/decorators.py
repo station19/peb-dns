@@ -93,9 +93,10 @@ def token_required(f):
 
 
 def owner_or_admin_required(f):
-    def wrapper(*args, **kwargs):
+    @wraps(f)
+    def decorated(*args, **kwargs):
         print(kwargs)
         if not (g.current_user.is_admin() or g.current_user.id == kwargs.get('user_id')):
             return get_response(RequestCode.OTHER_FAILED,  '拒绝访问！您无权访问当前资源，如有问题请联系管理员。')
         return f(*args, **kwargs)
-    return wrapper
+    return decorated
