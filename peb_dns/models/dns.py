@@ -328,6 +328,7 @@ class DBRecord(db.Model):
     alive = db.Column(db.String(64), default='ON')
     outter_record_id = db.Column(db.String(64), default='')
     zone_id = db.Column(db.Integer, index=True)
+    full_domain_name = db.Column(db.String(128), index=True, nullable=False, default='')
     gmt_create = db.Column(db.DateTime(), default=datetime.now)
     gmt_modified = db.Column(db.DateTime(), default=datetime.now)
 

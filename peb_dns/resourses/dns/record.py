@@ -71,7 +71,7 @@ paginated_record_fields = {
 
 
 class DNSRecordList(Resource):
-    method_decorators = [token_required] 
+    method_decorators = [token_required]
 
     def get(self):
         """
@@ -339,7 +339,8 @@ class DNSRecordList(Resource):
                 value = args['value'],
                 view_name = v_name,
                 comment = args['comment'],
-                zone_id = current_zone.id
+                zone_id = current_zone.id,
+                full_domain_name = args['host'] + '.' + current_zone.name,
                 )
             db.session.add(new_record)
             db.session.flush()
@@ -511,7 +512,7 @@ class DNSRecord(Resource):
                                 DBRecord.view_name==args['view_name']).first()
         if unique_record:
             return get_response(RequestCode.OTHER_FAILED,  '修改失败 !重复的记录！！同样的Zone，同样的主机，\
-                    同样的View 的记录只能存在一个。')
+                    同样的View的记录只能存在一个。')
                     
         try:
             self._update_record(current_record.zone, current_record, args)
@@ -573,6 +574,7 @@ class DNSRecord(Resource):
         current_record.view_name = args['view_name']
         current_record.comment = args['comment']
         current_record.zone_id = args['zone_id']
+        current_record.full_domain_name = args['host'] + '.' + current_zone.name
         current_record.gmt_modified = datetime.now()
         db.session.add(current_record)
         log = DBOperationLog(
@@ -613,6 +615,23 @@ class DNSRecord(Resource):
                 DBRolePrivilege.privilege_id == record_privilege.id
                 ).delete()
         current_record_privileges_query.delete()
+
+
+class DNSRecordsForSearch(Resource):
+  
+    def get(self):
+        args = request.args
+        inner_domain = args.get('inner', 1, type=int)
+        fuzzy_match = args.get('fuzzy', 1, type=int)
+        domain = args.get('domain', '', type=str)
+        zone_groups = (0,) if inner_domain==0 else (1, 2)
+        record_query = DBRecord.query.join(DBZone, and_(DBRecord.zone_id == DBZone.id, DBZone.zone_group.in_(zone_groups)))
+        if fuzzy_match:
+            record_list = record_query.filter(DBRecord.full_domain_name.like('%'+domain+'%')).all()
+        else:
+            record_list = record_query.filter(DBRecord.full_domain_name == domain).all()
+        results = list(set([r.full_domain_name for r in record_list]))
+        return get_response(RequestCode.SUCCESS, '获取成功！', results)
 
 
         
