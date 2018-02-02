@@ -152,7 +152,7 @@ class DNSViewList(Resource):
         if zone_id is not None:
             current_zone = DBZone.query.get(zone_id)
             if current_zone.zone_group == 0:
-                return DNSPod.getDNSPodLines(current_zone.name)
+                return get_response(RequestCode.SUCCESS, '获取成功！', DNSPod.getDNSPodLines(current_zone.name)) 
             view_query = view_query.join(
                 DBViewZone, and_(DBViewZone.view_id == DBView.id)) \
                 .join(DBZone, and_(DBZone.id == DBViewZone.zone_id)) \
